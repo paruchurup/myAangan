@@ -4,11 +4,13 @@ import com.myaangan.dto.*;
 import com.myaangan.service.ServiceProviderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,20 +21,38 @@ public class ServiceProviderController {
 
     private final ServiceProviderService providerService;
 
+    // ── List / Search / Sort ──────────────────────────────────────────────────
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','SECURITY_GUARD')")
     public ResponseEntity<UserDto.ApiResponse<List<ProviderSummaryResponse>>> getAll(
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "highest_rated") String sort) {
         return ResponseEntity.ok(
-            UserDto.ApiResponse.success("OK", providerService.getAll(categoryId, search)));
+            UserDto.ApiResponse.success("OK",
+                providerService.getAll(categoryId, search, sort)));
+    }
+
+    // My added providers
+    @GetMapping("/mine")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT')")
+    public ResponseEntity<UserDto.ApiResponse<List<ProviderSummaryResponse>>> getMyProviders(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(
+            UserDto.ApiResponse.success("OK",
+                providerService.getMyProviders(userDetails.getUsername())));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','SECURITY_GUARD')")
-    public ResponseEntity<UserDto.ApiResponse<ProviderDetailResponse>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(UserDto.ApiResponse.success("OK", providerService.getById(id)));
+    public ResponseEntity<UserDto.ApiResponse<ProviderDetailResponse>> getById(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(
+            UserDto.ApiResponse.success("OK", providerService.getById(id)));
     }
+
+    // ── Create ────────────────────────────────────────────────────────────────
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','RESIDENT')")
@@ -43,6 +63,8 @@ public class ServiceProviderController {
             UserDto.ApiResponse.success("Provider added successfully",
                 providerService.create(req, userDetails.getUsername())));
     }
+
+    // ── Update (details) ──────────────────────────────────────────────────────
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','SECURITY_GUARD')")
@@ -55,12 +77,29 @@ public class ServiceProviderController {
                 providerService.update(id, req, userDetails.getUsername())));
     }
 
+    // ── Photo Upload ──────────────────────────────────────────────────────────
+
+    @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT')")
+    public ResponseEntity<UserDto.ApiResponse<ProviderSummaryResponse>> uploadPhoto(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(
+            UserDto.ApiResponse.success("Photo uploaded",
+                providerService.uploadPhoto(id, file, userDetails.getUsername())));
+    }
+
+    // ── Delete ────────────────────────────────────────────────────────────────
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto.ApiResponse<Void>> delete(@PathVariable Long id) {
         providerService.delete(id);
         return ResponseEntity.ok(UserDto.ApiResponse.success("Provider removed", null));
     }
+
+    // ── Reviews ───────────────────────────────────────────────────────────────
 
     @PostMapping("/{id}/reviews")
     @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','SECURITY_GUARD')")

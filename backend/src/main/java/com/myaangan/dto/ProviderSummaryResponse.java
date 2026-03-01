@@ -2,7 +2,6 @@ package com.myaangan.dto;
 
 import com.myaangan.entity.ServiceProvider;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -11,6 +10,7 @@ public class ProviderSummaryResponse {
     private String name;
     private String phone;
     private String area;
+    private String photoUrl;        // Phase 2B
     private Long categoryId;
     private String categoryName;
     private String categoryIcon;
@@ -27,6 +27,8 @@ public class ProviderSummaryResponse {
         r.setName(p.getName());
         r.setPhone(p.getPhone());
         r.setArea(p.getArea());
+        r.setPhotoUrl(p.getPhotoFilename() != null
+            ? "/uploads/photos/" + p.getPhotoFilename() : null);
         r.setCategoryId(p.getCategory().getId());
         r.setCategoryName(p.getCategory().getName());
         r.setCategoryIcon(p.getCategory().getIcon());

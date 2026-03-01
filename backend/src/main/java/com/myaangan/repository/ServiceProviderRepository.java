@@ -11,22 +11,30 @@ import java.util.List;
 @Repository
 public interface ServiceProviderRepository extends JpaRepository<ServiceProvider, Long> {
 
-    // All active providers, optionally filtered by category
+    // ── Sort: Highest Rated ────────────────────────────────────────────────────
     List<ServiceProvider> findByActiveTrueOrderByAvgRatingDesc();
-
     List<ServiceProvider> findByCategoryIdAndActiveTrueOrderByAvgRatingDesc(Long categoryId);
 
-    // Search by name (case-insensitive)
+    // ── Sort: Most Reviewed ────────────────────────────────────────────────────
+    List<ServiceProvider> findByActiveTrueOrderByReviewCountDesc();
+    List<ServiceProvider> findByCategoryIdAndActiveTrueOrderByReviewCountDesc(Long categoryId);
+
+    // ── Search ─────────────────────────────────────────────────────────────────
     @Query("SELECT p FROM ServiceProvider p WHERE p.active = true AND " +
-           "LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+           "LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+           "ORDER BY p.avgRating DESC")
     List<ServiceProvider> searchByName(@Param("query") String query);
 
-    // Search by name within a category
     @Query("SELECT p FROM ServiceProvider p WHERE p.active = true AND " +
            "p.category.id = :categoryId AND " +
-           "LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+           "LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+           "ORDER BY p.avgRating DESC")
     List<ServiceProvider> searchByNameAndCategory(@Param("query") String query,
-                                                  @Param("categoryId") Long categoryId);
+                                                   @Param("categoryId") Long categoryId);
+
+    // ── My Providers ───────────────────────────────────────────────────────────
+    List<ServiceProvider> findByAddedByEmailAndActiveTrueOrderByCreatedAtDesc(String email);
 
     boolean existsByPhone(String phone);
+    boolean existsByPhoneAndIdNot(String phone, Long id);
 }

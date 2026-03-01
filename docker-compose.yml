@@ -28,6 +28,7 @@ services:
       start_period: 30s
 
   # ─────────────────────────────────────────
+  # ─────────────────────────────────────────
   # Spring Boot Backend
   # ─────────────────────────────────────────
   backend:
@@ -46,14 +47,14 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-myaanganpass}
       JWT_SECRET: ${JWT_SECRET:-MyAanganSuperSecretKey2024ChangeThisInProduction!}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://frontend}
+    volumes:
+      # Named volume shared with frontend container for photo serving
+      - photo_uploads:/app/uploads/photos
     ports:
-      - "8080:8080"       # Exposed so you can test API directly if needed
+      - "8080:8080"
     networks:
       - myaangan-net
 
-  # ─────────────────────────────────────────
-  # Angular Frontend (Nginx)
-  # ─────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
@@ -61,14 +62,19 @@ services:
     container_name: myaangan-frontend
     restart: unless-stopped
     depends_on:
-      - backend             # Simple dependency, no healthcheck needed
+      - backend
     ports:
       - "80:80"
+    volumes:
+      # Same volume mounted read-only — Nginx serves photos directly
+      - photo_uploads:/usr/share/nginx/uploads/photos:ro
     networks:
       - myaangan-net
 
 volumes:
   mysql_data:
+    driver: local
+  photo_uploads:
     driver: local
 
 networks:

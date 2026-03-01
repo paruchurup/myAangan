@@ -1,5 +1,3 @@
-// ── Category ──────────────────────────────────────────────────────────────────
-
 export interface Category {
   id: number;
   name: string;
@@ -13,15 +11,15 @@ export interface CategoryRequest {
   icon: string;
 }
 
-// ── Provider ──────────────────────────────────────────────────────────────────
-
 export type Availability = 'AVAILABLE' | 'BUSY' | 'NOT_RESPONDING';
+export type SortOption   = 'highest_rated' | 'most_reviewed';
 
 export interface ProviderSummary {
   id: number;
   name: string;
   phone: string;
   area: string;
+  photoUrl: string | null;      // Phase 2B
   categoryId: number;
   categoryName: string;
   categoryIcon: string;
@@ -51,8 +49,6 @@ export interface ProviderUpdateRequest {
   area?: string;
   availability?: Availability;
 }
-
-// ── Review ────────────────────────────────────────────────────────────────────
 
 export interface Review {
   id: number;

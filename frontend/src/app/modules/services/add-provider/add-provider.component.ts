@@ -11,7 +11,6 @@ import { Category } from '../../../core/models/service.model';
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
   template: `
     <div class="page">
-
       <div class="page-header">
         <button class="back-btn" routerLink="/services">← Back</button>
         <h1>Add Service Provider</h1>
@@ -21,28 +20,25 @@ import { Category } from '../../../core/models/service.model';
       <div class="form-container">
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-          <!-- Name -->
           <div class="field">
             <label>Full Name *</label>
             <input type="text" formControlName="name" placeholder="e.g. Ramesh Kumar" />
-            <span class="error" *ngIf="f['name'].touched && f['name'].errors?.['required']">
+            <span class="err" *ngIf="f['name'].touched && f['name'].errors?.['required']">
               Name is required
             </span>
           </div>
 
-          <!-- Phone -->
           <div class="field">
             <label>Mobile Number *</label>
-            <input type="tel" formControlName="phone" placeholder="10-digit mobile number" />
-            <span class="error" *ngIf="f['phone'].touched && f['phone'].errors?.['required']">
+            <input type="tel" formControlName="phone" placeholder="10-digit number" maxlength="10" />
+            <span class="err" *ngIf="f['phone'].touched && f['phone'].errors?.['required']">
               Phone is required
             </span>
-            <span class="error" *ngIf="f['phone'].touched && f['phone'].errors?.['pattern']">
+            <span class="err" *ngIf="f['phone'].touched && f['phone'].errors?.['pattern']">
               Enter a valid 10-digit mobile number
             </span>
           </div>
 
-          <!-- Category -->
           <div class="field">
             <label>Category *</label>
             <select formControlName="categoryId">
@@ -51,26 +47,38 @@ import { Category } from '../../../core/models/service.model';
                 {{ c.icon }} {{ c.name }}
               </option>
             </select>
-            <span class="error" *ngIf="f['categoryId'].touched && f['categoryId'].errors?.['required']">
+            <span class="err" *ngIf="f['categoryId'].touched && f['categoryId'].errors?.['required']">
               Please select a category
             </span>
           </div>
 
-          <!-- Area -->
           <div class="field">
-            <label>Area / Locality <span class="optional">(optional)</span></label>
+            <label>Area / Locality <span class="opt">(optional)</span></label>
             <input type="text" formControlName="area"
               placeholder="e.g. Near Main Gate, Sector 5" />
           </div>
 
-          <!-- Duplicate warning -->
-          <div class="warning" *ngIf="duplicateWarning">
-            ⚠️ A provider with this phone number might already exist. Please check the
-            directory before adding.
+          <!-- Photo upload (optional) -->
+          <div class="field">
+            <label>Photo <span class="opt">(optional, max 5MB)</span></label>
+            <div class="photo-picker" (click)="photoInput.click()">
+              <img *ngIf="photoPreview" [src]="photoPreview" class="preview-img" />
+              <div *ngIf="!photoPreview" class="photo-placeholder">
+                <span>📷</span>
+                <span>Tap to add photo</span>
+              </div>
+            </div>
+            <input #photoInput type="file" accept="image/*"
+              (change)="onPhotoSelected($event)" hidden />
+            <span class="err" *ngIf="photoError">{{ photoError }}</span>
           </div>
 
-          <!-- Error -->
-          <div class="error-banner" *ngIf="submitError">{{ submitError }}</div>
+          <div class="warning" *ngIf="duplicateWarning">
+            ⚠️ A provider with this phone number might already exist. Please check
+            the directory before adding.
+          </div>
+
+          <div class="err-banner" *ngIf="submitError">{{ submitError }}</div>
 
           <button type="submit" class="btn-submit"
             [disabled]="form.invalid || submitting">
@@ -79,7 +87,6 @@ import { Category } from '../../../core/models/service.model';
 
         </form>
       </div>
-
     </div>
   `,
   styles: [`
@@ -87,7 +94,7 @@ import { Category } from '../../../core/models/service.model';
 
     .page-header {
       background: linear-gradient(135deg, #1a1a2e, #0f3460);
-      padding: 16px 16px 28px; color: white; position: relative;
+      padding: 16px 16px 28px; color: white;
     }
     .back-btn {
       background: rgba(255,255,255,0.15); border: none; color: white;
@@ -95,36 +102,52 @@ import { Category } from '../../../core/models/service.model';
       margin-bottom: 12px; display: inline-block;
     }
     .page-header h1 { font-size: 22px; margin: 0 0 4px; }
-    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+    .page-header p  { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
 
     .form-container { padding: 20px 16px; }
 
     .field { margin-bottom: 18px; }
     label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 6px; }
-    .optional { font-weight: 400; color: #999; font-size: 12px; }
+    .opt { font-weight: 400; color: #999; font-size: 12px; }
 
-    input, select, textarea {
+    input, select {
       width: 100%; padding: 12px 14px; border: 1.5px solid #ddd; border-radius: 10px;
-      font-size: 15px; outline: none; background: white; box-sizing: border-box;
-      font-family: inherit; color: #1a1a2e;
+      font-size: 15px; outline: none; background: white; box-sizing: border-box; color: #1a1a2e;
     }
     input:focus, select:focus { border-color: #0f3460; }
-    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-
-    .error { color: #dc2626; font-size: 12px; margin-top: 4px; display: block; }
-    .warning {
-      background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px;
-      padding: 10px 14px; font-size: 13px; color: #92400e; margin-bottom: 16px;
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
     }
-    .error-banner {
-      background: #fee2e2; border: 1px solid #ef4444; border-radius: 10px;
-      padding: 10px 14px; font-size: 13px; color: #991b1b; margin-bottom: 16px;
+
+    .photo-picker {
+      border: 2px dashed #ddd; border-radius: 12px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; overflow: hidden; background: white;
+    }
+    .photo-picker:hover { border-color: #0f3460; }
+    .preview-img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #aaa; }
+    .photo-placeholder span:first-child { font-size: 32px; }
+    .photo-placeholder span:last-child  { font-size: 13px; }
+
+    .err { color: #dc2626; font-size: 12px; margin-top: 4px; display: block; }
+    .warning {
+      background: #fef3c7; border: 1px solid #f59e0b;
+      border-radius: 10px; padding: 10px 14px; font-size: 13px;
+      color: #92400e; margin-bottom: 16px;
+    }
+    .err-banner {
+      background: #fee2e2; border: 1px solid #ef4444;
+      border-radius: 10px; padding: 10px 14px; font-size: 13px;
+      color: #991b1b; margin-bottom: 16px;
     }
 
     .btn-submit {
       width: 100%; background: #0f3460; color: white; border: none;
-      padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600;
-      cursor: pointer; margin-top: 8px;
+      padding: 14px; border-radius: 12px; font-size: 16px;
+      font-weight: 600; cursor: pointer; margin-top: 8px;
     }
     .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
   `]
@@ -135,6 +158,9 @@ export class AddProviderComponent implements OnInit {
   submitting = false;
   submitError = '';
   duplicateWarning = false;
+  photoPreview: string | null = null;
+  photoFile: File | null = null;
+  photoError = '';
 
   get f() { return this.form.controls; }
 
@@ -152,13 +178,29 @@ export class AddProviderComponent implements OnInit {
       area:       ['']
     });
 
-    this.form.get('phone')?.valueChanges.subscribe(val => {
+    this.form.get('phone')?.valueChanges.subscribe(() => {
       this.duplicateWarning = false;
     });
 
-    this.svc.getCategories().subscribe({
-      next: r => this.categories = r.data
-    });
+    this.svc.getCategories().subscribe({ next: r => this.categories = r.data });
+  }
+
+  onPhotoSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.photoError = '';
+    if (!file.type.startsWith('image/')) {
+      this.photoError = 'Only image files are allowed';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.photoError = 'Photo must be under 5MB';
+      return;
+    }
+    this.photoFile = file;
+    const reader = new FileReader();
+    reader.onload = e => this.photoPreview = e.target?.result as string;
+    reader.readAsDataURL(file);
   }
 
   onSubmit() {
@@ -167,13 +209,22 @@ export class AddProviderComponent implements OnInit {
     this.submitError = '';
 
     this.svc.createProvider({
-      name: this.f['name'].value.trim(),
-      phone: this.f['phone'].value.trim(),
+      name:       this.f['name'].value.trim(),
+      phone:      this.f['phone'].value.trim(),
       categoryId: Number(this.f['categoryId'].value),
-      area: this.f['area'].value.trim() || undefined
+      area:       this.f['area'].value.trim() || undefined
     }).subscribe({
       next: r => {
-        this.router.navigate(['/services', r.data.id]);
+        const providerId = r.data.id;
+        // If photo selected, upload it then navigate
+        if (this.photoFile) {
+          this.svc.uploadPhoto(providerId, this.photoFile).subscribe({
+            next: () => this.router.navigate(['/services', providerId]),
+            error: () => this.router.navigate(['/services', providerId]) // navigate anyway
+          });
+        } else {
+          this.router.navigate(['/services', providerId]);
+        }
       },
       error: err => {
         this.submitting = false;
