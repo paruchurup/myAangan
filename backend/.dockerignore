@@ -1,0 +1,8 @@
+.gradle/
+build/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.git/
+.gitignore
+README.md

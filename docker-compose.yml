@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+
+  # ─────────────────────────────────────────
+  # MySQL Database
+  # ─────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: myaangan-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: myaangandb
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_USER: ${DB_USER:-myaangan}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-myaanganpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - myaangan-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ─────────────────────────────────────────
+  # Spring Boot Backend
+  # ─────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: myaangan-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: myaangandb
+      DB_USER: ${DB_USER:-myaangan}
+      DB_PASSWORD: ${DB_PASSWORD:-myaanganpass}
+      JWT_SECRET: ${JWT_SECRET:-MyAanganSuperSecretKey2024ChangeThisInProduction!}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://frontend}
+    ports:
+      - "8080:8080"       # Exposed so you can test API directly if needed
+    networks:
+      - myaangan-net
+
+  # ─────────────────────────────────────────
+  # Angular Frontend (Nginx)
+  # ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: myaangan-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend             # Simple dependency, no healthcheck needed
+    ports:
+      - "80:80"
+    networks:
+      - myaangan-net
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  myaangan-net:
+    driver: bridge
