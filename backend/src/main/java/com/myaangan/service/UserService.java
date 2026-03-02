@@ -1,6 +1,8 @@
 package com.myaangan.service;
 
 import com.myaangan.dto.UserDto;
+import com.myaangan.dto.DeliveryPreferencesRequest;
+import com.myaangan.dto.DeliveryPreferencesResponse;
 import com.myaangan.entity.User;
 import com.myaangan.enums.Role;
 import com.myaangan.enums.UserStatus;
@@ -128,6 +130,29 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // ─── Delivery Preferences (Phase 3B) ────────────────────────────────────────
+    public DeliveryPreferencesResponse getDeliveryPreferences(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+        return DeliveryPreferencesResponse.from(user);
+    }
+
+    public DeliveryPreferencesResponse updateDeliveryPreferences(String email,
+                                                                  DeliveryPreferencesRequest req) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+
+        // Allow explicit null to clear fields
+        user.setDeliveryNote(req.getDeliveryNote());
+        user.setPreferredCollector(req.getPreferredCollector());
+        user.setDndStart(req.getDndStart());
+        user.setDndEnd(req.getDndEnd());
+        user.setDefaultCollectorName(req.getDefaultCollectorName());
+
+        userRepository.save(user);
+        return DeliveryPreferencesResponse.from(user);
+    }
+
     // ─── Delete user (Admin only) ────────────────────────────────────────────────
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
@@ -152,6 +177,12 @@ public class UserService {
         response.setHostFlatNumber(user.getHostFlatNumber());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
+        // Delivery preferences
+        response.setDeliveryNote(user.getDeliveryNote());
+        response.setPreferredCollector(user.getPreferredCollector());
+        response.setDndStart(user.getDndStart());
+        response.setDndEnd(user.getDndEnd());
+        response.setDefaultCollectorName(user.getDefaultCollectorName());
         return response;
     }
 }

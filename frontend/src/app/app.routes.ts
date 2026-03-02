@@ -1,29 +1,33 @@
 import { Routes } from '@angular/router';
-import { authGuard, adminGuard, guestGuard, serviceGuard } from './core/guards/auth.guard';
+import {
+  authGuard, adminGuard, guestGuard,
+  serviceGuard, deliveryGuard, guardOnlyGuard, residentGuard,
+  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard
+} from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+
   {
-    path: 'auth',
-    canActivate: [guestGuard],
+    path: 'auth', canActivate: [guestGuard],
     children: [
       { path: 'login',    loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
       { path: 'register', loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent) }
     ]
   },
+
   {
-    path: 'dashboard',
-    canActivate: [authGuard],
+    path: 'dashboard', canActivate: [authGuard],
     loadComponent: () => import('./modules/user/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
-    path: 'profile',
-    canActivate: [authGuard],
+    path: 'profile', canActivate: [authGuard],
     loadComponent: () => import('./modules/user/profile/profile.component').then(m => m.ProfileComponent)
   },
+
+  // ── Services Directory ────────────────────────────────────────────────────
   {
-    path: 'services',
-    canActivate: [authGuard, serviceGuard],
+    path: 'services', canActivate: [authGuard, serviceGuard],
     children: [
       { path: '',     loadComponent: () => import('./modules/services/services-list/services-list.component').then(m => m.ServicesListComponent) },
       { path: 'add',  loadComponent: () => import('./modules/services/add-provider/add-provider.component').then(m => m.AddProviderComponent) },
@@ -31,14 +35,52 @@ export const routes: Routes = [
       { path: ':id',  loadComponent: () => import('./modules/services/provider-detail/provider-detail.component').then(m => m.ProviderDetailComponent) }
     ]
   },
+
+  // ── Delivery Management ───────────────────────────────────────────────────
   {
-    path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    path: 'delivery', canActivate: [authGuard, deliveryGuard],
+    children: [
+      { path: 'guard', canActivate: [guardOnlyGuard],
+        loadComponent: () => import('./modules/delivery/guard-dashboard/guard-dashboard.component').then(m => m.GuardDashboardComponent) },
+      { path: 'log', canActivate: [guardOnlyGuard],
+        loadComponent: () => import('./modules/delivery/log-delivery/log-delivery.component').then(m => m.LogDeliveryComponent) },
+      { path: 'my', canActivate: [residentGuard],
+        loadComponent: () => import('./modules/delivery/my-deliveries/my-deliveries.component').then(m => m.MyDeliveriesComponent) },
+      { path: 'preferences', canActivate: [residentGuard],
+        loadComponent: () => import('./modules/delivery/delivery-preferences/delivery-preferences.component').then(m => m.DeliveryPreferencesComponent) },
+      { path: 'all', canActivate: [adminGuard],
+        loadComponent: () => import('./modules/delivery/admin-deliveries/admin-deliveries.component').then(m => m.AdminDeliveriesComponent) }
+    ]
+  },
+
+  // ── Complaint Management ──────────────────────────────────────────────────
+  {
+    path: 'complaints', canActivate: [authGuard],
+    children: [
+      { path: 'my',
+        loadComponent: () => import('./modules/complaints/my-complaints/my-complaints.component').then(m => m.MyComplaintsComponent) },
+      { path: 'raise', canActivate: [complaintRaiserGuard],
+        loadComponent: () => import('./modules/complaints/raise-complaint/raise-complaint.component').then(m => m.RaiseComplaintComponent) },
+      { path: 'fm', canActivate: [fmGuard],
+        loadComponent: () => import('./modules/complaints/fm-dashboard/fm-dashboard.component').then(m => m.FmDashboardComponent) },
+      { path: 'bm', canActivate: [bmGuard],
+        loadComponent: () => import('./modules/complaints/bm-dashboard/bm-dashboard.component').then(m => m.BmDashboardComponent) },
+      { path: 'report', canActivate: [presidentGuard],
+        loadComponent: () => import('./modules/complaints/president-report/president-report.component').then(m => m.PresidentReportComponent) },
+      { path: ':id',
+        loadComponent: () => import('./modules/complaints/complaint-detail/complaint-detail.component').then(m => m.ComplaintDetailComponent) }
+    ]
+  },
+
+  // ── Admin ─────────────────────────────────────────────────────────────────
+  {
+    path: 'admin', canActivate: [authGuard, adminGuard],
     children: [
       { path: 'users',      loadComponent: () => import('./modules/admin/user-list/user-list.component').then(m => m.UserListComponent) },
       { path: 'pending',    loadComponent: () => import('./modules/admin/pending-users/pending-users.component').then(m => m.PendingUsersComponent) },
       { path: 'categories', loadComponent: () => import('./modules/admin/categories/categories.component').then(m => m.CategoriesComponent) }
     ]
   },
+
   { path: '**', redirectTo: '/dashboard' }
 ];

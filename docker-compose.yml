@@ -50,6 +50,7 @@ services:
     volumes:
       # Named volume shared with frontend container for photo serving
       - photo_uploads:/app/uploads/photos
+      - complaint_uploads:/app/uploads/complaints
     ports:
       - "8080:8080"
     networks:
@@ -68,6 +69,7 @@ services:
     volumes:
       # Same volume mounted read-only — Nginx serves photos directly
       - photo_uploads:/usr/share/nginx/uploads/photos:ro
+      - complaint_uploads:/usr/share/nginx/uploads/complaints:ro
     networks:
       - myaangan-net
 
@@ -75,6 +77,8 @@ volumes:
   mysql_data:
     driver: local
   photo_uploads:
+    driver: local
+  complaint_uploads:
     driver: local
 
 networks:

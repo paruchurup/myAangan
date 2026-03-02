@@ -80,6 +80,13 @@ public class UserDto {
         private String hostFlatNumber;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+
+        // Delivery preferences (Phase 3B)
+        private String deliveryNote;
+        private String preferredCollector;
+        private String dndStart;
+        private String dndEnd;
+        private String defaultCollectorName;
     }
 
     // ─── Update Request ─────────────────────────────────────────────────────────

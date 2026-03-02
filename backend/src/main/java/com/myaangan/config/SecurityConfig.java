@@ -84,9 +84,16 @@ public class SecurityConfig {
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Authenticated users
-                .requestMatchers("/api/services/**").hasAnyRole("ADMIN","RESIDENT","SECURITY_GUARD")
+                .requestMatchers("/api/services/**").hasAnyRole(
+                    "ADMIN","RESIDENT","SECURITY_GUARD","FACILITY_MANAGER",
+                    "BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY","VOLUNTEER")
+                .requestMatchers("/api/deliveries/**").hasAnyRole(
+                    "ADMIN","RESIDENT","SECURITY_GUARD","FACILITY_MANAGER")
+                .requestMatchers("/api/complaints/**").hasAnyRole(
+                    "ADMIN","RESIDENT","SECURITY_GUARD","FACILITY_MANAGER",
+                    "BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY","VOLUNTEER")
                 .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
-                .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "RESIDENT", "SECURITY_GUARD", "VISITOR")
+                .requestMatchers("/api/users/**").authenticated()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

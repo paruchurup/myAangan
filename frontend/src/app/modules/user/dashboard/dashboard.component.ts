@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { DeliveryService } from '../../../core/services/delivery.service';
 import { User } from '../../../core/models/user.model';
 
 @Component({
@@ -10,147 +11,264 @@ import { User } from '../../../core/models/user.model';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="dashboard">
+
+      <!-- Welcome card -->
       <div class="welcome-card">
         <div class="welcome-icon">🏠</div>
         <div class="welcome-text">
           <h2>Welcome, {{ user?.firstName }}!</h2>
-          <p class="role-badge" [class]="'role-' + user?.role?.toLowerCase()">{{ user?.role }}</p>
-          <p class="status" [class.active]="user?.status === 'ACTIVE'" [class.pending]="user?.status === 'PENDING_APPROVAL'">
-            Status: {{ user?.status }}
+          <p class="role-badge" [class]="'role-' + user?.role?.toLowerCase()">
+            {{ roleLabel(user?.role) }}
+          </p>
+          <p class="status" [class.active]="user?.status === 'ACTIVE'"
+            [class.pending]="user?.status === 'PENDING_APPROVAL'">
+            {{ user?.status === 'ACTIVE' ? '● Active' : '⏳ Pending Approval' }}
           </p>
         </div>
       </div>
 
-      <!-- Pending notice -->
+      <!-- Pending approval notice -->
       <div class="notice" *ngIf="user?.status === 'PENDING_APPROVAL'">
         ⏳ Your account is pending admin approval. You'll get full access once approved.
       </div>
 
-      <!-- Quick Links -->
+      <!-- Resident: Delivery pending alert -->
+      <a class="delivery-alert" routerLink="/delivery/my"
+        *ngIf="isResident && pendingDeliveryCount > 0">
+        <div class="alert-icon">📦</div>
+        <div class="alert-text">
+          <strong>{{ pendingDeliveryCount }} delivery{{ pendingDeliveryCount > 1 ? 'ies' : '' }} waiting at the gate</strong>
+          <span>Tap to view and acknowledge</span>
+        </div>
+        <div class="alert-badge">{{ pendingDeliveryCount }}</div>
+      </a>
+
+      <!-- Quick Actions -->
       <div class="quick-links" *ngIf="user?.status === 'ACTIVE'">
         <h3>Quick Actions</h3>
         <div class="grid">
+
+          <!-- Resident actions -->
+          <a routerLink="/delivery/my" class="action-card delivery" *ngIf="isResident">
+            <div class="card-icon-wrap">
+              <span class="icon">📦</span>
+              <span class="badge" *ngIf="pendingDeliveryCount > 0">{{ pendingDeliveryCount }}</span>
+            </div>
+            <span>My Deliveries</span>
+          </a>
+
+          <!-- Guard actions -->
+          <a routerLink="/delivery/guard" class="action-card delivery" *ngIf="isGuard">
+            <span class="icon">🚪</span>
+            <span>Gate Log</span>
+          </a>
+          <a routerLink="/delivery/log" class="action-card delivery" *ngIf="isGuard">
+            <span class="icon">📦</span>
+            <span>Log Delivery</span>
+          </a>
+
+          <!-- Services (non-visitor) -->
           <a routerLink="/services" class="action-card" *ngIf="!isVisitor">
             <span class="icon">🔧</span>
-            <span>Service Directory</span>
+            <span>Services</span>
           </a>
+
+          <!-- Profile always -->
           <a routerLink="/profile" class="action-card">
             <span class="icon">👤</span>
             <span>My Profile</span>
           </a>
+
+          <!-- Admin actions -->
           <ng-container *ngIf="isAdmin">
-            <a routerLink="/admin/users" class="action-card admin">
-              <span class="icon">👥</span>
-              <span>Manage Users</span>
-            </a>
-            <a routerLink="/admin/categories" class="action-card admin">
-            <span class="icon">⚙️</span>
-            <span>Categories</span>
-          </a>
-          <a routerLink="/admin/pending" class="action-card admin">
-              <span class="icon">⏳</span>
-              <span>Pending Approvals</span>
-            </a>
+            <a routerLink="/delivery/all"      class="action-card admin"><span class="icon">📊</span><span>Deliveries</span></a>
+            <a routerLink="/admin/users"        class="action-card admin"><span class="icon">👥</span><span>Users</span></a>
+            <a routerLink="/admin/categories"   class="action-card admin"><span class="icon">⚙️</span><span>Categories</span></a>
+            <a routerLink="/admin/pending"      class="action-card admin"><span class="icon">⏳</span><span>Approvals</span></a>
+            <a routerLink="/complaints/fm"      class="action-card complaint"><span class="icon">📢</span><span>Complaints</span></a>
+            <a routerLink="/complaints/report"  class="action-card complaint"><span class="icon">📄</span><span>PDF Report</span></a>
           </ng-container>
+
+          <!-- Complaint: Raise for Resident & Guard -->
+          <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">📢</span><span>My Complaints</span></a>
+          <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">✏️</span><span>Report Issue</span></a>
+
+          <!-- FM cards -->
+          <ng-container *ngIf="isFm">
+            <a routerLink="/complaints/fm"    class="action-card complaint"><span class="icon">📢</span><span>All Complaints</span></a>
+            <a routerLink="/complaints/raise" class="action-card complaint"><span class="icon">✏️</span><span>Raise Complaint</span></a>
+            <a routerLink="/services"         class="action-card"><span class="icon">🛠️</span><span>Services</span></a>
+          </ng-container>
+
+          <!-- BM / BDA cards -->
+          <ng-container *ngIf="isBm||isBda">
+            <a routerLink="/complaints/bm"  class="action-card complaint"><span class="icon">🚨</span><span>{{ isBda ? 'BDA Complaints' : 'Escalated' }}</span></a>
+            <a routerLink="/complaints/my"  class="action-card"><span class="icon">📋</span><span>My Complaints</span></a>
+          </ng-container>
+
+          <!-- President / Secretary / Volunteer cards -->
+          <ng-container *ngIf="isPresident">
+            <a routerLink="/complaints/report" class="action-card complaint"><span class="icon">🏛️</span><span>Complaint Report</span></a>
+            <a routerLink="/complaints/my"     class="action-card"><span class="icon">📋</span><span>My Complaints</span></a>
+          </ng-container>
+
         </div>
       </div>
 
-      <!-- User Info Card -->
+      <!-- Account info -->
       <div class="info-card" *ngIf="user">
         <h3>Account Details</h3>
         <div class="info-row"><span>Email</span><strong>{{ user.email }}</strong></div>
         <div class="info-row"><span>Phone</span><strong>{{ user.phone || '—' }}</strong></div>
-        <div class="info-row" *ngIf="user.flatNumber"><span>Flat</span><strong>{{ user.block ? user.block + '-' : '' }}{{ user.flatNumber }}</strong></div>
-        <div class="info-row" *ngIf="user.societyName"><span>Society</span><strong>{{ user.societyName }}</strong></div>
-        <div class="info-row" *ngIf="user.hostFlatNumber"><span>Visiting</span><strong>{{ user.hostFlatNumber }}</strong></div>
+        <div class="info-row" *ngIf="user.flatNumber">
+          <span>Flat</span>
+          <strong>{{ user.block ? user.block + '-' : '' }}{{ user.flatNumber }}</strong>
+        </div>
+        <div class="info-row" *ngIf="user.societyName">
+          <span>Society</span><strong>{{ user.societyName }}</strong>
+        </div>
+        <div class="info-row" *ngIf="user.hostFlatNumber">
+          <span>Visiting</span><strong>{{ user.hostFlatNumber }}</strong>
+        </div>
       </div>
+
     </div>
   `,
   styles: [`
-    .dashboard { max-width: 700px; margin: 0 auto; }
+    .dashboard { max-width: 700px; margin: 0 auto; padding-bottom: 80px; }
+
     .welcome-card {
-      background: linear-gradient(135deg, #1a237e, #3949ab);
-      border-radius: 16px;
-      padding: 28px;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 20px;
+      background: linear-gradient(135deg, #1a1a2e, #0f3460);
+      border-radius: 0 0 20px 20px; padding: 28px 20px;
+      color: white; display: flex; align-items: center; gap: 20px;
+      margin-bottom: 16px;
     }
     .welcome-icon { font-size: 52px; }
     h2 { margin: 0 0 8px; font-size: 22px; }
     .role-badge {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(255,255,255,0.2);
-      margin: 0 0 6px;
+      display: inline-block; padding: 3px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.2);
+      margin: 0 0 6px; text-transform: capitalize;
     }
     .status { margin: 0; font-size: 13px; opacity: 0.85; }
-    .status.active { color: #a5d6a7; }
-    .status.pending { color: #ffcc80; }
+    .status.active  { color: #86efac; }
+    .status.pending { color: #fcd34d; }
+
     .notice {
-      background: #fff8e1;
-      border: 1px solid #ffd54f;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      color: #e65100;
-      font-size: 14px;
+      background: #fff8e1; border: 1px solid #fcd34d; border-radius: 12px;
+      padding: 14px 20px; margin: 0 16px 16px; color: #92400e; font-size: 14px;
     }
-    h3 { margin: 0 0 16px; color: #333; }
+
+    .delivery-alert {
+      display: flex; align-items: center; gap: 12px;
+      background: #fef3c7; border: 1.5px solid #f59e0b;
+      border-radius: 14px; padding: 14px 16px;
+      margin: 0 16px 16px; text-decoration: none;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
+    }
+    .alert-icon { font-size: 28px; }
+    .alert-text { flex: 1; }
+    .alert-text strong { display: block; font-size: 14px; color: #92400e; }
+    .alert-text span   { font-size: 12px; color: #b45309; }
+    .alert-badge {
+      background: #f59e0b; color: white; font-size: 14px; font-weight: 700;
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    h3 { margin: 0 0 14px; color: #333; font-size: 16px; padding: 0 16px; }
     .quick-links { margin-bottom: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 16px; }
+
     .action-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding: 24px 16px;
-      background: white;
-      border-radius: 12px;
-      text-decoration: none;
-      color: #333;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.2s;
-      font-weight: 600;
-      font-size: 14px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 18px 10px; background: white; border-radius: 14px;
+      text-decoration: none; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      font-weight: 600; font-size: 13px; text-align: center;
+      transition: transform 0.15s;
     }
-    .action-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-    .action-card .icon { font-size: 32px; }
-    .action-card.admin { border: 2px solid #e8eaf6; }
+    .action-card:active { transform: scale(0.96); }
+    .action-card .icon  { font-size: 30px; }
+    .action-card.admin    { border: 2px solid #e8eaf6; }
+    .action-card.delivery { border: 2px solid #fde68a; }
+    .action-card.complaint{ border: 2px solid #fca5a5; }
+
+    .card-icon-wrap { position: relative; display: inline-block; }
+    .badge {
+      position: absolute; top: -6px; right: -10px;
+      background: #e94560; color: white; font-size: 10px; font-weight: 700;
+      min-width: 18px; height: 18px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; padding: 0 4px;
+    }
+
     .info-card {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: white; border-radius: 14px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin: 0 16px;
     }
+    .info-card h3 { padding: 0; margin-bottom: 12px; }
     .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #f0f0f0;
-      font-size: 14px;
+      display: flex; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px;
     }
     .info-row:last-child { border-bottom: none; }
-    .info-row span { color: #666; }
+    .info-row span   { color: #888; }
+    .info-row strong { color: #1a1a2e; }
   `]
 })
 export class DashboardComponent implements OnInit {
   user: User | null = null;
-  isAdmin = false;
-  isVisitor = false;
+  isAdmin    = false;
+  isResident = false;
+  isGuard    = false;
+  isVisitor  = false;
+  isFm       = false;
+  isBm       = false;
+  isBda      = false;
+  isPresident = false;
+  pendingDeliveryCount = 0;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private deliveryService: DeliveryService
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
-      this.user = user;
-      this.isAdmin = user?.role === 'ADMIN';
-      this.isVisitor = user?.role === 'VISITOR';
+      this.user        = user;
+      this.isAdmin     = user?.role === 'ADMIN';
+      this.isResident  = user?.role === 'RESIDENT';
+      this.isGuard     = user?.role === 'SECURITY_GUARD';
+      this.isVisitor   = user?.role === 'VISITOR';
+      this.isFm        = user?.role === 'FACILITY_MANAGER';
+      this.isBm        = user?.role === 'BUILDER_MANAGER';
+      this.isBda       = user?.role === 'BDA_ENGINEER';
+      this.isPresident = ['PRESIDENT','SECRETARY','VOLUNTEER'].includes(user?.role||'');
+
+      // Load pending delivery count for residents
+      if (this.isResident && user?.status === 'ACTIVE') {
+        this.loadPendingCount();
+      }
     });
+  }
+
+  loadPendingCount() {
+    this.deliveryService.getPendingCount().subscribe({
+      next: r => this.pendingDeliveryCount = r.data.count,
+      error: () => {}
+    });
+  }
+
+  roleLabel(role?: string): string {
+    return {
+      ADMIN: 'Admin', RESIDENT: 'Resident',
+      SECURITY_GUARD: 'Security Guard', VISITOR: 'Visitor',
+      FACILITY_MANAGER: 'Facility Manager', BUILDER_MANAGER: 'Builder Manager',
+      BDA_ENGINEER: 'BDA Engineer', PRESIDENT: 'President',
+      SECRETARY: 'Secretary', VOLUNTEER: 'Volunteer'
+    }[role || ''] || role || '';
   }
 }

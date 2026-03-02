@@ -17,4 +17,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRole(Role role);
     List<User> findByStatus(UserStatus status);
     List<User> findByRoleAndStatus(Role role, UserStatus status);
+
+    // Delivery: find resident by flat number to auto-link delivery
+    Optional<User> findByFlatNumberAndBlockAndRoleAndStatus(
+        String flatNumber, String block, Role role, UserStatus status);
+
+    Optional<User> findByFlatNumberAndRoleAndStatus(
+        String flatNumber, Role role, UserStatus status);
 }

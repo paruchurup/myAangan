@@ -1,6 +1,8 @@
 package com.myaangan.controller;
 
 import com.myaangan.dto.UserDto;
+import com.myaangan.dto.DeliveryPreferencesRequest;
+import com.myaangan.dto.DeliveryPreferencesResponse;
 import com.myaangan.enums.Role;
 import com.myaangan.service.UserService;
 import jakarta.validation.Valid;
@@ -123,5 +125,26 @@ public class UserController {
     public ResponseEntity<UserDto.ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(UserDto.ApiResponse.success("User deleted", null));
+    }
+
+    /**
+     * GET /api/users/me/delivery-preferences — Get my delivery preferences
+     */
+    @GetMapping("/users/me/delivery-preferences")
+    public ResponseEntity<UserDto.ApiResponse<DeliveryPreferencesResponse>> getDeliveryPreferences(
+            Authentication auth) {
+        return ResponseEntity.ok(UserDto.ApiResponse.success("OK",
+            userService.getDeliveryPreferences(auth.getName())));
+    }
+
+    /**
+     * PUT /api/users/me/delivery-preferences — Save my delivery preferences
+     */
+    @PutMapping("/users/me/delivery-preferences")
+    public ResponseEntity<UserDto.ApiResponse<DeliveryPreferencesResponse>> updateDeliveryPreferences(
+            @Valid @RequestBody DeliveryPreferencesRequest req,
+            Authentication auth) {
+        return ResponseEntity.ok(UserDto.ApiResponse.success("Preferences saved",
+            userService.updateDeliveryPreferences(auth.getName(), req)));
     }
 }

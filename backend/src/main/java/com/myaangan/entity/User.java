@@ -54,6 +54,21 @@ public class User {
     // For visitors: their host (resident) reference
     private String hostFlatNumber;
 
+    // ── Delivery Preferences (Phase 3B) ───────────────────────────────────────
+    // Free-text note shown to guard on delivery card
+    @Column(length = 500)
+    private String deliveryNote;
+
+    // Preferred person to collect (shown as hint to guard)
+    private String preferredCollector;
+
+    // Do-not-disturb window — stored as "HH:mm" strings for simplicity
+    private String dndStart;   // e.g. "14:00"
+    private String dndEnd;     // e.g. "16:00"
+
+    // Pre-fills guard's "Collected by" quick-pick
+    private String defaultCollectorName;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
