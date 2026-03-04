@@ -2,9 +2,6 @@ version: '3.9'
 
 services:
 
-  # ─────────────────────────────────────────
-  # MySQL Database
-  # ─────────────────────────────────────────
   db:
     image: mysql:8.0
     container_name: myaangan-db
@@ -18,6 +15,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
     networks:
       - myaangan-net
     healthcheck:
@@ -27,10 +25,6 @@ services:
       retries: 10
       start_period: 30s
 
-  # ─────────────────────────────────────────
-  # ─────────────────────────────────────────
-  # Spring Boot Backend
-  # ─────────────────────────────────────────
   backend:
     build:
       context: ./backend

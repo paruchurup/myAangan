@@ -20,7 +20,7 @@ public class ServiceCategoryController {
     private final ServiceCategoryService categoryService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','SECURITY_GUARD')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','VOLUNTEER','SECURITY_GUARD','FACILITY_MANAGER','BUILDER_MANAGER','BDA_ENGINEER','PRESIDENT','SECRETARY')")
     public ResponseEntity<UserDto.ApiResponse<List<CategoryResponse>>> getActive() {
         return ResponseEntity.ok(UserDto.ApiResponse.success("OK", categoryService.getAllActive()));
     }

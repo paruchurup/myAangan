@@ -7,6 +7,7 @@ import com.myaangan.service.ComplaintService;
 import com.myaangan.service.ComplaintPdfService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/complaints")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class ComplaintController {
 
     // ── Raise new complaint (with optional file attachments) ─────────────────
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','SECURITY_GUARD','FACILITY_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','VOLUNTEER','SECURITY_GUARD','FACILITY_MANAGER')")
     public ResponseEntity<UserDto.ApiResponse<ComplaintResponse>> raise(
             @RequestPart("data") @Valid ComplaintRequest req,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
@@ -146,22 +148,28 @@ public class ComplaintController {
         svc.deleteAttachment(attachmentId, user.getUsername());
         return ResponseEntity.ok(UserDto.ApiResponse.success("Deleted", null));
     }
-
     // ── Generate PDF report ───────────────────────────────────────────────────
     @PostMapping("/report/pdf")
     @PreAuthorize("hasAnyRole('ADMIN','PRESIDENT','SECRETARY','VOLUNTEER')")
-    public ResponseEntity<byte[]> downloadPdf(
+    public ResponseEntity<?> downloadPdf(
             @RequestBody PdfReportRequest req,
-            @AuthenticationPrincipal UserDetails user) throws Exception {
+            @AuthenticationPrincipal UserDetails user) {
 
-        // Pass the user's name to appear in the PDF
-        byte[] pdf = pdfSvc.generateReport(req, user.getUsername());
-        String filename = "MyAangan_Complaints_"
-            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + ".pdf";
+        try {
+            byte[] pdf = pdfSvc.generateReport(req, user.getUsername());
+            String filename = "MyAangan_Complaints_"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + ".pdf";
 
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-            .contentType(MediaType.APPLICATION_PDF)
-            .body(pdf);
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+
+        } catch (Exception e) {
+            log.error("PDF generation failed: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("success", false, "message", "PDF generation failed: " + e.getMessage()));
+        }
     }
 }

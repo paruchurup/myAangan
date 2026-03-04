@@ -84,6 +84,7 @@ import { User } from '../../../core/models/user.model';
             <a routerLink="/delivery/all"      class="action-card admin"><span class="icon">📊</span><span>Deliveries</span></a>
             <a routerLink="/admin/users"        class="action-card admin"><span class="icon">👥</span><span>Users</span></a>
             <a routerLink="/admin/categories"   class="action-card admin"><span class="icon">⚙️</span><span>Categories</span></a>
+            <a routerLink="/admin/permissions" class="action-card admin"><span class="icon">🔐</span><span>Permissions</span></a>
             <a routerLink="/admin/pending"      class="action-card admin"><span class="icon">⏳</span><span>Approvals</span></a>
             <a routerLink="/complaints/fm"      class="action-card complaint"><span class="icon">📢</span><span>Complaints</span></a>
             <a routerLink="/complaints/report"  class="action-card complaint"><span class="icon">📄</span><span>PDF Report</span></a>
@@ -92,6 +93,8 @@ import { User } from '../../../core/models/user.model';
           <!-- Complaint: Raise for Resident & Guard -->
           <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">📢</span><span>My Complaints</span></a>
           <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">✏️</span><span>Report Issue</span></a>
+          <a routerLink="/polls" class="action-card polls" *ngIf="canPollView"><span class="icon">🗳️</span><span>Polls &amp; Voting</span></a>
+          <a routerLink="/polls/manage" class="action-card polls mgmt" *ngIf="canPollManage"><span class="icon">⚙️</span><span>Manage Polls</span></a>
 
           <!-- FM cards -->
           <ng-container *ngIf="isFm">
@@ -228,25 +231,30 @@ export class DashboardComponent implements OnInit {
   isFm       = false;
   isBm       = false;
   isBda      = false;
-  isPresident = false;
+  isPresident   = false;
+  canPollView   = false;
+  canPollManage = false;
   pendingDeliveryCount = 0;
 
   constructor(
-    private authService: AuthService,
+    private auth: AuthService,
     private deliveryService: DeliveryService
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.auth.currentUser$.subscribe(user => {
       this.user        = user;
       this.isAdmin     = user?.role === 'ADMIN';
-      this.isResident  = user?.role === 'RESIDENT';
-      this.isGuard     = user?.role === 'SECURITY_GUARD';
       this.isVisitor   = user?.role === 'VISITOR';
-      this.isFm        = user?.role === 'FACILITY_MANAGER';
-      this.isBm        = user?.role === 'BUILDER_MANAGER';
-      this.isBda       = user?.role === 'BDA_ENGINEER';
-      this.isPresident = ['PRESIDENT','SECRETARY','VOLUNTEER'].includes(user?.role||'');
+      // All flags now derived from permissions — no hardcoded role lists
+      this.isResident  = this.auth.canAny('DELIVERY_VIEW_OWN', 'COMPLAINT_VIEW_OWN');
+      this.isGuard     = this.auth.canAny('DELIVERY_LOG', 'DELIVERY_VIEW_ALL');
+      this.isFm        = this.auth.can('COMPLAINT_MANAGE');
+      this.isBm        = this.auth.can('COMPLAINT_ESCALATE');
+      this.isBda       = user?.role === 'BDA_ENGINEER'; // specific level
+      this.isPresident  = this.auth.can('COMPLAINT_PDF');
+      this.canPollView   = this.auth.can('POLL_VIEW');
+      this.canPollManage = this.auth.can('POLL_MANAGE');
 
       // Load pending delivery count for residents
       if (this.isResident && user?.status === 'ACTIVE') {

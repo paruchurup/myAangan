@@ -67,7 +67,7 @@ export class BmDashboardComponent implements OnInit {
   get breachedCount(){return this.complaints.filter(c=>c.slaBreached).length;}
   constructor(private svc: ComplaintService, private auth: AuthService){}
   ngOnInit(){
-    this.isBda = this.auth.getRole()==='BDA_ENGINEER';
+    this.isBda = this.auth.getCurrentUser()?.role === 'BDA_ENGINEER';
     const level: EscalationLevel = this.isBda ? 'BDA_ENGINEER' : 'BUILDER_MANAGER';
     this.svc.getEscalated(level).subscribe({next:r=>{this.complaints=r.data;this.loading=false;},error:()=>this.loading=false});
   }

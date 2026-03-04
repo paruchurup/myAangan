@@ -1,11 +1,6 @@
 package com.myaangan.controller;
 
-import com.myaangan.dto.DeliveryRequest;
-import com.myaangan.dto.DeliveryResponse;
-import com.myaangan.dto.DeliveryStatusUpdateRequest;
-import com.myaangan.dto.OtpGenerateResponse;
-import com.myaangan.dto.OtpVerifyRequest;
-import com.myaangan.dto.UserDto;
+import com.myaangan.dto.*;
 import com.myaangan.enums.DeliveryStatus;
 import com.myaangan.service.DeliveryService;
 import jakarta.validation.Valid;
@@ -69,7 +64,7 @@ public class DeliveryController {
     // ── Resident: My pending deliveries ──────────────────────────────────────
 
     @GetMapping("/my-pending")
-    @PreAuthorize("hasRole('RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<List<DeliveryResponse>>> getMyPending(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(UserDto.ApiResponse.success("OK",
@@ -79,7 +74,7 @@ public class DeliveryController {
     // ── Resident: Pending badge count ─────────────────────────────────────────
 
     @GetMapping("/my-pending/count")
-    @PreAuthorize("hasRole('RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<Map<String, Long>>> getPendingCount(
             @AuthenticationPrincipal UserDetails userDetails) {
         long count = deliveryService.getPendingCount(userDetails.getUsername());
@@ -90,7 +85,7 @@ public class DeliveryController {
     // ── Resident: Full delivery history ──────────────────────────────────────
 
     @GetMapping("/my-history")
-    @PreAuthorize("hasRole('RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<List<DeliveryResponse>>> getMyHistory(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(UserDto.ApiResponse.success("OK",
@@ -110,7 +105,7 @@ public class DeliveryController {
     // ── Get single delivery ───────────────────────────────────────────────────
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','SECURITY_GUARD','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','SECURITY_GUARD','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<DeliveryResponse>> getById(
             @PathVariable Long id) {
         return ResponseEntity.ok(UserDto.ApiResponse.success("OK",
@@ -120,7 +115,7 @@ public class DeliveryController {
     // ── Update status (Guard marks collected/returned, Resident acknowledges) ─
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN','SECURITY_GUARD','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','SECURITY_GUARD','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<DeliveryResponse>> updateStatus(
             @PathVariable Long id,
             @Valid @RequestBody DeliveryStatusUpdateRequest req,
@@ -140,7 +135,7 @@ public class DeliveryController {
 
     // ── OTP: Resident generates OTP to show guard ─────────────────────────────
     @PostMapping("/{id}/otp/generate-resident")
-    @PreAuthorize("hasRole('RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<OtpGenerateResponse>> generateResidentOtp(
             @PathVariable Long id) {
         return ResponseEntity.ok(UserDto.ApiResponse.success("OTP generated",
@@ -149,7 +144,7 @@ public class DeliveryController {
 
     // ── OTP: Verify OTP (guard enters OTP shown by resident, or vice versa) ──
     @PostMapping("/{id}/otp/verify")
-    @PreAuthorize("hasAnyRole('ADMIN','SECURITY_GUARD','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','SECURITY_GUARD','RESIDENT','VOLUNTEER')")
     public ResponseEntity<UserDto.ApiResponse<DeliveryResponse>> verifyOtp(
             @PathVariable Long id,
             @Valid @RequestBody OtpVerifyRequest req,

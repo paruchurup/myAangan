@@ -211,7 +211,7 @@ export class ComplaintDetailComponent implements OnInit {
   constructor(private route: ActivatedRoute, private svc: ComplaintService, private auth: AuthService) {}
 
   ngOnInit() {
-    const role = this.auth.getRole();
+    const role = this.auth.getCurrentUser()?.role;
     this.isFmOrAbove = ['FACILITY_MANAGER','BUILDER_MANAGER','BDA_ENGINEER','ADMIN','PRESIDENT','SECRETARY','VOLUNTEER'].includes(role||'');
     this.load();
   }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.OrderBy;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -77,13 +78,13 @@ public class Complaint {
     @Builder.Default
     private List<ComplaintAttachment> attachments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
-               orderBy = "createdAt ASC")
+    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("createdAt ASC")
     @Builder.Default
     private List<ComplaintComment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
-               orderBy = "createdAt ASC")
+    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("createdAt ASC")
     @Builder.Default
     private List<ComplaintHistory> history = new ArrayList<>();
 }

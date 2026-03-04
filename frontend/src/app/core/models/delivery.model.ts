@@ -21,6 +21,18 @@ export interface Delivery {
   collectedBy: string;
   residentNote: string;
 
+  // OTP state (Phase 3B)
+  otpPending: boolean;
+  otpInitiatedBy: 'GUARD' | 'RESIDENT' | null;
+  otpVerified: boolean;
+
+  // Resident delivery preferences shown to guard (Phase 3B)
+  residentDeliveryNote: string;
+  residentPreferredCollector: string;
+  residentDefaultCollector: string;
+  residentDndActive: boolean;
+  residentDndWindow: string;
+
   createdAt: string;
   notifiedAt: string;
   collectedAt: string;

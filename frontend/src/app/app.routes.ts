@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import {
   authGuard, adminGuard, guestGuard,
   serviceGuard, deliveryGuard, guardOnlyGuard, residentGuard,
-  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard
+  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard, pollManageGuard
 } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -74,11 +74,30 @@ export const routes: Routes = [
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   {
+    path: 'polls', canActivate: [authGuard],
+    children: [
+      { path: '', loadComponent: () => import('./modules/polls/poll-list/poll-list.component').then(m => m.PollListComponent) },
+      { path: 'create', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
+      { path: 'manage', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
+      { path: ':id', loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
+    ]
+  },
+  {
+    path: 'polls', canActivate: [authGuard],
+    children: [
+      { path: '',        loadComponent: () => import('./modules/polls/poll-list/poll-list.component').then(m => m.PollListComponent) },
+      { path: 'create',  canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
+      { path: 'manage',  canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
+      { path: ':id',     loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
+    ]
+  },
+  {
     path: 'admin', canActivate: [authGuard, adminGuard],
     children: [
       { path: 'users',      loadComponent: () => import('./modules/admin/user-list/user-list.component').then(m => m.UserListComponent) },
       { path: 'pending',    loadComponent: () => import('./modules/admin/pending-users/pending-users.component').then(m => m.PendingUsersComponent) },
-      { path: 'categories', loadComponent: () => import('./modules/admin/categories/categories.component').then(m => m.CategoriesComponent) }
+      { path: 'categories',  loadComponent: () => import('./modules/admin/categories/categories.component').then(m => m.CategoriesComponent) },
+      { path: 'permissions', loadComponent: () => import('./modules/admin/permissions/permissions.component').then(m => m.PermissionsComponent) }
     ]
   },
 

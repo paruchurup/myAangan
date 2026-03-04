@@ -228,7 +228,7 @@ export class ServicesListComponent implements OnInit {
 
   get canAddProvider() {
     const role = this.auth.getCurrentUser()?.role;
-    return role === 'ADMIN' || role === 'RESIDENT';
+    return role === 'ADMIN' || role === 'RESIDENT' || role === 'VOLUNTEER';
   }
 
   constructor(private svc: ServiceDirectoryService, private auth: AuthService) {}

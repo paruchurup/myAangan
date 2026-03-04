@@ -1,4 +1,14 @@
-export type Role = 'ADMIN' | 'SECURITY_GUARD' | 'RESIDENT' | 'VISITOR';
+export type Role =
+  | 'ADMIN'
+  | 'SECURITY_GUARD'
+  | 'RESIDENT'
+  | 'VISITOR'
+  | 'FACILITY_MANAGER'
+  | 'BUILDER_MANAGER'
+  | 'BDA_ENGINEER'
+  | 'PRESIDENT'
+  | 'SECRETARY'
+  | 'VOLUNTEER';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING_APPROVAL';
 
 export interface User {
@@ -13,6 +23,7 @@ export interface User {
   block?: string;
   societyName?: string;
   hostFlatNumber?: string;
+  permissions: string[];  // dynamic — populated at login
   createdAt: string;
   updatedAt: string;
 }

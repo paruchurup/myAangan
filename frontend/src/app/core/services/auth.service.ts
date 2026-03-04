@@ -54,6 +54,19 @@ export class AuthService {
     return this.getCurrentUser()?.role === 'ADMIN';
   }
 
+  /** Check if current user has a specific permission */
+  can(permission: string): boolean {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    if (user.role === 'ADMIN') return true; // admin always can
+    return user.permissions?.includes(permission) ?? false;
+  }
+
+  /** Check if user has ANY of the given permissions */
+  canAny(...permissions: string[]): boolean {
+    return permissions.some(p => this.can(p));
+  }
+
   private storeToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
   }

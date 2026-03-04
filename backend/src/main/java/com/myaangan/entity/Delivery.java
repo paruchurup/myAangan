@@ -31,7 +31,7 @@ public class Delivery {
 
     // ── Delivery details ──────────────────────────────────────────────────────
     @Enumerated(EnumType.STRING)
-    
+
     @Column(nullable = false)
     @Builder.Default
     private DeliveryType deliveryType = DeliveryType.OTHER;

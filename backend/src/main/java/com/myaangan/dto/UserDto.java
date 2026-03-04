@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserDto {
 
@@ -87,6 +88,9 @@ public class UserDto {
         private String dndStart;
         private String dndEnd;
         private String defaultCollectorName;
+
+        // Dynamic permissions for this user's role
+        private List<String> permissions;
     }
 
     // ─── Update Request ─────────────────────────────────────────────────────────

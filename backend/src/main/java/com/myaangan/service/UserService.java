@@ -1,12 +1,13 @@
 package com.myaangan.service;
 
-import com.myaangan.dto.UserDto;
 import com.myaangan.dto.DeliveryPreferencesRequest;
 import com.myaangan.dto.DeliveryPreferencesResponse;
+import com.myaangan.dto.UserDto;
 import com.myaangan.entity.User;
 import com.myaangan.enums.Role;
 import com.myaangan.enums.UserStatus;
 import com.myaangan.exception.ResourceNotFoundException;
+import com.myaangan.repository.RolePermissionRepository;
 import com.myaangan.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RolePermissionRepository rolePermissionRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -183,6 +187,11 @@ public class UserService {
         response.setDndStart(user.getDndStart());
         response.setDndEnd(user.getDndEnd());
         response.setDefaultCollectorName(user.getDefaultCollectorName());
+        // Dynamic permissions — ADMIN bypasses checks on the frontend so empty list is fine
+        List<String> perms = rolePermissionRepository
+                .findGrantedPermissionsByRole(user.getRole())
+                .stream().map(Enum::name).collect(Collectors.toList());
+        response.setPermissions(perms);
         return response;
     }
 }
