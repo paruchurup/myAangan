@@ -42,6 +42,9 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         // ── Ensure poll tables exist (Hibernate creates them, but just in case) ─
         ensurePollTables();
 
+
+        // ── Ensure notice tables exist ────────────────────────────────────────────
+        ensureNoticeTables();
         log.info("✅ DatabaseMigrationRunner complete");
     }
 
@@ -138,6 +141,69 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
      * Alters a column only if its current VARCHAR size is smaller than required.
      * Non-VARCHAR columns are skipped. Completely safe to run repeatedly.
      */
+    private void ensureNoticeTables() {
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS notices (
+                    id                       BIGINT        NOT NULL AUTO_INCREMENT,
+                    title                    VARCHAR(300)  NOT NULL,
+                    content                  TEXT          NOT NULL,
+                    type                     VARCHAR(20)   NOT NULL,
+                    priority                 VARCHAR(10)   NOT NULL DEFAULT 'NORMAL',
+                    status                   VARCHAR(15)   NOT NULL DEFAULT 'DRAFT',
+                    pinned                   TINYINT(1)    NOT NULL DEFAULT 0,
+                    requires_acknowledgement TINYINT(1)    NOT NULL DEFAULT 0,
+                    target_blocks            VARCHAR(200),
+                    publish_at               DATETIME,
+                    expires_at               DATETIME,
+                    published_at             DATETIME,
+                    archived_at              DATETIME,
+                    created_by_id            BIGINT        NOT NULL,
+                    created_at               DATETIME,
+                    updated_at               DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS notice_attachments (
+                    id            BIGINT       NOT NULL AUTO_INCREMENT,
+                    notice_id     BIGINT       NOT NULL,
+                    original_name VARCHAR(500) NOT NULL,
+                    stored_path   VARCHAR(1000)NOT NULL,
+                    file_type     VARCHAR(10)  NOT NULL,
+                    file_size     BIGINT       NOT NULL DEFAULT 0,
+                    uploaded_at   DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS notice_reads (
+                    id               BIGINT    NOT NULL AUTO_INCREMENT,
+                    notice_id        BIGINT    NOT NULL,
+                    user_id          BIGINT    NOT NULL,
+                    acknowledged     TINYINT(1)NOT NULL DEFAULT 0,
+                    read_at          DATETIME,
+                    acknowledged_at  DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_notice_user (notice_id, user_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS notice_comments (
+                    id         BIGINT        NOT NULL AUTO_INCREMENT,
+                    notice_id  BIGINT        NOT NULL,
+                    author_id  BIGINT        NOT NULL,
+                    text       VARCHAR(1000) NOT NULL,
+                    created_at DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Notice tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure notice tables: {}", e.getMessage());
+        }
+    }
+
     private void widenColumn(String table, String column, String newDefinition) {
         try {
             String currentType = jdbc.queryForObject(

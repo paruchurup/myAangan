@@ -39,6 +39,7 @@ public class DataInitializer implements CommandLineRunner {
         createDefaultCategories();
         createEscalationSettings();
         seedDefaultPermissions();
+        ensureNoticePermissions(); // idempotent — safe to run every startup
     }
 
     private void createDefaultAdmin() {
@@ -189,7 +190,39 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.VOLUNTEER, Permission.POLL_VOTE);
         grant(Role.VOLUNTEER, Permission.POLL_MANAGE);
 
+
+        // ── Notice permissions ────────────────────────────────────────────────────
+        for (Role role : new Role[]{Role.SECURITY_GUARD, Role.RESIDENT, Role.VOLUNTEER,
+                Role.FACILITY_MANAGER, Role.BUILDER_MANAGER, Role.BDA_ENGINEER,
+                Role.PRESIDENT, Role.SECRETARY}) {
+            grant(role, Permission.NOTICE_VIEW);
+        }
+        // President, Secretary, FM, Admin can post notices
+        grant(Role.PRESIDENT,        Permission.NOTICE_MANAGE);
+        grant(Role.SECRETARY,        Permission.NOTICE_MANAGE);
+        grant(Role.FACILITY_MANAGER, Permission.NOTICE_MANAGE);
+        grant(Role.VOLUNTEER,        Permission.NOTICE_MANAGE);
         logger.info("✅ Default role permissions seeded");
+    }
+
+    /**
+     * Idempotent: ensures NOTICE_VIEW / NOTICE_MANAGE are granted for all roles.
+     * Safe to run every startup because grant() silently ignores duplicate-key violations.
+     * This handles existing databases that were seeded before notice permissions were added.
+     */
+    private void ensureNoticePermissions() {
+        // All society members can view published notices
+        for (Role role : new Role[]{Role.SECURITY_GUARD, Role.RESIDENT, Role.VOLUNTEER,
+                Role.FACILITY_MANAGER, Role.BUILDER_MANAGER, Role.BDA_ENGINEER,
+                Role.PRESIDENT, Role.SECRETARY}) {
+            grant(role, Permission.NOTICE_VIEW);
+        }
+        // Management roles can create and publish notices
+        grant(Role.FACILITY_MANAGER, Permission.NOTICE_MANAGE);
+        grant(Role.PRESIDENT,        Permission.NOTICE_MANAGE);
+        grant(Role.SECRETARY,        Permission.NOTICE_MANAGE);
+        grant(Role.VOLUNTEER,        Permission.NOTICE_MANAGE);
+        logger.info("✅ Notice permissions ensured for all roles");
     }
 
     private void grant(Role role, Permission permission) {

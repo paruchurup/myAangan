@@ -48,3 +48,4 @@ export const fmGuard              = permGuard('COMPLAINT_MANAGE');
 export const bmGuard              = permGuard('COMPLAINT_ESCALATE');
 export const presidentGuard       = permGuard('COMPLAINT_PDF');
 export const pollManageGuard      = permGuard('POLL_MANAGE');
+export const noticeManageGuard    = permGuard('NOTICE_MANAGE');

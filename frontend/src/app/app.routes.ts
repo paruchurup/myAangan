@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import {
   authGuard, adminGuard, guestGuard,
   serviceGuard, deliveryGuard, guardOnlyGuard, residentGuard,
-  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard, pollManageGuard
+  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard, pollManageGuard, noticeManageGuard
 } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -74,12 +74,30 @@ export const routes: Routes = [
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   {
+    path: 'notices', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/notices/notice-feed/notice-feed.component').then(m => m.NoticeFeedComponent) },
+      { path: 'create', canActivate: [noticeManageGuard], loadComponent: () => import('./modules/notices/create-notice/create-notice.component').then(m => m.CreateNoticeComponent) },
+      { path: 'manage', canActivate: [noticeManageGuard], loadComponent: () => import('./modules/notices/manage-notices/manage-notices.component').then(m => m.ManageNoticesComponent) },
+      { path: ':id',    loadComponent: () => import('./modules/notices/notice-detail/notice-detail.component').then(m => m.NoticeDetailComponent) },
+    ]
+  },
+  {
     path: 'polls', canActivate: [authGuard],
     children: [
       { path: '', loadComponent: () => import('./modules/polls/poll-list/poll-list.component').then(m => m.PollListComponent) },
       { path: 'create', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
       { path: 'manage', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
       { path: ':id', loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
+    ]
+  },
+  {
+    path: 'notices', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/notices/notice-feed/notice-feed.component').then(m => m.NoticeFeedComponent) },
+      { path: 'create', canActivate: [noticeManageGuard], loadComponent: () => import('./modules/notices/create-notice/create-notice.component').then(m => m.CreateNoticeComponent) },
+      { path: 'manage', canActivate: [noticeManageGuard], loadComponent: () => import('./modules/notices/manage-notices/manage-notices.component').then(m => m.ManageNoticesComponent) },
+      { path: ':id',    loadComponent: () => import('./modules/notices/notice-detail/notice-detail.component').then(m => m.NoticeDetailComponent) },
     ]
   },
   {

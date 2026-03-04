@@ -94,6 +94,8 @@ import { User } from '../../../core/models/user.model';
           <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">📢</span><span>My Complaints</span></a>
           <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">✏️</span><span>Report Issue</span></a>
           <a routerLink="/polls" class="action-card polls" *ngIf="canPollView"><span class="icon">🗳️</span><span>Polls &amp; Voting</span></a>
+          <a routerLink="/notices" class="action-card notices" *ngIf="canNoticeView"><span class="icon">📢</span><span>Notices</span></a>
+          <a routerLink="/notices/manage" class="action-card notices mgmt" *ngIf="canNoticeManage"><span class="icon">📋</span><span>Post Notice</span></a>
           <a routerLink="/polls/manage" class="action-card polls mgmt" *ngIf="canPollManage"><span class="icon">⚙️</span><span>Manage Polls</span></a>
 
           <!-- FM cards -->
@@ -199,6 +201,8 @@ import { User } from '../../../core/models/user.model';
     .action-card.admin    { border: 2px solid #e8eaf6; }
     .action-card.delivery { border: 2px solid #fde68a; }
     .action-card.complaint{ border: 2px solid #fca5a5; }
+    .action-card.notices  { border: 2px solid #c4b5fd; }
+    .action-card.polls    { border: 2px solid #a5f3fc; }
 
     .card-icon-wrap { position: relative; display: inline-block; }
     .badge {
@@ -233,7 +237,9 @@ export class DashboardComponent implements OnInit {
   isBda      = false;
   isPresident   = false;
   canPollView   = false;
-  canPollManage = false;
+  canPollManage   = false;
+  canNoticeView   = false;
+  canNoticeManage = false;
   pendingDeliveryCount = 0;
 
   constructor(
@@ -254,7 +260,9 @@ export class DashboardComponent implements OnInit {
       this.isBda       = user?.role === 'BDA_ENGINEER'; // specific level
       this.isPresident  = this.auth.can('COMPLAINT_PDF');
       this.canPollView   = this.auth.can('POLL_VIEW');
-      this.canPollManage = this.auth.can('POLL_MANAGE');
+      this.canPollManage   = this.auth.can('POLL_MANAGE');
+      this.canNoticeView   = this.auth.can('NOTICE_VIEW');
+      this.canNoticeManage = this.auth.can('NOTICE_MANAGE');
 
       // Load pending delivery count for residents
       if (this.isResident && user?.status === 'ACTIVE') {

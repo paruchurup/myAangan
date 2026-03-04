@@ -34,6 +34,10 @@ public enum Permission {
     POLL_VOTE,     // Cast votes on polls
     POLL_MANAGE,   // Create, edit, publish, close polls
 
+    // ── Notices & Announcements ──────────────────────────────────────────────
+    NOTICE_VIEW,    // Read published notices
+    NOTICE_MANAGE,  // Create, publish, archive notices
+
     // ── User Management ───────────────────────────────────────────────────────
     USER_MANAGE,             // Admin: approve, change roles, manage users
 }

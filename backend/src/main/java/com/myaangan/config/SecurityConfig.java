@@ -89,6 +89,8 @@ public class SecurityConfig {
                     "BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY","VOLUNTEER")
                 .requestMatchers("/api/deliveries/**").hasAnyRole(
                     "ADMIN","RESIDENT","VOLUNTEER","SECURITY_GUARD","FACILITY_MANAGER")
+                .requestMatchers("/api/notices/**")
+                    .hasAnyRole("ADMIN","RESIDENT","VOLUNTEER","SECURITY_GUARD","FACILITY_MANAGER","BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY")
                 .requestMatchers("/api/polls/**")
                     .hasAnyRole("ADMIN","RESIDENT","VOLUNTEER","SECURITY_GUARD","FACILITY_MANAGER","BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY")
                 .requestMatchers("/api/complaints/**").hasAnyRole(
