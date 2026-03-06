@@ -39,7 +39,8 @@ public class DataInitializer implements CommandLineRunner {
         createDefaultCategories();
         createEscalationSettings();
         seedDefaultPermissions();
-        ensureNoticePermissions(); // idempotent — safe to run every startup
+        ensureNoticePermissions();   // idempotent — safe to run every startup
+        ensureVehiclePermissions();  // idempotent — safe to run every startup
     }
 
     private void createDefaultAdmin() {
@@ -61,6 +62,16 @@ public class DataInitializer implements CommandLineRunner {
             "9999999996", Role.BDA_ENGINEER, "Default BDA Engineer: bda@myaangan.com / Bda@1234");
         seedUser("president@myaangan.com", "Pres@1234", "Society", "President",
             "9999999995", Role.PRESIDENT, "Default President: president@myaangan.com / Pres@1234");
+        seedUser("guard1@myaangan.com", "Guard@1234", "Guard",     "One",
+            "9888800001", Role.SECURITY_GUARD, "Default Security Guard 1: guard1@myaangan.com / Guard@1234");
+        seedUser("guard2@myaangan.com", "Guard@1234", "Guard",     "Two",
+            "9888800002", Role.SECURITY_GUARD, "Default Security Guard 2: guard2@myaangan.com / Guard@1234");
+        seedUser("guard3@myaangan.com", "Guard@1234", "Guard",     "Three",
+            "9888800003", Role.SECURITY_GUARD, "Default Security Guard 3: guard3@myaangan.com / Guard@1234");
+        seedUser("guard4@myaangan.com", "Guard@1234", "Guard",     "Four",
+            "9888800004", Role.SECURITY_GUARD, "Default Security Guard 4: guard4@myaangan.com / Guard@1234");
+        seedUser("guard5@myaangan.com", "Guard@1234", "Guard",     "Five",
+            "9888800005", Role.SECURITY_GUARD, "Default Security Guard 5: guard5@myaangan.com / Guard@1234");
         seedUser("volunteer1@myaangan.com", "Vol@12345", "Volunteer", "One",
             "9999999090", Role.VOLUNTEER, "Default Volunteer 1 created: volunteer1@myaangan.com / Vol@12345");
         seedUser("volunteer2@myaangan.com", "Vol@12345", "Volunteer", "Two",
@@ -72,7 +83,7 @@ public class DataInitializer implements CommandLineRunner {
         seedUser("volunteer5@myaangan.com", "Vol@12345", "Volunteer", "Five",
             "9999999094", Role.VOLUNTEER, "Default Volunteer 5 created: volunteer5@myaangan.com / Vol@12345");
     }
-
+   
     private void seedUser(String email, String password, String firstName, String lastName,
                           String phone, Role role, String logMsg) {
         if (!userRepository.existsByEmail(email)) {
@@ -220,8 +231,8 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECRETARY,        Permission.NOTICE_MANAGE);
         grant(Role.FACILITY_MANAGER, Permission.NOTICE_MANAGE);
         grant(Role.VOLUNTEER,        Permission.NOTICE_MANAGE);
-		
-		      // ── Vehicle & Parking permissions ────────────────────────────────────────
+
+        // ── Vehicle & Parking permissions ────────────────────────────────────────
         // All residents can register their own vehicles
         grant(Role.RESIDENT,  Permission.VEHICLE_REGISTER);
         grant(Role.VOLUNTEER, Permission.VEHICLE_REGISTER);
@@ -229,6 +240,13 @@ public class DataInitializer implements CommandLineRunner {
         // Guards can view registered vehicles, log visitors, report violations
         grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
         grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
+
+        // Visitor pass permissions
+        grant(Role.RESIDENT,         Permission.VISITOR_PASS_CREATE);
+        grant(Role.VOLUNTEER,        Permission.VISITOR_PASS_CREATE);
+        grant(Role.PRESIDENT,        Permission.VISITOR_PASS_CREATE);
+        grant(Role.SECRETARY,        Permission.VISITOR_PASS_CREATE);
+        grant(Role.FACILITY_MANAGER, Permission.VISITOR_PASS_MANAGE);
 
         // FM, President, Secretary can manage vehicles and parking
         for (Role r : new Role[]{Role.FACILITY_MANAGER, Role.PRESIDENT, Role.SECRETARY}) {
@@ -258,6 +276,26 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECRETARY,        Permission.NOTICE_MANAGE);
         grant(Role.VOLUNTEER,        Permission.NOTICE_MANAGE);
         logger.info("✅ Notice permissions ensured for all roles");
+    }
+
+    private void ensureVehiclePermissions() {
+        // Residents & similar roles: register vehicle + create visitor passes
+        for (Role role : new Role[]{Role.RESIDENT, Role.VOLUNTEER, Role.PRESIDENT, Role.SECRETARY}) {
+            grant(role, Permission.VEHICLE_REGISTER);
+            grant(role, Permission.VISITOR_PASS_CREATE);
+        }
+        // Guards: view all vehicles, log visitors/violations, scan passes
+        grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
+        grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
+        // FM, President, Secretary: full vehicle & parking management
+        for (Role r : new Role[]{Role.FACILITY_MANAGER, Role.PRESIDENT, Role.SECRETARY}) {
+            grant(r, Permission.VEHICLE_MANAGE);
+            grant(r, Permission.VEHICLE_VIEW_ALL);
+            grant(r, Permission.PARKING_MANAGE);
+            grant(r, Permission.VISITOR_VEHICLE_LOG);
+            grant(r, Permission.VISITOR_PASS_MANAGE);
+        }
+        logger.info("✅ Vehicle/pass permissions ensured for all roles");
     }
 
     private void grant(Role role, Permission permission) {

@@ -157,6 +157,7 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
                     colour       VARCHAR(30),
                     year         VARCHAR(20),
                     photo_path   VARCHAR(500),
+                    assigned_slot_id BIGINT,
                     status       VARCHAR(15)  NOT NULL DEFAULT 'PENDING',
                     admin_note   VARCHAR(500),
                     approved_by_id BIGINT,
@@ -209,7 +210,10 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
                     description     VARCHAR(1000) NOT NULL,
                     photo_path      VARCHAR(500),
                     reported_by_id  BIGINT        NOT NULL,
+                    status          VARCHAR(25)   NOT NULL DEFAULT 'OPEN',
                     resolved        TINYINT(1)    NOT NULL DEFAULT 0,
+                    owner_notified_at DATETIME,
+                    owner_action_at  DATETIME,
                     resolution_note VARCHAR(500),
                     resolved_by_id  BIGINT,
                     resolved_at     DATETIME,
@@ -217,11 +221,65 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
                     PRIMARY KEY (id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             """);
+
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS parking_notifications (
+                    id           BIGINT      NOT NULL AUTO_INCREMENT,
+                    recipient_id BIGINT      NOT NULL,
+                    violation_id BIGINT      NOT NULL,
+                    message      VARCHAR(300) NOT NULL,
+                    read         TINYINT(1)  NOT NULL DEFAULT 0,
+                    read_at      DATETIME,
+                    created_at   DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("parking_notifications table ensured");
             log.info("Vehicle & parking tables ensured");
         } catch (Exception e) {
             log.warn("Could not ensure vehicle tables: {}", e.getMessage());
         }
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS visitor_passes (
+                    id              BIGINT       NOT NULL AUTO_INCREMENT,
+                    token           VARCHAR(8)   NOT NULL UNIQUE,
+                    created_by_id   BIGINT       NOT NULL,
+                    visitor_name    VARCHAR(100) NOT NULL,
+                    visitor_phone   VARCHAR(20),
+                    purpose         VARCHAR(100),
+                    pass_type       VARCHAR(10)  NOT NULL,
+                    status          VARCHAR(10)  NOT NULL DEFAULT 'ACTIVE',
+                    valid_date      DATE,
+                    window_start    TIME,
+                    window_end      TIME,
+                    allowed_days    VARCHAR(20),
+                    standing_from   DATE,
+                    standing_until  DATE,
+                    notes           VARCHAR(300),
+                    created_at      DATETIME,
+                    updated_at      DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS visitor_pass_logs (
+                    id                BIGINT       NOT NULL AUTO_INCREMENT,
+                    pass_id           BIGINT       NOT NULL,
+                    checked_in_by_id  BIGINT       NOT NULL,
+                    check_in_status   VARCHAR(15)  NOT NULL DEFAULT 'CHECKED_IN',
+                    override_reason   VARCHAR(300),
+                    checked_in_at     DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Visitor pass tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure visitor pass tables: {}", e.getMessage());
+        }
     }
+
+    private void ensureVisitorPassTables() { /* tables created above inline */ }
 
     private void ensureNoticeTables() {
         try {

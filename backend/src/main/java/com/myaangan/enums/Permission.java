@@ -44,6 +44,8 @@ public enum Permission {
     VEHICLE_MANAGE,      // Admin/FM: approve, reject, suspend vehicles
     PARKING_MANAGE,      // Admin: create/assign/manage parking slots
     VISITOR_VEHICLE_LOG, // Guard: log visitor vehicles in/out + report violations
+    VISITOR_PASS_CREATE,    // Resident creates/manages visitor pre-approval passes
+    VISITOR_PASS_MANAGE,    // FM/Admin manages all passes // Guard: log visitor vehicles in/out + report violations
 
     // ── User Management ───────────────────────────────────────────────────────
     USER_MANAGE,             // Admin: approve, change roles, manage users
