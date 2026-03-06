@@ -9,6 +9,9 @@ const PERMISSION_GROUPS: { label: string; perms: string[] }[] = [
   { label: 'Delivery',   perms: ['DELIVERY_LOG','DELIVERY_VIEW_ALL','DELIVERY_VIEW_OWN','DELIVERY_OTP_RESIDENT','DELIVERY_PREFERENCES'] },
   { label: 'Complaints', perms: ['COMPLAINT_RAISE','COMPLAINT_VIEW_OWN','COMPLAINT_VIEW_ALL','COMPLAINT_MANAGE','COMPLAINT_INTERNAL_NOTE','COMPLAINT_ESCALATE','COMPLAINT_PDF'] },
   { label: 'Services',   perms: ['SERVICE_VIEW','SERVICE_ADD','SERVICE_REVIEW','SERVICE_MANAGE'] },
+  { label: 'Polls',      perms: ['POLL_VIEW','POLL_VOTE','POLL_MANAGE'] },
+  { label: 'Notices',    perms: ['NOTICE_VIEW','NOTICE_MANAGE'] },
+  { label: 'Vehicles',   perms: ['VEHICLE_REGISTER','VEHICLE_VIEW_ALL','VEHICLE_MANAGE','PARKING_MANAGE','VISITOR_VEHICLE_LOG'] },
   { label: 'Users',      perms: ['USER_MANAGE'] },
 ];
 
@@ -29,6 +32,11 @@ const PERM_LABELS: Record<string, string> = {
   COMPLAINT_PDF: 'Download PDF report',
   SERVICE_VIEW: 'Browse services', SERVICE_ADD: 'Add/edit providers',
   SERVICE_REVIEW: 'Leave reviews', SERVICE_MANAGE: 'Approve/delete',
+  POLL_VIEW: 'View polls', POLL_VOTE: 'Cast votes', POLL_MANAGE: 'Create/manage polls',
+  NOTICE_VIEW: 'Read notices', NOTICE_MANAGE: 'Post/manage notices',
+  VEHICLE_REGISTER: 'Register own vehicle', VEHICLE_VIEW_ALL: 'View all vehicles',
+  VEHICLE_MANAGE: 'Approve/suspend vehicles', PARKING_MANAGE: 'Manage parking slots',
+  VISITOR_VEHICLE_LOG: 'Log visitor vehicles',
   USER_MANAGE: 'Manage users',
 };
 

@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import {
   authGuard, adminGuard, guestGuard,
   serviceGuard, deliveryGuard, guardOnlyGuard, residentGuard,
-  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard, pollManageGuard, noticeManageGuard
+  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard, pollManageGuard, noticeManageGuard, vehicleManageGuard, guardGuard
 } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -11,8 +11,10 @@ export const routes: Routes = [
   {
     path: 'auth', canActivate: [guestGuard],
     children: [
-      { path: 'login',    loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
-      { path: 'register', loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent) }
+      { path: 'login',           loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
+      { path: 'register',        loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent) },
+      { path: 'forgot-password', loadComponent: () => import('./auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
+      { path: 'reset-password',  loadComponent: () => import('./auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) }
     ]
   },
 
@@ -74,6 +76,14 @@ export const routes: Routes = [
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   {
+    path: 'vehicles', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/vehicles/my-vehicles/my-vehicles.component').then(m => m.MyVehiclesComponent) },
+      { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
+      { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
+    ]
+  },
+  {
     path: 'notices', canActivate: [authGuard],
     children: [
       { path: '',       loadComponent: () => import('./modules/notices/notice-feed/notice-feed.component').then(m => m.NoticeFeedComponent) },
@@ -89,6 +99,14 @@ export const routes: Routes = [
       { path: 'create', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
       { path: 'manage', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
       { path: ':id', loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
+    ]
+  },
+  {
+    path: 'vehicles', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/vehicles/my-vehicles/my-vehicles.component').then(m => m.MyVehiclesComponent) },
+      { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
+      { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
     ]
   },
   {

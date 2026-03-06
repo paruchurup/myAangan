@@ -24,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +63,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).map(String::trim).collect(Collectors.toList()));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -89,6 +90,8 @@ public class SecurityConfig {
                     "BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY","VOLUNTEER")
                 .requestMatchers("/api/deliveries/**").hasAnyRole(
                     "ADMIN","RESIDENT","VOLUNTEER","SECURITY_GUARD","FACILITY_MANAGER")
+                .requestMatchers("/api/vehicles/**")
+                    .hasAnyRole("ADMIN","RESIDENT","VOLUNTEER","SECURITY_GUARD","FACILITY_MANAGER","BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY")
                 .requestMatchers("/api/notices/**")
                     .hasAnyRole("ADMIN","RESIDENT","VOLUNTEER","SECURITY_GUARD","FACILITY_MANAGER","BUILDER_MANAGER","BDA_ENGINEER","PRESIDENT","SECRETARY")
                 .requestMatchers("/api/polls/**")

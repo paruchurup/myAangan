@@ -2,6 +2,7 @@ package com.myaangan.controller;
 
 import com.myaangan.dto.UserDto;
 import com.myaangan.security.JwtUtils;
+import com.myaangan.service.PasswordResetService;
 import com.myaangan.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     /**
      * POST /api/auth/register
@@ -52,5 +56,32 @@ public class AuthController {
 
         return ResponseEntity.ok(UserDto.ApiResponse.success("Login successful",
                 new UserDto.AuthResponse(jwt, userResponse)));
+    }
+
+    /**
+     * POST /api/auth/forgot-password
+     * Generates a reset token and sends an email (if SMTP configured).
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<UserDto.ApiResponse<Void>> forgotPassword(
+            @Valid @RequestBody UserDto.ForgotPasswordRequest request) {
+        try {
+            passwordResetService.initiateForgotPassword(request.getEmail());
+        } catch (Exception e) {
+            // Always return success to avoid leaking whether email exists
+        }
+        return ResponseEntity.ok(UserDto.ApiResponse.success(
+            "If that email is registered, a reset link has been sent.", null));
+    }
+
+    /**
+     * POST /api/auth/reset-password
+     * Validates token and sets new password.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<UserDto.ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody UserDto.ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok(UserDto.ApiResponse.success("Password reset successfully.", null));
     }
 }

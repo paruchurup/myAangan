@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByFlatNumberAndRoleAndStatus(
         String flatNumber, Role role, UserStatus status);
+
+    Optional<User> findByPasswordResetToken(String token);
 }

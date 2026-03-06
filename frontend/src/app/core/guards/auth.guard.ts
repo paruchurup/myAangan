@@ -49,3 +49,5 @@ export const bmGuard              = permGuard('COMPLAINT_ESCALATE');
 export const presidentGuard       = permGuard('COMPLAINT_PDF');
 export const pollManageGuard      = permGuard('POLL_MANAGE');
 export const noticeManageGuard    = permGuard('NOTICE_MANAGE');
+export const vehicleManageGuard   = permGuard('VEHICLE_MANAGE');
+export const guardGuard           = permGuard('VISITOR_VEHICLE_LOG');

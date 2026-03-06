@@ -38,6 +38,13 @@ public enum Permission {
     NOTICE_VIEW,    // Read published notices
     NOTICE_MANAGE,  // Create, publish, archive notices
 
+    // ── Vehicle & Parking ─────────────────────────────────────────────────────
+    VEHICLE_REGISTER,    // Resident: register own vehicle
+    VEHICLE_VIEW_ALL,    // Guard/Admin: see all registered vehicles
+    VEHICLE_MANAGE,      // Admin/FM: approve, reject, suspend vehicles
+    PARKING_MANAGE,      // Admin: create/assign/manage parking slots
+    VISITOR_VEHICLE_LOG, // Guard: log visitor vehicles in/out + report violations
+
     // ── User Management ───────────────────────────────────────────────────────
     USER_MANAGE,             // Admin: approve, change roles, manage users
 }

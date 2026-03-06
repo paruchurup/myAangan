@@ -45,6 +45,9 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
 
         // ── Ensure notice tables exist ────────────────────────────────────────────
         ensureNoticeTables();
+
+        ensureVehicleTables();
+        migrateVehicleSlotRelationship();
         log.info("✅ DatabaseMigrationRunner complete");
     }
 
@@ -141,6 +144,85 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
      * Alters a column only if its current VARCHAR size is smaller than required.
      * Non-VARCHAR columns are skipped. Completely safe to run repeatedly.
      */
+    private void ensureVehicleTables() {
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS vehicles (
+                    id           BIGINT       NOT NULL AUTO_INCREMENT,
+                    owner_id     BIGINT       NOT NULL,
+                    plate_number VARCHAR(20)  NOT NULL,
+                    type         VARCHAR(10)  NOT NULL,
+                    make         VARCHAR(50)  NOT NULL,
+                    model        VARCHAR(50)  NOT NULL,
+                    colour       VARCHAR(30),
+                    year         VARCHAR(20),
+                    photo_path   VARCHAR(500),
+                    status       VARCHAR(15)  NOT NULL DEFAULT 'PENDING',
+                    admin_note   VARCHAR(500),
+                    approved_by_id BIGINT,
+                    approved_at  DATETIME,
+                    created_at   DATETIME,
+                    updated_at   DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_plate (plate_number)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS parking_slots (
+                    id                  BIGINT      NOT NULL AUTO_INCREMENT,
+                    block               VARCHAR(5)  NOT NULL,
+                    slot_number         VARCHAR(10) NOT NULL,
+                    level               VARCHAR(20),
+                    type                VARCHAR(10) NOT NULL,
+                    status              VARCHAR(15) NOT NULL DEFAULT 'AVAILABLE',
+                    assigned_vehicle_id BIGINT,
+                    notes               VARCHAR(500),
+                    created_at          DATETIME,
+                    updated_at          DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_slot (block, slot_number)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS visitor_vehicles (
+                    id                   BIGINT       NOT NULL AUTO_INCREMENT,
+                    plate_number         VARCHAR(20)  NOT NULL,
+                    vehicle_description  VARCHAR(30),
+                    host_flat            VARCHAR(10)  NOT NULL,
+                    visitor_name         VARCHAR(100) NOT NULL,
+                    visitor_phone        VARCHAR(20)  NOT NULL,
+                    slot_id              BIGINT,
+                    logged_by_id         BIGINT       NOT NULL,
+                    exited_at            DATETIME,
+                    notes                VARCHAR(200),
+                    entered_at           DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS parking_violations (
+                    id              BIGINT        NOT NULL AUTO_INCREMENT,
+                    vehicle_id      BIGINT,
+                    plate_number    VARCHAR(20)   NOT NULL,
+                    slot_id         BIGINT,
+                    violation_type  VARCHAR(20)   NOT NULL,
+                    description     VARCHAR(1000) NOT NULL,
+                    photo_path      VARCHAR(500),
+                    reported_by_id  BIGINT        NOT NULL,
+                    resolved        TINYINT(1)    NOT NULL DEFAULT 0,
+                    resolution_note VARCHAR(500),
+                    resolved_by_id  BIGINT,
+                    resolved_at     DATETIME,
+                    reported_at     DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Vehicle & parking tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure vehicle tables: {}", e.getMessage());
+        }
+    }
+
     private void ensureNoticeTables() {
         try {
             jdbc.execute("""
@@ -201,6 +283,43 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
             log.info("Notice tables ensured");
         } catch (Exception e) {
             log.warn("Could not ensure notice tables: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Moves the slot assignment FK from parking_slots.assigned_vehicle_id
+     * to vehicles.assigned_slot_id (one-to-many: a slot can hold multiple bikes).
+     * Idempotent — safe to run on every startup.
+     */
+    private void migrateVehicleSlotRelationship() {
+        try {
+            // 1. Add assigned_slot_id column to vehicles if it doesn't exist
+            jdbc.execute("""
+                ALTER TABLE vehicles
+                ADD COLUMN IF NOT EXISTS assigned_slot_id BIGINT DEFAULT NULL
+            """);
+
+            // 2. Migrate existing data: copy the mapping that was stored in parking_slots
+            jdbc.execute("""
+                UPDATE vehicles v
+                JOIN parking_slots s ON s.assigned_vehicle_id = v.id
+                SET v.assigned_slot_id = s.id
+                WHERE v.assigned_slot_id IS NULL
+            """);
+
+            // 3. Update slot status: set OCCUPIED where a CAR is now assigned
+            jdbc.execute("""
+                UPDATE parking_slots s
+                SET s.status = 'OCCUPIED'
+                WHERE EXISTS (
+                    SELECT 1 FROM vehicles v
+                    WHERE v.assigned_slot_id = s.id AND v.type = 'CAR'
+                )
+            """);
+
+            log.info("✅ Vehicle-slot relationship migration complete");
+        } catch (Exception e) {
+            log.warn("Vehicle-slot migration skipped or partial: {}", e.getMessage());
         }
     }
 

@@ -70,7 +70,8 @@ import { User } from '../../../core/models/user.model';
           <!-- Services (non-visitor) -->
           <a routerLink="/services" class="action-card" *ngIf="!isVisitor">
             <span class="icon">🔧</span>
-            <span>Services</span>
+            <span>Services
+            </span>
           </a>
 
           <!-- Profile always -->
@@ -91,9 +92,12 @@ import { User } from '../../../core/models/user.model';
           </ng-container>
 
           <!-- Complaint: Raise for Resident & Guard -->
-          <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">📢</span><span>My Complaints</span></a>
-          <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">✏️</span><span>Report Issue</span></a>
+          <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="(isResident||isGuard) && !isAdmin"><span class="icon">📢</span><span>My Complaints</span></a>
+          <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="(isResident||isGuard) && !isFm"><span class="icon">✏️</span><span>Raise Complaint</span></a>
           <a routerLink="/polls" class="action-card polls" *ngIf="canPollView"><span class="icon">🗳️</span><span>Polls &amp; Voting</span></a>
+          <a routerLink="/vehicles" class="action-card vehicles" *ngIf="canVehicleReg"><span class="icon">🚗</span><span>My Vehicles</span></a>
+          <a routerLink="/vehicles/manage" class="action-card vehicles mgmt" *ngIf="canVehicleManage"><span class="icon">🅿️</span><span>Parking Control</span></a>
+          <a routerLink="/vehicles/gate" class="action-card vehicles guard" *ngIf="canGuardGate"><span class="icon">🔍</span><span>Gate Control</span></a>
           <a routerLink="/notices" class="action-card notices" *ngIf="canNoticeView"><span class="icon">📢</span><span>Notices</span></a>
           <a routerLink="/notices/manage" class="action-card notices mgmt" *ngIf="canNoticeManage"><span class="icon">📋</span><span>Post Notice</span></a>
           <a routerLink="/polls/manage" class="action-card polls mgmt" *ngIf="canPollManage"><span class="icon">⚙️</span><span>Manage Polls</span></a>
@@ -102,19 +106,19 @@ import { User } from '../../../core/models/user.model';
           <ng-container *ngIf="isFm">
             <a routerLink="/complaints/fm"    class="action-card complaint"><span class="icon">📢</span><span>All Complaints</span></a>
             <a routerLink="/complaints/raise" class="action-card complaint"><span class="icon">✏️</span><span>Raise Complaint</span></a>
-            <a routerLink="/services"         class="action-card"><span class="icon">🛠️</span><span>Services</span></a>
+            <a routerLink="/services"         class="action-card" *ngIf="!isAdmin"><span class="icon">🛠️</span><span>Services</span></a>
           </ng-container>
 
           <!-- BM / BDA cards -->
           <ng-container *ngIf="isBm||isBda">
             <a routerLink="/complaints/bm"  class="action-card complaint"><span class="icon">🚨</span><span>{{ isBda ? 'BDA Complaints' : 'Escalated' }}</span></a>
-            <a routerLink="/complaints/my"  class="action-card"><span class="icon">📋</span><span>My Complaints</span></a>
+            <a routerLink="/complaints/my"  class="action-card" *ngIf="!isAdmin"><span class="icon">📋</span><span>My Complaints</span></a>
           </ng-container>
 
           <!-- President / Secretary / Volunteer cards -->
           <ng-container *ngIf="isPresident">
             <a routerLink="/complaints/report" class="action-card complaint"><span class="icon">🏛️</span><span>Complaint Report</span></a>
-            <a routerLink="/complaints/my"     class="action-card"><span class="icon">📋</span><span>My Complaints</span></a>
+            <a routerLink="/complaints/my"     class="action-card" *ngIf="!isAdmin"><span class="icon">📋</span><span>My Complaints</span></a>
           </ng-container>
 
         </div>
@@ -239,7 +243,10 @@ export class DashboardComponent implements OnInit {
   canPollView   = false;
   canPollManage   = false;
   canNoticeView   = false;
-  canNoticeManage = false;
+  canNoticeManage  = false;
+  canVehicleReg    = false;
+  canVehicleManage = false;
+  canGuardGate     = false;
   pendingDeliveryCount = 0;
 
   constructor(
@@ -262,7 +269,10 @@ export class DashboardComponent implements OnInit {
       this.canPollView   = this.auth.can('POLL_VIEW');
       this.canPollManage   = this.auth.can('POLL_MANAGE');
       this.canNoticeView   = this.auth.can('NOTICE_VIEW');
-      this.canNoticeManage = this.auth.can('NOTICE_MANAGE');
+      this.canNoticeManage  = this.auth.can('NOTICE_MANAGE');
+      this.canVehicleReg    = this.auth.can('VEHICLE_REGISTER');
+      this.canVehicleManage = this.auth.can('VEHICLE_MANAGE');
+      this.canGuardGate     = this.auth.can('VISITOR_VEHICLE_LOG');
 
       // Load pending delivery count for residents
       if (this.isResident && user?.status === 'ACTIVE') {

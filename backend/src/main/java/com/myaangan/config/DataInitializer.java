@@ -43,8 +43,16 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createDefaultAdmin() {
-        seedUser("admin@myaangan.com", "Admin@1234", "Society", "Admin",
+        seedUser("admin@myaangan.com",  "Admin@1234", "Society",  "Admin",
             "9999999999", Role.ADMIN, "IMPORTANT: Change the default admin password after first login!");
+        seedUser("admin2@myaangan.com", "Admin@1234", "Admin",    "Two",
+            "9999999994", Role.ADMIN, "Default Admin 2 created: admin2@myaangan.com / Admin@1234");
+        seedUser("admin3@myaangan.com", "Admin@1234", "Admin",    "Three",
+            "9999999993", Role.ADMIN, "Default Admin 3 created: admin3@myaangan.com / Admin@1234");
+        seedUser("admin4@myaangan.com", "Admin@1234", "Admin",    "Four",
+            "9999999992", Role.ADMIN, "Default Admin 4 created: admin4@myaangan.com / Admin@1234");
+        seedUser("admin5@myaangan.com", "Admin@1234", "Admin",    "Five",
+            "9999999991", Role.ADMIN, "Default Admin 5 created: admin5@myaangan.com / Admin@1234");
         seedUser("fm@myaangan.com", "Fm@12345", "Facility", "Manager",
             "9999999998", Role.FACILITY_MANAGER, "Default Facility Manager: fm@myaangan.com / Fm@12345");
         seedUser("bm@myaangan.com", "Bm@12345", "Builder", "Manager",
@@ -53,6 +61,16 @@ public class DataInitializer implements CommandLineRunner {
             "9999999996", Role.BDA_ENGINEER, "Default BDA Engineer: bda@myaangan.com / Bda@1234");
         seedUser("president@myaangan.com", "Pres@1234", "Society", "President",
             "9999999995", Role.PRESIDENT, "Default President: president@myaangan.com / Pres@1234");
+        seedUser("volunteer1@myaangan.com", "Vol@12345", "Volunteer", "One",
+            "9999999090", Role.VOLUNTEER, "Default Volunteer 1 created: volunteer1@myaangan.com / Vol@12345");
+        seedUser("volunteer2@myaangan.com", "Vol@12345", "Volunteer", "Two",
+            "9999999091", Role.VOLUNTEER, "Default Volunteer 2 created: volunteer2@myaangan.com / Vol@12345");
+        seedUser("volunteer3@myaangan.com", "Vol@12345", "Volunteer", "Three",
+            "9999999092", Role.VOLUNTEER, "Default Volunteer 3 created: volunteer3@myaangan.com / Vol@12345");
+        seedUser("volunteer4@myaangan.com", "Vol@12345", "Volunteer", "Four",
+            "9999999093", Role.VOLUNTEER, "Default Volunteer 4 created: volunteer4@myaangan.com / Vol@12345");
+        seedUser("volunteer5@myaangan.com", "Vol@12345", "Volunteer", "Five",
+            "9999999094", Role.VOLUNTEER, "Default Volunteer 5 created: volunteer5@myaangan.com / Vol@12345");
     }
 
     private void seedUser(String email, String password, String firstName, String lastName,
@@ -202,6 +220,23 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECRETARY,        Permission.NOTICE_MANAGE);
         grant(Role.FACILITY_MANAGER, Permission.NOTICE_MANAGE);
         grant(Role.VOLUNTEER,        Permission.NOTICE_MANAGE);
+		
+		      // ── Vehicle & Parking permissions ────────────────────────────────────────
+        // All residents can register their own vehicles
+        grant(Role.RESIDENT,  Permission.VEHICLE_REGISTER);
+        grant(Role.VOLUNTEER, Permission.VEHICLE_REGISTER);
+
+        // Guards can view registered vehicles, log visitors, report violations
+        grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
+        grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
+
+        // FM, President, Secretary can manage vehicles and parking
+        for (Role r : new Role[]{Role.FACILITY_MANAGER, Role.PRESIDENT, Role.SECRETARY}) {
+            grant(r, Permission.VEHICLE_MANAGE);
+            grant(r, Permission.VEHICLE_VIEW_ALL);
+            grant(r, Permission.PARKING_MANAGE);
+            grant(r, Permission.VISITOR_VEHICLE_LOG);
+        }
         logger.info("✅ Default role permissions seeded");
     }
 

@@ -69,6 +69,11 @@ public class User {
     // Pre-fills guard's "Collected by" quick-pick
     private String defaultCollectorName;
 
+    // ── Password Reset ────────────────────────────────────────────────────────────
+    @Column(unique = true)
+    private String passwordResetToken;
+    private LocalDateTime passwordResetTokenExpiry;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

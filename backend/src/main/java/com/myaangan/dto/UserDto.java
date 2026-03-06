@@ -122,6 +122,23 @@ public class UserDto {
         private String newPassword;
     }
 
+    // ─── Forgot Password Request ─────────────────────────────────────────────────
+    @Data
+    public static class ForgotPasswordRequest {
+        @NotBlank @Email
+        private String email;
+    }
+
+    // ─── Reset Password Request ──────────────────────────────────────────────────
+    @Data
+    public static class ResetPasswordRequest {
+        @NotBlank
+        private String token;
+
+        @NotBlank @Size(min = 6)
+        private String newPassword;
+    }
+
     // ─── API Response Wrapper ────────────────────────────────────────────────────
     @Data
     public static class ApiResponse<T> {
