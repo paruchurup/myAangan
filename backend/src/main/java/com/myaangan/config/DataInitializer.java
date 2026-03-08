@@ -39,9 +39,10 @@ public class DataInitializer implements CommandLineRunner {
         createDefaultCategories();
         createEscalationSettings();
         seedDefaultPermissions();
-        ensureNoticePermissions();   // idempotent — safe to run every startup
-        ensureVehiclePermissions();  // idempotent — safe to run every startup
-        ensureEventPermissions();    // idempotent — safe to run every startup
+        ensureNoticePermissions();    // idempotent — safe to run every startup
+        ensureVehiclePermissions();   // idempotent — safe to run every startup
+        ensureEventPermissions();     // idempotent — safe to run every startup
+        ensureHelpdeskPermissions();  // idempotent — safe to run every startup
     }
 
     private void createDefaultAdmin() {
@@ -242,6 +243,26 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
         grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
 
+        // Helpdesk permissions
+        grant(Role.RESIDENT,         Permission.HELPDESK_RAISE);
+        grant(Role.RESIDENT,         Permission.HELPDESK_VIEW_OWN);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_RAISE);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_VIEW_OWN);
+        grant(Role.FACILITY_MANAGER, Permission.HELPDESK_MANAGE);
+        grant(Role.PRESIDENT,        Permission.HELPDESK_MANAGE);
+        grant(Role.SECRETARY,        Permission.HELPDESK_MANAGE);
+
+        // Helpdesk permissions
+        grant(Role.RESIDENT,         Permission.HELPDESK_CREATE);
+        grant(Role.RESIDENT,         Permission.HELPDESK_VIEW_OWN);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_CREATE);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_VIEW_OWN);
+        grant(Role.FACILITY_MANAGER, Permission.HELPDESK_MANAGE);
+        grant(Role.FACILITY_MANAGER, Permission.HELPDESK_VIEW_OWN);
+        grant(Role.PRESIDENT,        Permission.HELPDESK_MANAGE);
+        grant(Role.PRESIDENT,        Permission.HELPDESK_VIEW_OWN);
+        grant(Role.SECRETARY,        Permission.HELPDESK_VIEW_OWN);
+
         // Event permissions
         grant(Role.RESIDENT,         Permission.EVENT_VIEW);
         grant(Role.RESIDENT,         Permission.EVENT_VOTE);
@@ -361,6 +382,22 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.FACILITY_MANAGER, Permission.EVENT_EXPENSE);
         grant(Role.FACILITY_MANAGER, Permission.EVENT_PHOTO);
         logger.info("✅ Event permissions ensured for all roles");
+    }
+
+    private void ensureHelpdeskPermissions() {
+        grant(Role.RESIDENT,         Permission.HELPDESK_CREATE);
+        grant(Role.RESIDENT,         Permission.HELPDESK_RAISE);
+        grant(Role.RESIDENT,         Permission.HELPDESK_VIEW_OWN);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_CREATE);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_RAISE);
+        grant(Role.VOLUNTEER,        Permission.HELPDESK_VIEW_OWN);
+        grant(Role.FACILITY_MANAGER, Permission.HELPDESK_MANAGE);
+        grant(Role.FACILITY_MANAGER, Permission.HELPDESK_VIEW_OWN);
+        grant(Role.PRESIDENT,        Permission.HELPDESK_MANAGE);
+        grant(Role.PRESIDENT,        Permission.HELPDESK_VIEW_OWN);
+        grant(Role.SECRETARY,        Permission.HELPDESK_MANAGE);
+        grant(Role.SECRETARY,        Permission.HELPDESK_VIEW_OWN);
+        logger.info("✅ Helpdesk permissions ensured for all roles");
     }
 
     private void grant(Role role, Permission permission) {

@@ -46,6 +46,7 @@ services:
       - photo_uploads:/app/uploads/photos
       - complaint_uploads:/app/uploads/complaints
       - uploads_receipts:/app/uploads/receipts
+		upload_helpdesk::/app/uploads/helpdesk
     ports:
       - "8080:8080"
     networks:

@@ -278,7 +278,6 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
             log.warn("Could not ensure visitor pass tables: {}", e.getMessage());
         }
 
-
         try {
             jdbc.execute("""
                 CREATE TABLE IF NOT EXISTS maintenance_config (
@@ -442,6 +441,96 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
             log.info("Event tables ensured");
         } catch (Exception e) {
             log.warn("Could not ensure event tables: {}", e.getMessage());
+        }
+
+
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS helpdesk_requests (
+                    id               BIGINT       NOT NULL AUTO_INCREMENT,
+                    title            VARCHAR(150) NOT NULL,
+                    description      TEXT,
+                    category         VARCHAR(15)  NOT NULL,
+                    status           VARCHAR(15)  NOT NULL DEFAULT 'PENDING',
+                    raised_by_id     BIGINT       NOT NULL,
+                    preferred_at     DATETIME,
+                    confirmed_at     DATETIME,
+                    assigned_staff   VARCHAR(150),
+                    assignment_note  TEXT,
+                    created_at       DATETIME,
+                    updated_at       DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS helpdesk_photos (
+                    id          BIGINT       NOT NULL AUTO_INCREMENT,
+                    request_id  BIGINT       NOT NULL,
+                    photo_path  VARCHAR(300) NOT NULL,
+                    uploaded_at DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS helpdesk_comments (
+                    id           BIGINT      NOT NULL AUTO_INCREMENT,
+                    request_id   BIGINT      NOT NULL,
+                    author_id    BIGINT      NOT NULL,
+                    message      TEXT        NOT NULL,
+                    is_staff_note TINYINT(1) NOT NULL DEFAULT 0,
+                    created_at   DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Helpdesk tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure helpdesk tables: {}", e.getMessage());
+        }
+
+
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS service_requests (
+                    id                    BIGINT       NOT NULL AUTO_INCREMENT,
+                    resident_id           BIGINT       NOT NULL,
+                    category              VARCHAR(20)  NOT NULL,
+                    title                 VARCHAR(200) NOT NULL,
+                    description           TEXT,
+                    preferred_datetime    DATETIME,
+                    confirmed_datetime    DATETIME,
+                    assigned_staff_name   VARCHAR(100),
+                    assigned_staff_contact VARCHAR(30),
+                    fm_note               TEXT,
+                    status                VARCHAR(15)  NOT NULL DEFAULT 'PENDING',
+                    created_at            DATETIME,
+                    updated_at            DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS service_request_photos (
+                    id          BIGINT       NOT NULL AUTO_INCREMENT,
+                    request_id  BIGINT       NOT NULL,
+                    photo_path  VARCHAR(300) NOT NULL,
+                    uploaded_at DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS service_request_status_log (
+                    id            BIGINT       NOT NULL AUTO_INCREMENT,
+                    request_id    BIGINT       NOT NULL,
+                    from_status   VARCHAR(15),
+                    to_status     VARCHAR(15)  NOT NULL,
+                    changed_by_id BIGINT,
+                    note          VARCHAR(300),
+                    changed_at    DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Helpdesk tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure helpdesk tables: {}", e.getMessage());
         }
     }
     private void ensureVisitorPassTables() { /* tables created above inline */ }

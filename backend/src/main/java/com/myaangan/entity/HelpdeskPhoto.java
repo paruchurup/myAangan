@@ -5,23 +5,19 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "service_categories")
+@Entity @Table(name = "helpdesk_photos")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class ServiceCategory {
-
+public class HelpdeskPhoto {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id", nullable = false)
+    private HelpdeskRequest request;
 
-    private String icon;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean active = true;
+    @Column(nullable = false, length = 300)
+    private String photoPath;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDateTime uploadedAt;
 }

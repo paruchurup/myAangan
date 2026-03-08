@@ -53,3 +53,4 @@ export const vehicleManageGuard   = permGuard('VEHICLE_MANAGE');
 export const guardGuard           = permGuard('VISITOR_VEHICLE_LOG');
 export const maintenanceManageGuard = permGuard('MAINTENANCE_MANAGE');
 export const analyticsGuard           = permGuard('ANALYTICS_VIEW');
+export const helpdeskManageGuard      = permGuard('HELPDESK_MANAGE');

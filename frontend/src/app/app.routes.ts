@@ -15,7 +15,7 @@ import {
   noticeManageGuard,
   vehicleManageGuard,
   guardGuard,
-  analyticsGuard, maintenanceManageGuard
+  analyticsGuard, maintenanceManageGuard, helpdeskManageGuard
 } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -87,6 +87,8 @@ export const routes: Routes = [
     ]
   },
 
+
+
   // ── Admin ─────────────────────────────────────────────────────────────────
   {
     path: 'vehicles', canActivate: [authGuard],
@@ -95,6 +97,16 @@ export const routes: Routes = [
       { path: 'passes',  loadComponent: () => import('./modules/vehicles/my-passes/my-passes.component').then(m => m.MyPassesComponent) },
       { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
       { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
+    ]
+  },
+  {
+    path: 'helpdesk', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/helpdesk/my-requests/my-requests.component').then(m => m.MyRequestsComponent) },
+      { path: 'raise',  loadComponent: () => import('./modules/helpdesk/raise-request/raise-request.component').then(m => m.RaiseRequestComponent) },
+      { path: 'manage', canActivate: [helpdeskManageGuard], loadComponent: () => import('./modules/helpdesk/manage-helpdesk/manage-helpdesk.component').then(m => m.ManageHelpdeskComponent) },
+      { path: 'fm',     loadComponent: () => import('./modules/helpdesk/fm-dashboard/fm-dashboard.component').then(m => m.FmDashboardComponent) },
+      { path: ':id',    loadComponent: () => import('./modules/helpdesk/request-detail/request-detail.component').then(m => m.RequestDetailComponent) },
     ]
   },
   {
@@ -128,10 +140,10 @@ export const routes: Routes = [
   {
     path: 'polls', canActivate: [authGuard],
     children: [
-      { path: '', loadComponent: () => import('./modules/polls/poll-list/poll-list.component').then(m => m.PollListComponent) },
-      { path: 'create', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
-      { path: 'manage', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
-      { path: ':id', loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
+      { path: '',        loadComponent: () => import('./modules/polls/poll-list/poll-list.component').then(m => m.PollListComponent) },
+      { path: 'create',  canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
+      { path: 'manage',  canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
+      { path: ':id',     loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
     ]
   },
   {
