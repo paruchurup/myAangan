@@ -43,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         ensureVehiclePermissions();   // idempotent — safe to run every startup
         ensureEventPermissions();     // idempotent — safe to run every startup
         ensureHelpdeskPermissions();  // idempotent — safe to run every startup
+        ensureVaultPermissions();     // idempotent — safe to run every startup
     }
 
     private void createDefaultAdmin() {
@@ -243,6 +244,17 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
         grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
 
+        // Vault permissions
+        grant(Role.RESIDENT,         Permission.VAULT_VIEW);
+        grant(Role.RESIDENT,         Permission.VAULT_NOC_REQUEST);
+        grant(Role.VOLUNTEER,        Permission.VAULT_VIEW);
+        grant(Role.VOLUNTEER,        Permission.VAULT_NOC_REQUEST);
+        grant(Role.PRESIDENT,        Permission.VAULT_VIEW);
+        grant(Role.PRESIDENT,        Permission.VAULT_UPLOAD);
+        grant(Role.SECRETARY,        Permission.VAULT_VIEW);
+        grant(Role.SECRETARY,        Permission.VAULT_UPLOAD);
+        grant(Role.FACILITY_MANAGER, Permission.VAULT_VIEW);
+
         // Helpdesk permissions
         grant(Role.RESIDENT,         Permission.HELPDESK_RAISE);
         grant(Role.RESIDENT,         Permission.HELPDESK_VIEW_OWN);
@@ -251,6 +263,17 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.FACILITY_MANAGER, Permission.HELPDESK_MANAGE);
         grant(Role.PRESIDENT,        Permission.HELPDESK_MANAGE);
         grant(Role.SECRETARY,        Permission.HELPDESK_MANAGE);
+
+        // Vault permissions
+        grant(Role.RESIDENT,         Permission.VAULT_VIEW);
+        grant(Role.RESIDENT,         Permission.VAULT_NOC_REQUEST);
+        grant(Role.VOLUNTEER,        Permission.VAULT_VIEW);
+        grant(Role.VOLUNTEER,        Permission.VAULT_NOC_REQUEST);
+        grant(Role.PRESIDENT,        Permission.VAULT_VIEW);
+        grant(Role.PRESIDENT,        Permission.VAULT_UPLOAD);
+        grant(Role.SECRETARY,        Permission.VAULT_VIEW);
+        grant(Role.SECRETARY,        Permission.VAULT_UPLOAD);
+        grant(Role.FACILITY_MANAGER, Permission.VAULT_VIEW);
 
         // Helpdesk permissions
         grant(Role.RESIDENT,         Permission.HELPDESK_CREATE);
@@ -398,6 +421,23 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECRETARY,        Permission.HELPDESK_MANAGE);
         grant(Role.SECRETARY,        Permission.HELPDESK_VIEW_OWN);
         logger.info("✅ Helpdesk permissions ensured for all roles");
+    }
+
+    private void ensureVaultPermissions() {
+        // RESIDENT / VOLUNTEER → view own vault + request NOC
+        grant(Role.RESIDENT,         Permission.VAULT_VIEW);
+        grant(Role.RESIDENT,         Permission.VAULT_NOC_REQUEST);
+        grant(Role.VOLUNTEER,        Permission.VAULT_VIEW);
+        grant(Role.VOLUNTEER,        Permission.VAULT_NOC_REQUEST);
+        // PRESIDENT / SECRETARY → view + upload/manage docs
+        grant(Role.PRESIDENT,        Permission.VAULT_VIEW);
+        grant(Role.PRESIDENT,        Permission.VAULT_UPLOAD);
+        grant(Role.SECRETARY,        Permission.VAULT_VIEW);
+        grant(Role.SECRETARY,        Permission.VAULT_UPLOAD);
+        // FACILITY_MANAGER → view only
+        grant(Role.FACILITY_MANAGER, Permission.VAULT_VIEW);
+        // ADMIN → all (via hasRole('ADMIN') in controller — no explicit grant needed)
+        logger.info("✅ Vault permissions ensured for all roles");
     }
 
     private void grant(Role role, Permission permission) {

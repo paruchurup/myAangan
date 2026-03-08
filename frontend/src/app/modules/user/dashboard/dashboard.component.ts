@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { DeliveryService } from '../../../core/services/delivery.service';
-import { MaintenanceService } from '../../../core/services/maintenance.service';
 import { User } from '../../../core/models/user.model';
+import {MaintenanceService} from "../../../core/services/maintenance.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -92,12 +92,12 @@ import { User } from '../../../core/models/user.model';
           </ng-container>
 
           <!-- Complaint: Raise for Resident & Guard -->
-          <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="(isResident||isGuard) && !isAdmin"><span class="icon">📢</span><span>My Complaints</span></a>
-          <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="(isResident||isGuard) && !isFm"><span class="icon">✏️</span><span>Raise Complaint</span></a>
+          <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">📢</span><span>My Complaints</span></a>
+          <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="isResident||isGuard"><span class="icon">✏️</span><span>Report Issue</span></a>
           <a routerLink="/polls" class="action-card polls" *ngIf="canPollView"><span class="icon">🗳️</span><span>Polls &amp; Voting</span></a>
+          <a [routerLink]="canVaultUpload ? '/vault/admin' : '/vault'" class="action-card vault" *ngIf="canVault"><span class="icon">📂</span><span>Vault</span></a>
           <a routerLink="/helpdesk" class="action-card helpdesk" *ngIf="canHelpdeskRaise"><span class="icon">🛠️</span><span>Helpdesk</span></a>
           <a routerLink="/helpdesk/manage" class="action-card helpdesk mgmt" *ngIf="canHelpdeskManage"><span class="icon">📋</span><span>Service Board</span></a>
-          <a routerLink="/helpdesk" class="action-card helpdesk" *ngIf="canHelpdesk"><span class="icon">🛠️</span><span>Helpdesk</span></a>
           <a routerLink="/events" class="action-card events" *ngIf="canEventView"><span class="icon">🎉</span><span>Events</span></a>
           <a routerLink="/analytics" class="action-card analytics" *ngIf="canAnalytics"><span class="icon">📊</span><span>Analytics</span></a>
           <a routerLink="/maintenance" class="action-card maintenance" *ngIf="canMaintPay">
@@ -118,19 +118,19 @@ import { User } from '../../../core/models/user.model';
           <ng-container *ngIf="isFm">
             <a routerLink="/complaints/fm"    class="action-card complaint"><span class="icon">📢</span><span>All Complaints</span></a>
             <a routerLink="/complaints/raise" class="action-card complaint"><span class="icon">✏️</span><span>Raise Complaint</span></a>
-            <a routerLink="/services"         class="action-card" *ngIf="!isAdmin"><span class="icon">🛠️</span><span>Services</span></a>
+            <a routerLink="/services"         class="action-card"><span class="icon">🛠️</span><span>Services</span></a>
           </ng-container>
 
           <!-- BM / BDA cards -->
           <ng-container *ngIf="isBm||isBda">
             <a routerLink="/complaints/bm"  class="action-card complaint"><span class="icon">🚨</span><span>{{ isBda ? 'BDA Complaints' : 'Escalated' }}</span></a>
-            <a routerLink="/complaints/my"  class="action-card" *ngIf="!isAdmin"><span class="icon">📋</span><span>My Complaints</span></a>
+            <a routerLink="/complaints/my"  class="action-card"><span class="icon">📋</span><span>My Complaints</span></a>
           </ng-container>
 
           <!-- President / Secretary / Volunteer cards -->
           <ng-container *ngIf="isPresident">
             <a routerLink="/complaints/report" class="action-card complaint"><span class="icon">🏛️</span><span>Complaint Report</span></a>
-            <a routerLink="/complaints/my"     class="action-card" *ngIf="!isAdmin"><span class="icon">📋</span><span>My Complaints</span></a>
+            <a routerLink="/complaints/my"     class="action-card"><span class="icon">📋</span><span>My Complaints</span></a>
           </ng-container>
 
         </div>
@@ -217,8 +217,6 @@ import { User } from '../../../core/models/user.model';
     .action-card.admin    { border: 2px solid #e8eaf6; }
     .action-card.delivery { border: 2px solid #fde68a; }
     .action-card.complaint{ border: 2px solid #fca5a5; }
-    .action-card.notices  { border: 2px solid #c4b5fd; }
-    .action-card.polls    { border: 2px solid #a5f3fc; }
 
     .card-icon-wrap { position: relative; display: inline-block; }
     .badge {
@@ -260,7 +258,8 @@ export class DashboardComponent implements OnInit {
   canMaintPay      = false;
   canAnalytics     = false;
   canEventView     = false;
-  canHelpdesk      = false;
+  canVault         = false;
+  canVaultUpload   = false;
   canHelpdeskRaise  = false;
   canHelpdeskManage = false;
   canMaintManage   = false;
@@ -272,8 +271,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private auth: AuthService,
-    private deliveryService: DeliveryService,
-    private maintSvc: MaintenanceService
+    private maintSvc: MaintenanceService,
+    private deliveryService: DeliveryService
   ) {}
 
   ngOnInit(): void {
@@ -298,10 +297,12 @@ export class DashboardComponent implements OnInit {
       this.canMaintManage  = this.auth.can('MAINTENANCE_MANAGE');
       this.canAnalytics    = this.auth.can('ANALYTICS_VIEW');
       this.canEventView      = this.auth.can('EVENT_VIEW');
-      this.canHelpdeskRaise  = this.auth.can('HELPDESK_RAISE');
+      this.canHelpdeskRaise  = this.auth.can('HELPDESK_RAISE') || this.auth.can('HELPDESK_CREATE');
       this.canHelpdeskManage = this.auth.can('HELPDESK_MANAGE');
       this.canVehicleManage = this.auth.can('VEHICLE_MANAGE');
       this.canGuardGate     = this.auth.can('VISITOR_VEHICLE_LOG');
+      this.canVault         = this.isAdmin || this.auth.can('VAULT_VIEW');
+      this.canVaultUpload   = this.isAdmin || this.auth.can('VAULT_UPLOAD');
 
       // Load pending delivery count for residents
       if (this.isResident && user?.status === 'ACTIVE') {

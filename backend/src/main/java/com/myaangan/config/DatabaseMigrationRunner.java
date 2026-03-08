@@ -277,7 +277,7 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("Could not ensure visitor pass tables: {}", e.getMessage());
         }
-
+    
         try {
             jdbc.execute("""
                 CREATE TABLE IF NOT EXISTS maintenance_config (
@@ -532,7 +532,47 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("Could not ensure helpdesk tables: {}", e.getMessage());
         }
-    }
+
+
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS vault_documents (
+                    id             BIGINT       NOT NULL AUTO_INCREMENT,
+                    type           VARCHAR(15)  NOT NULL,
+                    title          VARCHAR(200) NOT NULL,
+                    description    TEXT,
+                    file_path      VARCHAR(300) NOT NULL,
+                    file_format    VARCHAR(20)  NOT NULL,
+                    resident_id    BIGINT,
+                    noc_request_id BIGINT,
+                    uploaded_by_id BIGINT,
+                    expiry_date    DATE,
+                    active         TINYINT(1)   NOT NULL DEFAULT 1,
+                    created_at     DATETIME,
+                    updated_at     DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS noc_requests (
+                    id               BIGINT       NOT NULL AUTO_INCREMENT,
+                    resident_id      BIGINT       NOT NULL,
+                    purpose          VARCHAR(200) NOT NULL,
+                    details          TEXT,
+                    status           VARCHAR(12)  NOT NULL DEFAULT 'PENDING',
+                    rejection_reason TEXT,
+                    handled_by_id    BIGINT,
+                    created_at       DATETIME,
+                    updated_at       DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Vault tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure vault tables: {}", e.getMessage());
+        }
+  }
+
     private void ensureVisitorPassTables() { /* tables created above inline */ }
 
     private void ensureNoticeTables() {

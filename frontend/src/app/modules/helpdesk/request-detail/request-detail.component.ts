@@ -197,8 +197,8 @@ import { CATEGORY_CONFIG, STATUS_CONFIG } from '../../../core/models/helpdesk.mo
     .resident-actions{padding-top:4px}
     .cancel-btn{width:100%;background:none;border:1px solid #ef4444;color:#ef4444;padding:11px;border-radius:8px;font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
     .cancel-btn:disabled{opacity:0.4}
-    .err{position:fixed;bottom:80px;left:14px;right:14px;background:rgba(239,68,68,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
-    .ok {position:fixed;bottom:80px;left:14px;right:14px;background:rgba(16,185,129,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
+    .err{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:480px;background:rgba(239,68,68,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
+    .ok {position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:480px;background:rgba(16,185,129,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
   `]
 })
 export class RequestDetailComponent implements OnInit {

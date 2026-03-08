@@ -54,3 +54,5 @@ export const guardGuard           = permGuard('VISITOR_VEHICLE_LOG');
 export const maintenanceManageGuard = permGuard('MAINTENANCE_MANAGE');
 export const analyticsGuard           = permGuard('ANALYTICS_VIEW');
 export const helpdeskManageGuard      = permGuard('HELPDESK_MANAGE');
+export const vaultGuard               = permGuard('VAULT_VIEW', 'VAULT_NOC_REQUEST', 'VAULT_UPLOAD');
+export const vaultUploadGuard         = permGuard('VAULT_UPLOAD');

@@ -295,8 +295,8 @@ declare const Razorpay: any;
     .spinner{width:26px;height:26px;border:3px solid #333;border-top-color:#f59e0b;border-radius:50%;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .empty-msg{font-size:12px;color:#4b5563;text-align:center;padding:20px}
-    .err{position:fixed;bottom:80px;left:14px;right:14px;background:rgba(239,68,68,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
-    .ok {position:fixed;bottom:80px;left:14px;right:14px;background:rgba(16,185,129,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
+    .err{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:480px;background:rgba(239,68,68,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
+    .ok {position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:480px;background:rgba(16,185,129,0.9);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;text-align:center;z-index:50}
 
     /* INFO tab */
     .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}

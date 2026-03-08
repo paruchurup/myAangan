@@ -46,11 +46,9 @@ public enum Permission {
     VISITOR_VEHICLE_LOG, // Guard: log visitor vehicles in/out + report violations
     VISITOR_PASS_CREATE,    // Resident creates/manages visitor pre-approval passes
     VISITOR_PASS_MANAGE,    // FM/Admin manages all passes
-
     MAINTENANCE_PAY,        // Resident pays own maintenance bill
     MAINTENANCE_VIEW,       // Resident views own bills and receipts
     MAINTENANCE_MANAGE,     // Admin/FM manages config, waives bills, views all
-
     ANALYTICS_VIEW,         // View society analytics dashboard
 
     // ── Events & Community ───────────────────────────────────────────────────
@@ -66,6 +64,9 @@ public enum Permission {
     HELPDESK_CREATE,        // Raise a service request (all residents)
     HELPDESK_VIEW_OWN,      // View own requests
     HELPDESK_MANAGE,        // FM: view all, assign, update status
+    VAULT_VIEW,             // View society & own documents
+    VAULT_UPLOAD,           // Admin/President/Secretary: upload society/NOC/maintenance docs
+    VAULT_NOC_REQUEST,      // Resident: request an NOC
     HELPDESK_RAISE,         // Resident raises a service request
 
 
