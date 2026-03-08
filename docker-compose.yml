@@ -45,6 +45,7 @@ services:
       # Named volume shared with frontend container for photo serving
       - photo_uploads:/app/uploads/photos
       - complaint_uploads:/app/uploads/complaints
+      - uploads_receipts:/app/uploads/receipts
     ports:
       - "8080:8080"
     networks:

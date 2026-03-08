@@ -25,7 +25,7 @@
             "production": {
               "budgets": [
                 { "type": "initial", "maximumWarning": "2kb", "maximumError": "1mb" },
-                { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "10kb" }
+                { "type": "anyComponentStyle", "maximumWarning": "10kb", "maximumError": "30kb" }
               ],
               "fileReplacements": [
                 { "replace": "src/environments/environment.ts", "with": "src/environments/environment.prod.ts" }
@@ -46,7 +46,13 @@
             "production": { "buildTarget": "myaangan-frontend:build:production" },
             "development": { "buildTarget": "myaangan-frontend:build:development" }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 5000,
+            "host": "0.0.0.0",
+            "allowedHosts": ["all"],
+            "publicHost": "http://117.198.97.8:5000"
+          }
         }
       }
     }

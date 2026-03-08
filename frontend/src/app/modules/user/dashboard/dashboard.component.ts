@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { DeliveryService } from '../../../core/services/delivery.service';
+import { MaintenanceService } from '../../../core/services/maintenance.service';
 import { User } from '../../../core/models/user.model';
 
 @Component({
@@ -70,8 +71,7 @@ import { User } from '../../../core/models/user.model';
           <!-- Services (non-visitor) -->
           <a routerLink="/services" class="action-card" *ngIf="!isVisitor">
             <span class="icon">🔧</span>
-            <span>Services
-            </span>
+            <span>Services</span>
           </a>
 
           <!-- Profile always -->
@@ -95,7 +95,15 @@ import { User } from '../../../core/models/user.model';
           <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="(isResident||isGuard) && !isAdmin"><span class="icon">📢</span><span>My Complaints</span></a>
           <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="(isResident||isGuard) && !isFm"><span class="icon">✏️</span><span>Raise Complaint</span></a>
           <a routerLink="/polls" class="action-card polls" *ngIf="canPollView"><span class="icon">🗳️</span><span>Polls &amp; Voting</span></a>
+          <a routerLink="/analytics" class="action-card analytics" *ngIf="canAnalytics"><span class="icon">📊</span><span>Analytics</span></a>
+          <a routerLink="/maintenance" class="action-card maintenance" *ngIf="canMaintPay">
+            <span class="icon">💰</span>
+            <span>My Bills</span>
+            <span class="badge-dot" *ngIf="hasOutstanding">{{ outstandingCount }}</span>
+          </a>
+          <a routerLink="/maintenance/manage" class="action-card maintenance mgmt" *ngIf="canMaintManage"><span class="icon">🏦</span><span>Maintenance</span></a>
           <a routerLink="/vehicles" class="action-card vehicles" *ngIf="canVehicleReg"><span class="icon">🚗</span><span>My Vehicles</span></a>
+          <a routerLink="/vehicles/passes" class="action-card vehicles passes" *ngIf="canVehicleReg"><span class="icon">🎫</span><span>Visitor Passes</span></a>
           <a routerLink="/vehicles/manage" class="action-card vehicles mgmt" *ngIf="canVehicleManage"><span class="icon">🅿️</span><span>Parking Control</span></a>
           <a routerLink="/vehicles/gate" class="action-card vehicles guard" *ngIf="canGuardGate"><span class="icon">🔍</span><span>Gate Control</span></a>
           <a routerLink="/notices" class="action-card notices" *ngIf="canNoticeView"><span class="icon">📢</span><span>Notices</span></a>
@@ -245,13 +253,19 @@ export class DashboardComponent implements OnInit {
   canNoticeView   = false;
   canNoticeManage  = false;
   canVehicleReg    = false;
+  canMaintPay      = false;
+  canAnalytics     = false;
+  canMaintManage   = false;
+  hasOutstanding   = false;
+  outstandingCount = 0;
   canVehicleManage = false;
   canGuardGate     = false;
   pendingDeliveryCount = 0;
 
   constructor(
     private auth: AuthService,
-    private deliveryService: DeliveryService
+    private deliveryService: DeliveryService,
+    private maintSvc: MaintenanceService
   ) {}
 
   ngOnInit(): void {
@@ -271,6 +285,10 @@ export class DashboardComponent implements OnInit {
       this.canNoticeView   = this.auth.can('NOTICE_VIEW');
       this.canNoticeManage  = this.auth.can('NOTICE_MANAGE');
       this.canVehicleReg    = this.auth.can('VEHICLE_REGISTER');
+      this.canMaintPay     = this.auth.can('MAINTENANCE_PAY');
+      if (this.canMaintPay) { this.maintSvc.getMyOutstanding().subscribe({ next: r => { this.hasOutstanding = r.data?.unpaidCount > 0; this.outstandingCount = r.data?.unpaidCount || 0; }, error: () => {} }); }
+      this.canMaintManage  = this.auth.can('MAINTENANCE_MANAGE');
+      this.canAnalytics    = this.auth.can('ANALYTICS_VIEW');
       this.canVehicleManage = this.auth.can('VEHICLE_MANAGE');
       this.canGuardGate     = this.auth.can('VISITOR_VEHICLE_LOG');
 

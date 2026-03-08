@@ -277,6 +277,52 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("Could not ensure visitor pass tables: {}", e.getMessage());
         }
+
+
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS maintenance_config (
+                    id                  BIGINT        NOT NULL DEFAULT 1,
+                    monthly_amount      DECIMAL(10,2) NOT NULL DEFAULT 2000.00,
+                    due_day_of_month    INT           NOT NULL DEFAULT 15,
+                    late_penalty_flat   DECIMAL(10,2) NOT NULL DEFAULT 500.00,
+                    late_interest_pct   DECIMAL(5,2)  NOT NULL DEFAULT 2.00,
+                    razorpay_key_id     VARCHAR(100),
+                    razorpay_key_secret VARCHAR(100),
+                    society_name        VARCHAR(200),
+                    updated_at          DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS maintenance_bills (
+                    id                   BIGINT        NOT NULL AUTO_INCREMENT,
+                    flat_key             VARCHAR(20)   NOT NULL,
+                    resident_id          BIGINT,
+                    bill_year            INT           NOT NULL,
+                    bill_month           INT           NOT NULL,
+                    base_amount          DECIMAL(10,2) NOT NULL,
+                    penalty_amount       DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    interest_amount      DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    total_amount         DECIMAL(10,2) NOT NULL,
+                    due_date             DATE          NOT NULL,
+                    status               VARCHAR(15)   NOT NULL DEFAULT 'UNPAID',
+                    razorpay_order_id    VARCHAR(100),
+                    razorpay_payment_id  VARCHAR(100),
+                    receipt_path         VARCHAR(200),
+                    waiver_note          VARCHAR(300),
+                    waived_by            VARCHAR(50),
+                    paid_at              DATETIME,
+                    created_at           DATETIME,
+                    updated_at           DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_flat_month (flat_key, bill_year, bill_month)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Maintenance tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure maintenance tables: {}", e.getMessage());
+        }
     }
 
     private void ensureVisitorPassTables() { /* tables created above inline */ }

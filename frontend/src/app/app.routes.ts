@@ -1,8 +1,21 @@
 import { Routes } from '@angular/router';
 import {
-  authGuard, adminGuard, guestGuard,
-  serviceGuard, deliveryGuard, guardOnlyGuard, residentGuard,
-  complaintRaiserGuard, fmGuard, bmGuard, presidentGuard, pollManageGuard, noticeManageGuard, vehicleManageGuard, guardGuard
+  authGuard,
+  adminGuard,
+  guestGuard,
+  serviceGuard,
+  deliveryGuard,
+  guardOnlyGuard,
+  residentGuard,
+  complaintRaiserGuard,
+  fmGuard,
+  bmGuard,
+  presidentGuard,
+  pollManageGuard,
+  noticeManageGuard,
+  vehicleManageGuard,
+  guardGuard,
+  analyticsGuard, maintenanceManageGuard
 } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -11,8 +24,8 @@ export const routes: Routes = [
   {
     path: 'auth', canActivate: [guestGuard],
     children: [
-      { path: 'login',           loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
-      { path: 'register',        loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent) },
+      { path: 'login',    loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
+      { path: 'register', loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent) },
       { path: 'forgot-password', loadComponent: () => import('./auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
       { path: 'reset-password',  loadComponent: () => import('./auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) }
     ]
@@ -79,8 +92,20 @@ export const routes: Routes = [
     path: 'vehicles', canActivate: [authGuard],
     children: [
       { path: '',       loadComponent: () => import('./modules/vehicles/my-vehicles/my-vehicles.component').then(m => m.MyVehiclesComponent) },
+      { path: 'passes',  loadComponent: () => import('./modules/my-passes/my-passes.component').then(m => m.MyPassesComponent) },
       { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
       { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
+    ]
+  },
+  {
+    path: 'analytics', canActivate: [authGuard, analyticsGuard],
+    loadComponent: () => import('./modules/analytics/analytics-dashboard.component').then(m => m.AnalyticsDashboardComponent)
+  },
+  {
+    path: 'maintenance', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/maintenance/my-maintenance/my-maintenance.component').then(m => m.MyMaintenanceComponent) },
+      { path: 'manage', canActivate: [maintenanceManageGuard], loadComponent: () => import('./modules/maintenance/manage-maintenance/manage-maintenance.component').then(m => m.ManageMaintenanceComponent) },
     ]
   },
   {
@@ -105,8 +130,20 @@ export const routes: Routes = [
     path: 'vehicles', canActivate: [authGuard],
     children: [
       { path: '',       loadComponent: () => import('./modules/vehicles/my-vehicles/my-vehicles.component').then(m => m.MyVehiclesComponent) },
+      { path: 'passes',  loadComponent: () => import('./modules/my-passes/my-passes.component').then(m => m.MyPassesComponent) },
       { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
       { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
+    ]
+  },
+  {
+    path: 'analytics', canActivate: [authGuard, analyticsGuard],
+    loadComponent: () => import('./modules/analytics/analytics-dashboard.component').then(m => m.AnalyticsDashboardComponent)
+  },
+  {
+    path: 'maintenance', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/maintenance/my-maintenance/my-maintenance.component').then(m => m.MyMaintenanceComponent) },
+      { path: 'manage', canActivate: [maintenanceManageGuard], loadComponent: () => import('./modules/maintenance/manage-maintenance/manage-maintenance.component').then(m => m.ManageMaintenanceComponent) },
     ]
   },
   {

@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG } from '../../../core/models/vehicle.model';
+import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG, ParkingViolation, PassValidationResult, DAY_NAMES } from '../../../core/models/vehicle.model';
 
 @Component({
   selector: 'app-guard-vehicles',
@@ -30,6 +30,7 @@ import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG } from '../../../core/mo
     </button>
     <button class="tab" [class.active]="tab==='LOG_IN'"   (click)="tab='LOG_IN'">➕ Log Entry</button>
     <button class="tab" [class.active]="tab==='VIOLATE'"  (click)="tab='VIOLATE'">⚠️ Violation</button>
+    <button class="tab" [class.active]="tab==='PASS'"     (click)="tab='PASS'; resetPassScan()">🎫 Pass Scan</button>
   </div>
 
   <!-- ── PLATE LOOKUP ─────────────────────────────────────────────────── -->
@@ -184,10 +185,111 @@ import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG } from '../../../core/mo
       {{ violSubmitting ? 'Reporting…' : '🚨 Report Violation' }}
     </button>
 
-    <div class="success-banner" *ngIf="violSuccess">
+    <div class="success-banner action-required" *ngIf="violSuccess && lastViolation?.status === 'ACTION_REQUIRED'">
+      🚨 Violation reported — owner notified to move their vehicle
+    </div>
+    <div class="success-banner" *ngIf="violSuccess && lastViolation?.status !== 'ACTION_REQUIRED'">
       ✅ Violation reported — admin notified
     </div>
   </div>
+
+  <!-- ── VISITOR PASS SCAN ──────────────────────────────────────────── -->
+  <div class="body" *ngIf="tab==='PASS'">
+    <h2>🎫 Visitor Pass Scan</h2>
+
+    <!-- Input: typed code or scanned QR -->
+    <div *ngIf="!passResult">
+      <div class="scan-area">
+        <div class="scan-icon" *ngIf="!cameraActive" (click)="startCamera()">
+          <div class="cam-ring">📷</div>
+          <div class="cam-hint">Tap to scan QR</div>
+        </div>
+        <video #videoEl id="pass-video" class="cam-video" [class.hidden]="!cameraActive"
+          autoplay playsinline></video>
+        <button class="stop-cam" *ngIf="cameraActive" (click)="stopCamera()">✕ Close Camera</button>
+      </div>
+
+      <div class="divider-or"><span>or enter code</span></div>
+
+      <div class="code-entry">
+        <input class="code-input" [(ngModel)]="passToken"
+          placeholder="X K Y M  9 2 P Q"
+          (input)="onPassTokenInput($event)"
+          maxlength="8" />
+        <button class="lookup-btn" (click)="validatePass()" [disabled]="!passToken || passLooking">
+          {{ passLooking ? '…' : '→' }}
+        </button>
+      </div>
+      <div class="pass-err" *ngIf="passInputErr">{{ passInputErr }}</div>
+    </div>
+
+    <!-- Validation result -->
+    <div class="pass-result" *ngIf="passResult">
+
+      <!-- VALID -->
+      <div class="result-card valid" *ngIf="passResult.valid">
+        <div class="result-header valid-hdr">
+          <span class="result-icon">✅</span>
+          <span class="result-title">PASS VALID</span>
+        </div>
+        <div class="result-visitor">{{ passResult.pass?.visitorName }}</div>
+        <div class="result-meta" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
+        <div class="result-meta" *ngIf="passResult.pass?.visitorPhone">📱 {{ passResult.pass?.visitorPhone }}</div>
+        <div class="result-host">
+          🏠 Flat {{ passResult.pass?.createdBy?.block }}-{{ passResult.pass?.createdBy?.flatNumber }}
+          · {{ passResult.pass?.createdBy?.firstName }} {{ passResult.pass?.createdBy?.lastName }}
+        </div>
+        <div class="result-validity">
+          <span *ngIf="passResult.pass?.passType==='ONE_TIME'">📅 One-time pass · {{ passResult.pass?.validDate | date:'d MMM' }}
+            <span *ngIf="passResult.pass?.windowStart"> · {{ passResult.pass?.windowStart }}–{{ passResult.pass?.windowEnd }}</span>
+          </span>
+          <span *ngIf="passResult.pass?.passType==='STANDING'">🔄 Standing · {{ formatPassDays(passResult.pass?.allowedDays) }}</span>
+        </div>
+        <div class="result-notes" *ngIf="passResult.pass?.notes">💬 {{ passResult.pass?.notes }}</div>
+        <button class="checkin-btn" (click)="checkIn(false)" [disabled]="checkingIn">
+          {{ checkingIn ? 'Checking in…' : '✅ Allow Entry' }}
+        </button>
+      </div>
+
+      <!-- INVALID -->
+      <div class="result-card invalid" *ngIf="!passResult.valid">
+        <div class="result-header invalid-hdr">
+          <span class="result-icon">🚫</span>
+          <span class="result-title">PASS INVALID</span>
+        </div>
+        <div class="result-reason">{{ passResult.errorReason }}</div>
+
+        <ng-container *ngIf="passResult.pass">
+          <div class="result-visitor mt">{{ passResult.pass?.visitorName }}</div>
+          <div class="result-meta" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
+          <div class="result-host">
+            🏠 Flat {{ passResult.pass?.createdBy?.block }}-{{ passResult.pass?.createdBy?.flatNumber }}
+            · {{ passResult.pass?.createdBy?.firstName }} {{ passResult.pass?.createdBy?.lastName }}
+          </div>
+        </ng-container>
+
+        <!-- Override section -->
+        <div class="override-section">
+          <div class="override-label">Guard Override — Allow Entry Anyway?</div>
+          <textarea [(ngModel)]="overrideReason" rows="2"
+            placeholder="Reason for override (required)…" class="override-input"></textarea>
+          <button class="override-btn" (click)="checkIn(true)"
+            [disabled]="!overrideReason.trim() || checkingIn">
+            {{ checkingIn ? 'Processing…' : '⚠️ Override & Allow Entry' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Post check-in success -->
+      <div class="checkin-success" *ngIf="checkInDone">
+        <div class="cs-icon">✅</div>
+        <div class="cs-msg">Entry logged for {{ passResult.pass?.visitorName }}</div>
+      </div>
+
+      <button class="scan-another" (click)="resetPassScan()">← Scan Another Pass</button>
+    </div>
+  </div>
+
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
@@ -279,6 +381,49 @@ import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG } from '../../../core/mo
     .submit-btn{background:#f59e0b;border:none;color:#111;padding:13px;border-radius:8px;font-family:'Oswald',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;cursor:pointer}
     .submit-btn:disabled{opacity:0.4}
     .success-banner{background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#34d399;padding:12px;border-radius:8px;font-size:13px;text-align:center}
+
+    /* Pass scan tab */
+    .scan-area{display:flex;flex-direction:column;align-items:center;gap:8px;background:#111;border:1.5px dashed #333;border-radius:12px;padding:20px}
+    .cam-ring{font-size:36px;cursor:pointer}
+    .cam-hint{font-size:11px;color:#6b7280;letter-spacing:1px}
+    .cam-video{width:100%;max-width:320px;border-radius:8px;background:#000}
+    .cam-video.hidden{display:none}
+    .stop-cam{background:none;border:1px solid #444;color:#6b7280;padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer}
+    .divider-or{display:flex;align-items:center;gap:10px;color:#4b5563;font-size:11px}
+    .divider-or::before,.divider-or::after{content:'';flex:1;border-top:1px solid #333}
+    .code-entry{display:flex;gap:8px}
+    .code-input{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;letter-spacing:8px;text-align:center;text-transform:uppercase;flex:1}
+    .lookup-btn{background:#f59e0b;border:none;color:#111;width:44px;border-radius:7px;font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0}
+    .lookup-btn:disabled{opacity:0.4}
+    .pass-err{color:#f87171;font-size:12px;text-align:center}
+
+    .pass-result{display:flex;flex-direction:column;gap:10px}
+    .result-card{border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px}
+    .result-card.valid{background:#0a1a0f;border:1.5px solid #10b981}
+    .result-card.invalid{background:#1a0a0a;border:1.5px solid #ef4444}
+    .result-header{display:flex;align-items:center;gap:8px}
+    .valid-hdr .result-title{font-family:'Oswald',sans-serif;font-size:14px;color:#10b981;letter-spacing:2px}
+    .invalid-hdr .result-title{font-family:'Oswald',sans-serif;font-size:14px;color:#ef4444;letter-spacing:2px}
+    .result-icon{font-size:20px}
+    .result-visitor{font-family:'Oswald',sans-serif;font-size:20px;color:#fff;font-weight:700}
+    .result-meta{font-size:12px;color:#9ca3af}
+    .result-host{font-size:13px;color:#f59e0b;font-weight:500}
+    .result-validity{font-size:12px;color:#6ee7b7}
+    .result-notes{font-size:12px;color:#6b7280;font-style:italic}
+    .result-reason{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:9px 12px;border-radius:6px;font-size:13px;font-weight:500}
+    .mt{margin-top:4px}
+    .checkin-btn{background:#10b981;border:none;color:#fff;padding:12px;border-radius:7px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:4px}
+    .checkin-btn:disabled{opacity:0.4}
+    .override-section{border-top:1px solid #333;padding-top:10px;margin-top:4px;display:flex;flex-direction:column;gap:8px}
+    .override-label{font-size:11px;color:#f59e0b;letter-spacing:1px;font-family:'Oswald',sans-serif}
+    .override-input{background:#1c1c1c;border:1.5px solid #444;border-radius:6px;color:#e8e8e8;padding:8px 10px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;resize:vertical;width:100%;box-sizing:border-box}
+    .override-btn{background:rgba(245,158,11,0.15);border:1px solid #f59e0b;color:#f59e0b;padding:10px;border-radius:7px;font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+    .override-btn:disabled{opacity:0.4}
+    .checkin-success{background:#0a1a0f;border:1px solid #10b981;border-radius:8px;padding:14px;display:flex;align-items:center;gap:10px}
+    .cs-icon{font-size:24px}
+    .cs-msg{font-size:14px;color:#6ee7b7;font-weight:500}
+    .scan-another{background:none;border:1px solid #333;color:#6b7280;padding:9px;border-radius:7px;font-size:12px;cursor:pointer;text-align:center}
+
   `]
 })
 export class GuardVehiclesComponent implements OnInit {
@@ -301,6 +446,7 @@ export class GuardVehiclesComponent implements OnInit {
   violSubmitting = false;
   violError = '';
   violSuccess = false;
+  lastViolation: ParkingViolation | null = null;
 
   violationTypes = Object.entries(VIOLATION_TYPE_CONFIG).map(([value, cfg]) => ({ value, ...cfg }));
 
@@ -370,14 +516,97 @@ export class GuardVehiclesComponent implements OnInit {
     if (this.violPhoto) fd.append('photo', this.violPhoto);
 
     this.svc.reportViolation(fd).subscribe({
-      next: () => {
+      next: r => {
+        this.lastViolation = r.data;
         this.violForm = { plateNumber: '', violationType: '', description: '' };
         this.violPhoto = null;
         this.violSuccess = true;
         this.violSubmitting = false;
-        setTimeout(() => this.violSuccess = false, 3000);
+        setTimeout(() => this.violSuccess = false, 4000);
       },
       error: e => { this.violError = e.error?.message || 'Failed to report.'; this.violSubmitting = false; }
     });
   }
+
+  // ── Pass scan ─────────────────────────────────────────────────────────
+  passToken    = '';
+  passLooking  = false;
+  passInputErr = '';
+  passResult: PassValidationResult | null = null;
+  overrideReason = '';
+  checkingIn   = false;
+  checkInDone  = false;
+  cameraActive = false;
+  private stream: MediaStream | null = null;
+  private scanInterval: any = null;
+
+  @ViewChild('videoEl') videoEl!: ElementRef<HTMLVideoElement>;
+
+  resetPassScan() {
+    this.passToken = ''; this.passLooking = false; this.passInputErr = '';
+    this.passResult = null; this.overrideReason = ''; this.checkingIn = false;
+    this.checkInDone = false; this.stopCamera();
+  }
+
+  onPassTokenInput(e: Event) {
+    this.passToken = (e.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  }
+
+  validatePass() {
+    if (!this.passToken.trim()) return;
+    this.passLooking = true; this.passInputErr = '';
+    this.svc.validateToken(this.passToken.toUpperCase()).subscribe({
+      next: r  => { this.passResult = r.data; this.passLooking = false; this.stopCamera(); },
+      error: () => { this.passInputErr = 'Could not validate pass. Try again.'; this.passLooking = false; }
+    });
+  }
+
+  checkIn(override: boolean) {
+    this.checkingIn = true;
+    const body: any = { token: this.passToken };
+    if (override) { body.override = 'true'; body.overrideReason = this.overrideReason; }
+    this.svc.checkInPass(body).subscribe({
+      next: () => { this.checkingIn = false; this.checkInDone = true; },
+      error: e  => { this.checkingIn = false; this.passInputErr = e.error?.message || 'Check-in failed.'; }
+    });
+  }
+
+  formatPassDays(allowedDays: string | undefined): string {
+    if (!allowedDays) return '';
+    return allowedDays.split(',').map(d => DAY_NAMES[+d] || d).join(', ');
+  }
+
+  async startCamera() {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      this.cameraActive = true;
+      setTimeout(() => {
+        if (this.videoEl?.nativeElement) this.videoEl.nativeElement.srcObject = this.stream!;
+      }, 100);
+      // Poll video frames for QR decoding using BarcodeDetector API if available
+      this.scanInterval = setInterval(() => this.tryDecodeFrame(), 400);
+    } catch { this.passInputErr = 'Camera access denied. Use code entry instead.'; }
+  }
+
+  stopCamera() {
+    this.cameraActive = false;
+    if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+    if (this.scanInterval) { clearInterval(this.scanInterval); this.scanInterval = null; }
+  }
+
+  private async tryDecodeFrame() {
+    if (!(window as any).BarcodeDetector || !this.videoEl?.nativeElement) return;
+    try {
+      const detector = new (window as any).BarcodeDetector({ formats: ['qr_code'] });
+      const barcodes = await detector.detect(this.videoEl.nativeElement);
+      if (barcodes.length > 0) {
+        const raw = barcodes[0].rawValue?.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+        if (raw?.length === 8) {
+          this.passToken = raw;
+          this.validatePass();
+        }
+      }
+    } catch { /* BarcodeDetector not supported */ }
+  }
+
 }

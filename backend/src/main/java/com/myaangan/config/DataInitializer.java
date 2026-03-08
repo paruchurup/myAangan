@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createDefaultAdmin() {
-        seedUser("admin@myaangan.com",  "Admin@1234", "Society",  "Admin",
+        seedUser("admin@myaangan.com", "Admin@1234", "Society", "Admin",
             "9999999999", Role.ADMIN, "IMPORTANT: Change the default admin password after first login!");
         seedUser("admin2@myaangan.com", "Admin@1234", "Admin",    "Two",
             "9999999994", Role.ADMIN, "Default Admin 2 created: admin2@myaangan.com / Admin@1234");
@@ -240,6 +240,20 @@ public class DataInitializer implements CommandLineRunner {
         // Guards can view registered vehicles, log visitors, report violations
         grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
         grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
+
+        // Analytics permissions
+        grant(Role.FACILITY_MANAGER, Permission.ANALYTICS_VIEW);
+        grant(Role.PRESIDENT,        Permission.ANALYTICS_VIEW);
+        grant(Role.SECRETARY,        Permission.ANALYTICS_VIEW);
+
+        // Maintenance fee permissions
+        grant(Role.RESIDENT,         Permission.MAINTENANCE_VIEW);
+        grant(Role.RESIDENT,         Permission.MAINTENANCE_PAY);
+        grant(Role.VOLUNTEER,        Permission.MAINTENANCE_VIEW);
+        grant(Role.VOLUNTEER,        Permission.MAINTENANCE_PAY);
+        grant(Role.PRESIDENT,        Permission.MAINTENANCE_MANAGE);
+        grant(Role.SECRETARY,        Permission.MAINTENANCE_MANAGE);
+        grant(Role.FACILITY_MANAGER, Permission.MAINTENANCE_MANAGE);
 
         // Visitor pass permissions
         grant(Role.RESIDENT,         Permission.VISITOR_PASS_CREATE);

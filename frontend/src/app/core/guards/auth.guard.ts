@@ -51,3 +51,5 @@ export const pollManageGuard      = permGuard('POLL_MANAGE');
 export const noticeManageGuard    = permGuard('NOTICE_MANAGE');
 export const vehicleManageGuard   = permGuard('VEHICLE_MANAGE');
 export const guardGuard           = permGuard('VISITOR_VEHICLE_LOG');
+export const maintenanceManageGuard = permGuard('MAINTENANCE_MANAGE');
+export const analyticsGuard           = permGuard('ANALYTICS_VIEW');
