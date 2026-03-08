@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VehicleService } from '../../core/services/vehicle.service';
-import { VisitorPass, PASS_STATUS_CONFIG, DAY_NAMES } from '../../core/models/vehicle.model';
+import { VehicleService } from '../../../core/services/vehicle.service';
+import { VisitorPass, PASS_STATUS_CONFIG, DAY_NAMES } from '../../../core/models/vehicle.model';
 
 // QR code library loaded from CDN via script tag in index.html
 declare const QRCode: any;

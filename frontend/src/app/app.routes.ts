@@ -92,9 +92,17 @@ export const routes: Routes = [
     path: 'vehicles', canActivate: [authGuard],
     children: [
       { path: '',       loadComponent: () => import('./modules/vehicles/my-vehicles/my-vehicles.component').then(m => m.MyVehiclesComponent) },
-      { path: 'passes',  loadComponent: () => import('./modules/my-passes/my-passes.component').then(m => m.MyPassesComponent) },
+      { path: 'passes',  loadComponent: () => import('./modules/vehicles/my-passes/my-passes.component').then(m => m.MyPassesComponent) },
       { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
       { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
+    ]
+  },
+  {
+    path: 'events', canActivate: [authGuard],
+    children: [
+      { path: '',       loadComponent: () => import('./modules/events/event-list/event-list.component').then(m => m.EventListComponent) },
+      { path: 'create', loadComponent: () => import('./modules/events/create-event/create-event.component').then(m => m.CreateEventComponent) },
+      { path: ':id',    loadComponent: () => import('./modules/events/event-detail/event-detail.component').then(m => m.EventDetailComponent) },
     ]
   },
   {
@@ -124,44 +132,6 @@ export const routes: Routes = [
       { path: 'create', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
       { path: 'manage', canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
       { path: ':id', loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
-    ]
-  },
-  {
-    path: 'vehicles', canActivate: [authGuard],
-    children: [
-      { path: '',       loadComponent: () => import('./modules/vehicles/my-vehicles/my-vehicles.component').then(m => m.MyVehiclesComponent) },
-      { path: 'passes',  loadComponent: () => import('./modules/my-passes/my-passes.component').then(m => m.MyPassesComponent) },
-      { path: 'manage', canActivate: [vehicleManageGuard], loadComponent: () => import('./modules/vehicles/manage-vehicles/manage-vehicles.component').then(m => m.ManageVehiclesComponent) },
-      { path: 'gate',   canActivate: [guardGuard],         loadComponent: () => import('./modules/vehicles/guard-vehicles/guard-vehicles.component').then(m => m.GuardVehiclesComponent) },
-    ]
-  },
-  {
-    path: 'analytics', canActivate: [authGuard, analyticsGuard],
-    loadComponent: () => import('./modules/analytics/analytics-dashboard.component').then(m => m.AnalyticsDashboardComponent)
-  },
-  {
-    path: 'maintenance', canActivate: [authGuard],
-    children: [
-      { path: '',       loadComponent: () => import('./modules/maintenance/my-maintenance/my-maintenance.component').then(m => m.MyMaintenanceComponent) },
-      { path: 'manage', canActivate: [maintenanceManageGuard], loadComponent: () => import('./modules/maintenance/manage-maintenance/manage-maintenance.component').then(m => m.ManageMaintenanceComponent) },
-    ]
-  },
-  {
-    path: 'notices', canActivate: [authGuard],
-    children: [
-      { path: '',       loadComponent: () => import('./modules/notices/notice-feed/notice-feed.component').then(m => m.NoticeFeedComponent) },
-      { path: 'create', canActivate: [noticeManageGuard], loadComponent: () => import('./modules/notices/create-notice/create-notice.component').then(m => m.CreateNoticeComponent) },
-      { path: 'manage', canActivate: [noticeManageGuard], loadComponent: () => import('./modules/notices/manage-notices/manage-notices.component').then(m => m.ManageNoticesComponent) },
-      { path: ':id',    loadComponent: () => import('./modules/notices/notice-detail/notice-detail.component').then(m => m.NoticeDetailComponent) },
-    ]
-  },
-  {
-    path: 'polls', canActivate: [authGuard],
-    children: [
-      { path: '',        loadComponent: () => import('./modules/polls/poll-list/poll-list.component').then(m => m.PollListComponent) },
-      { path: 'create',  canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/create-poll/create-poll.component').then(m => m.CreatePollComponent) },
-      { path: 'manage',  canActivate: [pollManageGuard], loadComponent: () => import('./modules/polls/manage-polls/manage-polls.component').then(m => m.ManagePollsComponent) },
-      { path: ':id',     loadComponent: () => import('./modules/polls/poll-detail/poll-detail.component').then(m => m.PollDetailComponent) },
     ]
   },
   {

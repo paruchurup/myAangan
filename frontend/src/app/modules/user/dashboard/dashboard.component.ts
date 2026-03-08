@@ -95,6 +95,7 @@ import { User } from '../../../core/models/user.model';
           <a routerLink="/complaints/my"    class="action-card complaint" *ngIf="(isResident||isGuard) && !isAdmin"><span class="icon">📢</span><span>My Complaints</span></a>
           <a routerLink="/complaints/raise" class="action-card complaint" *ngIf="(isResident||isGuard) && !isFm"><span class="icon">✏️</span><span>Raise Complaint</span></a>
           <a routerLink="/polls" class="action-card polls" *ngIf="canPollView"><span class="icon">🗳️</span><span>Polls &amp; Voting</span></a>
+          <a routerLink="/events" class="action-card events" *ngIf="canEventView"><span class="icon">🎉</span><span>Events</span></a>
           <a routerLink="/analytics" class="action-card analytics" *ngIf="canAnalytics"><span class="icon">📊</span><span>Analytics</span></a>
           <a routerLink="/maintenance" class="action-card maintenance" *ngIf="canMaintPay">
             <span class="icon">💰</span>
@@ -255,6 +256,7 @@ export class DashboardComponent implements OnInit {
   canVehicleReg    = false;
   canMaintPay      = false;
   canAnalytics     = false;
+  canEventView     = false;
   canMaintManage   = false;
   hasOutstanding   = false;
   outstandingCount = 0;
@@ -289,6 +291,7 @@ export class DashboardComponent implements OnInit {
       if (this.canMaintPay) { this.maintSvc.getMyOutstanding().subscribe({ next: r => { this.hasOutstanding = r.data?.unpaidCount > 0; this.outstandingCount = r.data?.unpaidCount || 0; }, error: () => {} }); }
       this.canMaintManage  = this.auth.can('MAINTENANCE_MANAGE');
       this.canAnalytics    = this.auth.can('ANALYTICS_VIEW');
+      this.canEventView   = this.auth.can('EVENT_VIEW');
       this.canVehicleManage = this.auth.can('VEHICLE_MANAGE');
       this.canGuardGate     = this.auth.can('VISITOR_VEHICLE_LOG');
 

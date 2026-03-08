@@ -41,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         seedDefaultPermissions();
         ensureNoticePermissions();   // idempotent — safe to run every startup
         ensureVehiclePermissions();  // idempotent — safe to run every startup
+        ensureEventPermissions();    // idempotent — safe to run every startup
     }
 
     private void createDefaultAdmin() {
@@ -241,6 +242,30 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
         grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
 
+        // Event permissions
+        grant(Role.RESIDENT,         Permission.EVENT_VIEW);
+        grant(Role.RESIDENT,         Permission.EVENT_VOTE);
+        grant(Role.RESIDENT,         Permission.EVENT_VOLUNTEER);
+        grant(Role.RESIDENT,         Permission.EVENT_CONTRIBUTE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_VIEW);
+        grant(Role.VOLUNTEER,        Permission.EVENT_VOTE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_VOLUNTEER);
+        grant(Role.VOLUNTEER,        Permission.EVENT_CONTRIBUTE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_EXPENSE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_PHOTO);
+        grant(Role.PRESIDENT,        Permission.EVENT_CREATE);
+        grant(Role.PRESIDENT,        Permission.EVENT_VIEW);
+        grant(Role.PRESIDENT,        Permission.EVENT_EXPENSE);
+        grant(Role.PRESIDENT,        Permission.EVENT_PHOTO);
+        grant(Role.SECRETARY,        Permission.EVENT_CREATE);
+        grant(Role.SECRETARY,        Permission.EVENT_VIEW);
+        grant(Role.SECRETARY,        Permission.EVENT_EXPENSE);
+        grant(Role.SECRETARY,        Permission.EVENT_PHOTO);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_CREATE);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_VIEW);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_EXPENSE);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_PHOTO);
+
         // Analytics permissions
         grant(Role.FACILITY_MANAGER, Permission.ANALYTICS_VIEW);
         grant(Role.PRESIDENT,        Permission.ANALYTICS_VIEW);
@@ -310,6 +335,32 @@ public class DataInitializer implements CommandLineRunner {
             grant(r, Permission.VISITOR_PASS_MANAGE);
         }
         logger.info("✅ Vehicle/pass permissions ensured for all roles");
+    }
+
+    private void ensureEventPermissions() {
+        grant(Role.RESIDENT,         Permission.EVENT_VIEW);
+        grant(Role.RESIDENT,         Permission.EVENT_VOTE);
+        grant(Role.RESIDENT,         Permission.EVENT_VOLUNTEER);
+        grant(Role.RESIDENT,         Permission.EVENT_CONTRIBUTE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_VIEW);
+        grant(Role.VOLUNTEER,        Permission.EVENT_VOTE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_VOLUNTEER);
+        grant(Role.VOLUNTEER,        Permission.EVENT_CONTRIBUTE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_EXPENSE);
+        grant(Role.VOLUNTEER,        Permission.EVENT_PHOTO);
+        grant(Role.PRESIDENT,        Permission.EVENT_CREATE);
+        grant(Role.PRESIDENT,        Permission.EVENT_VIEW);
+        grant(Role.PRESIDENT,        Permission.EVENT_EXPENSE);
+        grant(Role.PRESIDENT,        Permission.EVENT_PHOTO);
+        grant(Role.SECRETARY,        Permission.EVENT_CREATE);
+        grant(Role.SECRETARY,        Permission.EVENT_VIEW);
+        grant(Role.SECRETARY,        Permission.EVENT_EXPENSE);
+        grant(Role.SECRETARY,        Permission.EVENT_PHOTO);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_CREATE);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_VIEW);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_EXPENSE);
+        grant(Role.FACILITY_MANAGER, Permission.EVENT_PHOTO);
+        logger.info("✅ Event permissions ensured for all roles");
     }
 
     private void grant(Role role, Permission permission) {

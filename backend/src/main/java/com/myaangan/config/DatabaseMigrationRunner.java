@@ -323,8 +323,127 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("Could not ensure maintenance tables: {}", e.getMessage());
         }
-    }
 
+
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS events (
+                    id               BIGINT       NOT NULL AUTO_INCREMENT,
+                    name             VARCHAR(150) NOT NULL,
+                    description      TEXT,
+                    event_date       DATETIME     NOT NULL,
+                    venue            VARCHAR(200),
+                    estimated_budget DECIMAL(12,2) NOT NULL,
+                    quorum_pct       INT          NOT NULL DEFAULT 50,
+                    vote_deadline    DATETIME     NOT NULL,
+                    status           VARCHAR(15)  NOT NULL DEFAULT 'DRAFT',
+                    created_by_id    BIGINT,
+                    recognition_json TEXT,
+                    surplus_note     TEXT,
+                    created_at       DATETIME,
+                    updated_at       DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_votes (
+                    id        BIGINT NOT NULL AUTO_INCREMENT,
+                    event_id  BIGINT NOT NULL,
+                    voter_id  BIGINT NOT NULL,
+                    choice    VARCHAR(5) NOT NULL,
+                    voted_at  DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_event_voter (event_id, voter_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_volunteer_slots (
+                    id               BIGINT       NOT NULL AUTO_INCREMENT,
+                    event_id         BIGINT       NOT NULL,
+                    role_name        VARCHAR(100) NOT NULL,
+                    role_description VARCHAR(300),
+                    max_volunteers   INT          NOT NULL DEFAULT 5,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_volunteer_signups (
+                    id          BIGINT NOT NULL AUTO_INCREMENT,
+                    slot_id     BIGINT NOT NULL,
+                    resident_id BIGINT NOT NULL,
+                    signed_up_at DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_slot_resident (slot_id, resident_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_contributions (
+                    id                  BIGINT        NOT NULL AUTO_INCREMENT,
+                    event_id            BIGINT        NOT NULL,
+                    resident_id         BIGINT        NOT NULL,
+                    amount              DECIMAL(10,2) NOT NULL,
+                    type                VARCHAR(10)   NOT NULL,
+                    razorpay_order_id   VARCHAR(100),
+                    razorpay_payment_id VARCHAR(100),
+                    note                VARCHAR(200),
+                    confirmed           TINYINT(1)    NOT NULL DEFAULT 0,
+                    created_at          DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_inkind_contributions (
+                    id              BIGINT        NOT NULL AUTO_INCREMENT,
+                    event_id        BIGINT        NOT NULL,
+                    resident_id     BIGINT        NOT NULL,
+                    item_name       VARCHAR(150)  NOT NULL,
+                    description     VARCHAR(200),
+                    quantity        INT           NOT NULL DEFAULT 1,
+                    estimated_value DECIMAL(10,2),
+                    created_at      DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_expenses (
+                    id           BIGINT        NOT NULL AUTO_INCREMENT,
+                    event_id     BIGINT        NOT NULL,
+                    logged_by_id BIGINT        NOT NULL,
+                    description  VARCHAR(200)  NOT NULL,
+                    amount       DECIMAL(10,2) NOT NULL,
+                    category     VARCHAR(80),
+                    receipt_path VARCHAR(300),
+                    created_at   DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_photos (
+                    id              BIGINT       NOT NULL AUTO_INCREMENT,
+                    event_id        BIGINT       NOT NULL,
+                    uploaded_by_id  BIGINT       NOT NULL,
+                    photo_path      VARCHAR(300) NOT NULL,
+                    caption         VARCHAR(200),
+                    uploaded_at     DATETIME,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS event_surplus_votes (
+                    id       BIGINT NOT NULL AUTO_INCREMENT,
+                    event_id BIGINT NOT NULL,
+                    voter_id BIGINT NOT NULL,
+                    choice   VARCHAR(15) NOT NULL,
+                    voted_at DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_surplus_voter (event_id, voter_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Event tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure event tables: {}", e.getMessage());
+        }
+    }
     private void ensureVisitorPassTables() { /* tables created above inline */ }
 
     private void ensureNoticeTables() {

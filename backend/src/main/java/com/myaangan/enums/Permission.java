@@ -49,7 +49,14 @@ public enum Permission {
     MAINTENANCE_PAY,        // Resident pays own maintenance bill
     MAINTENANCE_VIEW,       // Resident views own bills and receipts
     MAINTENANCE_MANAGE,     // Admin/FM manages config, waives bills, views all
-    ANALYTICS_VIEW,         // View society analytics dashboard // Guard: log visitor vehicles in/out + report violations
+    ANALYTICS_VIEW,         // View society analytics dashboard
+    EVENT_CREATE,           // Create and manage events (President/Secretary/FM)
+    EVENT_VOTE,             // Vote to approve/reject events and surplus
+    EVENT_VOLUNTEER,        // Sign up as volunteer for event roles
+    EVENT_CONTRIBUTE,       // Make monetary or in-kind contribution
+    EVENT_EXPENSE,          // Log expenses (volunteers)
+    EVENT_PHOTO,            // Upload event gallery photos (volunteers/organisers)
+    EVENT_VIEW,             // View event details, budget, expenses
 
     // ── User Management ───────────────────────────────────────────────────────
     USER_MANAGE,             // Admin: approve, change roles, manage users
