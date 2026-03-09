@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class ComplaintService {
 
     private final ComplaintRepository complaintRepo;
+    private final NotificationService notifSvc;
     private final ComplaintAttachmentRepository attachmentRepo;
     private final ComplaintCommentRepository commentRepo;
     private final EscalationSettingRepository escalationSettingRepo;
@@ -79,6 +80,7 @@ public class ComplaintService {
             .build();
 
         complaint = complaintRepo.save(complaint);
+        notifSvc.complaintStatusChanged(complaint.getRaisedBy().getEmail(), complaint.getTitle(), complaint.getStatus().name(), complaint.getId());
 
         // Log history
         logHistory(complaint, "Complaint raised", null,
@@ -166,7 +168,10 @@ public class ComplaintService {
         }
 
         logHistory(c, "Status updated", oldStatus, req.getStatus().name(), updater);
-        return ComplaintResponse.from(complaintRepo.save(c), canSeeInternalNotes(updater));
+        Complaint saved = complaintRepo.save(c);
+        notifSvc.complaintStatusChanged(
+            saved.getRaisedBy().getEmail(), saved.getTitle(), saved.getStatus().name(), saved.getId());
+        return ComplaintResponse.from(saved, canSeeInternalNotes(updater));
     }
 
     // ── Assign to FM ──────────────────────────────────────────────────────────

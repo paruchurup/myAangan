@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { PollService } from '../../../core/services/poll.service';
-import { Poll, POLL_STATUS_CONFIG, POLL_TYPE_CONFIG } from '../../../core/models/poll.model';
+import { PollService } from '@services/poll.service';
+import { Poll, POLL_STATUS_CONFIG, POLL_TYPE_CONFIG } from '@models/poll.model';
 
 @Component({
   selector: 'app-manage-polls',
@@ -10,11 +10,12 @@ import { Poll, POLL_STATUS_CONFIG, POLL_TYPE_CONFIG } from '../../../core/models
   imports: [CommonModule, RouterModule],
   template: `
 <div class="page">
-  <div class="hdr">
-    <button class="back" routerLink="/polls">← Back to Polls</button>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/polls">← Back</a>
+    </div>
     <h1>⚙️ Manage Polls</h1>
-    <p>Create, publish, and close polls</p>
-    <a routerLink="/polls/create" class="new-btn">+ New Poll</a>
+    <p>Edit and close polls</p>
   </div>
 
   <div class="loading" *ngIf="loading"><div class="sp"></div></div>
@@ -78,12 +79,12 @@ import { Poll, POLL_STATUS_CONFIG, POLL_TYPE_CONFIG } from '../../../core/models
   </div>
 </div>`,
   styles: [`
-    .page{min-height:100vh;background:#0f0f1a;padding-bottom:80px;font-family:'Segoe UI',sans-serif}
-    .hdr{background:linear-gradient(135deg,#1a0533,#0f3460 70%,#1a1a2e);padding:20px 20px 24px;color:#fff}
-    .back{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;margin-bottom:12px;display:block}
-    h1{font-size:20px;font-weight:800;margin:0 0 4px}
-    .hdr p{color:rgba(255,255,255,0.5);font-size:13px;margin:0 0 14px}
-    .new-btn{display:inline-block;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:700;text-decoration:none}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;color:#212121}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .loading{display:flex;justify-content:center;padding:60px}
     .sp{width:32px;height:32px;border:3px solid rgba(255,255,255,0.1);border-top-color:#7c3aed;border-radius:50%;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}

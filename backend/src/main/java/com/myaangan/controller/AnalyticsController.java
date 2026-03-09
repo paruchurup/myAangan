@@ -19,5 +19,6 @@ public class AnalyticsController {
     @GetMapping("/summary")
     public ResponseEntity<?> getSummary() {
         return ResponseEntity.ok(UserDto.ApiResponse.success("OK", svc.getSummary()));
+
     }
 }

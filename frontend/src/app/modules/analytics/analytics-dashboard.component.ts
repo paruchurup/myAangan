@@ -1,23 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
 <div class="page">
-  <div class="header">
-    <div>
-      <div class="eyebrow">ADMIN · SOCIETY</div>
-      <h1>📊 Analytics Dashboard</h1>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <div class="refresh-info" *ngIf="generatedAt">
+        Updated {{ generatedAt | date:'h:mm a' }}
+        <button class="refresh-btn" (click)="load()" [disabled]="loading">↻</button>
+      </div>
     </div>
-    <div class="refresh-info" *ngIf="generatedAt">
-      Updated {{ generatedAt | date:'h:mm a' }}
-      <button class="refresh-btn" (click)="load()" [disabled]="loading">↻</button>
-    </div>
+    <h1>📊 Analytics</h1>
+    <p>Society-wide statistics and insights</p>
   </div>
 
   <div class="loading-full" *ngIf="loading && !data">
@@ -235,12 +237,14 @@ import { environment } from '../../../environments/environment';
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8}
-    .header{background:linear-gradient(180deg,#111 0%,#161616 100%);border-bottom:3px solid #6366f1;padding:16px 16px 12px;display:flex;justify-content:space-between;align-items:flex-start}
-    .eyebrow{font-size:10px;color:#6366f1;letter-spacing:3px;font-family:'Oswald',sans-serif}
-    h1{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;margin:0;letter-spacing:1px}
-    .refresh-info{font-size:11px;color:#6b7280;display:flex;align-items:center;gap:6px;margin-top:4px}
-    .refresh-btn{background:none;border:1px solid #333;color:#6b7280;padding:3px 8px;border-radius:5px;font-size:13px;cursor:pointer}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
+    .refresh-info{font-size:11px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px}
+    .refresh-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:white;padding:3px 8px;border-radius:5px;font-size:13px;cursor:pointer}
     .refresh-btn:disabled{opacity:0.4}
 
     .loading-full{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:14px}

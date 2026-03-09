@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ServiceDirectoryService } from '../../../core/services/service-directory.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Category, ProviderSummary, SortOption } from '../../../core/models/service.model';
+import { ServiceDirectoryService } from '@services/service-directory.service';
+import { AuthService } from '@services/auth.service';
+import { Category, ProviderSummary, SortOption } from '@models/service.model';
 
 @Component({
   selector: 'app-services-list',
@@ -14,11 +14,12 @@ import { Category, ProviderSummary, SortOption } from '../../../core/models/serv
     <div class="page">
 
       <div class="page-header">
-        <div class="header-top">
-          <h1>🔧 Service Directory</h1>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/dashboard">← Back</a>
           <a routerLink="/services/add" class="btn-add" *ngIf="canAddProvider">+ Add</a>
         </div>
-        <p class="subtitle">Trusted workers recommended by your community</p>
+        <h1>🔧 Service Directory</h1>
+        <p>Trusted workers recommended by your community</p>
       </div>
 
       <!-- Search + Sort row -->
@@ -104,13 +105,11 @@ import { Category, ProviderSummary, SortOption } from '../../../core/models/serv
   styles: [`
     .page { padding: 0 0 80px; background: #f5f6fa; min-height: 100vh; }
 
-    .page-header {
-      background: linear-gradient(135deg, #1a1a2e, #0f3460);
-      padding: 20px 16px 20px; color: white;
-    }
-    .header-top { display: flex; justify-content: space-between; align-items: center; }
-    .page-header h1 { font-size: 22px; margin: 0; font-weight: 700; }
-    .subtitle { font-size: 13px; color: rgba(255,255,255,0.7); margin: 4px 0 0; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .btn-add {
       background: #e94560; color: white; padding: 8px 14px;
       border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600;

@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final NotificationService notifSvc;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -187,6 +188,7 @@ public class DeliveryService {
         delivery.setOtpVerified(false);
         deliveryRepository.save(delivery);
 
+        notifSvc.deliveryOtp(delivery.getResident().getEmail(), delivery.getSenderName(), delivery.getId());
         log.info("OTP generated for delivery={} by={}", deliveryId, initiatedBy);
         return new OtpGenerateResponse(otp, initiatedBy, expiresAt.toString(), deliveryId);
     }

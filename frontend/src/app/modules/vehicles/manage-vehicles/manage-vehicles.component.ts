@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { VehicleService } from '../../../core/services/vehicle.service';
+import { VehicleService } from '@services/vehicle.service';
 import {
   Vehicle, ParkingSlot, ParkingViolation, VisitorVehicle, ParkingStats, SlotVehicleInfo,
   VEHICLE_STATUS_CONFIG, VEHICLE_TYPE_CONFIG, SLOT_STATUS_CONFIG, VIOLATION_TYPE_CONFIG
-} from '../../../core/models/vehicle.model';
+} from '@models/vehicle.model';
 
 @Component({
   selector: 'app-manage-vehicles',
@@ -16,11 +16,12 @@ import {
 <div class="page">
 
   <!-- Header with stats -->
-  <div class="header">
-    <button class="back" routerLink="/vehicles">← Back</button>
-    <div class="title-row">
-      <h1>🅿️ PARKING CONTROL</h1>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
+    <h1>🅿️ Parking Management</h1>
+    <p>Manage society vehicle registrations</p>
     <div class="stats-grid" *ngIf="stats">
       <div class="stat-box" [class.amber]="stats.pendingApproval > 0">
         <span class="sn">{{ stats.pendingApproval }}</span>
@@ -235,12 +236,14 @@ import {
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121}
 
-    .header{background:#111;border-bottom:3px solid #f59e0b;padding:16px}
-    .back{background:none;border:1px solid #333;color:#9ca3af;padding:5px 12px;border-radius:4px;font-size:11px;cursor:pointer;margin-bottom:12px;display:block;font-family:'Oswald',sans-serif;letter-spacing:0.5px}
-    .title-row{margin-bottom:14px}
-    h1{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:#f59e0b;margin:0;letter-spacing:2px}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0 0 12px; }
+    h1{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:#fff;margin:0;letter-spacing:2px}
     .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
     .stat-box{background:#1c1c1c;border:1px solid #333;border-radius:8px;padding:10px;text-align:center}
     .stat-box.amber{border-color:#f59e0b;background:rgba(245,158,11,0.08)}

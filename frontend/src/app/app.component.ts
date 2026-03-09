@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from './shared/navbar/navbar.component';
+import { NavbarComponent } from '@shared/navbar/navbar.component';
+import { NotificationPushService } from '@services/notification-push.service';
 
 @Component({
   selector: 'app-root',
@@ -20,4 +21,7 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
     }
   `]
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  constructor(private notifSvc: NotificationPushService) {}
+  ngOnInit() { this.notifSvc.startPolling(); }
+}

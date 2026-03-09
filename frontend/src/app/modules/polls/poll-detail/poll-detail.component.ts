@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { PollService } from '../../../core/services/poll.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Poll, POLL_TYPE_CONFIG, POLL_STATUS_CONFIG } from '../../../core/models/poll.model';
+import { PollService } from '@services/poll.service';
+import { AuthService } from '@services/auth.service';
+import { Poll, POLL_TYPE_CONFIG, POLL_STATUS_CONFIG } from '@models/poll.model';
 
 @Component({
   selector: 'app-poll-detail',
@@ -12,14 +12,19 @@ import { Poll, POLL_TYPE_CONFIG, POLL_STATUS_CONFIG } from '../../../core/models
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
 <div class="page" *ngIf="poll">
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/polls">← Back</a>
+    </div>
+    <h1>{{ poll?.question || '🗳️ Poll' }}</h1>
+    <p>{{ poll?.status }} · {{ poll?.totalVoters }} voter{{ poll?.totalVoters!==1?'s':'' }}</p>
+  </div>
   <div class="header">
-    <button class="back" onclick="history.back()">← Back</button>
     <div class="status-row">
       <span class="st" [style.background]="stBg()" [style.color]="stColor()">{{ stLabel() }}</span>
       <span class="type">{{ typeIcon() }} {{ typeLabel() }}</span>
       <span class="anon" *ngIf="poll.anonymous">🔒 Anonymous</span>
     </div>
-    <h1>{{ poll.question }}</h1>
     <p class="desc" *ngIf="poll.description">{{ poll.description }}</p>
     <div class="meta-row">
       <span>By {{ poll.createdByName }}</span>
@@ -200,9 +205,13 @@ import { Poll, POLL_TYPE_CONFIG, POLL_STATUS_CONFIG } from '../../../core/models
 
 <div class="loading" *ngIf="!poll && loading"><div class="sp"></div></div>`,
   styles: [`
-    .page{min-height:100vh;background:#0f0f1a;font-family:'Segoe UI',sans-serif;padding-bottom:80px}
-    .header{background:linear-gradient(135deg,#1a0533,#0f3460 70%,#1a1a2e);padding:20px 20px 28px;color:#fff}
-    .back{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;margin-bottom:14px;display:block}
+    .page{min-height:100vh;background:#f5f6fa;font-family:'Segoe UI',sans-serif;padding-bottom:80px}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+    .header{background:linear-gradient(135deg,#1a0533,#0f3460 70%,#1a1a2e);padding:12px 20px 20px;color:#fff}
     .status-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
     .st{font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px}
     .type{font-size:12px;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.1);padding:3px 10px;border-radius:10px}

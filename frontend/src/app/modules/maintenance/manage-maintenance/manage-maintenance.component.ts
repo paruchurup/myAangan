@@ -1,20 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MaintenanceService } from '../../../core/services/maintenance.service';
-import { MaintenanceBill, MaintenanceConfig, BILL_STATUS_CONFIG, MONTH_NAMES } from '../../../core/models/maintenance.model';
+import { RouterModule } from '@angular/router';
+import { MaintenanceService } from '@services/maintenance.service';
+import { MaintenanceBill, MaintenanceConfig, BILL_STATUS_CONFIG, MONTH_NAMES } from '@models/maintenance.model';
 
 @Component({
   selector: 'app-manage-maintenance',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <div class="page">
-  <div class="header">
-    <div>
-      <div class="eyebrow">ADMIN · MAINTENANCE</div>
-      <h1>🏦 Maintenance Control</h1>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
+    <h1>⚙️ Manage Maintenance</h1>
+    <p>Manage maintenance fee collection</p>
   </div>
 
   <!-- Tab strip -->
@@ -172,10 +174,12 @@ import { MaintenanceBill, MaintenanceConfig, BILL_STATUS_CONFIG, MONTH_NAMES } f
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8;position:relative}
-    .header{background:linear-gradient(180deg,#111 0%,#161616 100%);border-bottom:3px solid #10b981;padding:18px 16px 14px}
-    .eyebrow{font-size:10px;color:#10b981;letter-spacing:3px;font-family:'Oswald',sans-serif}
-    h1{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;margin:0;letter-spacing:1px}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121;position:relative}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
 
     .tabs{display:flex;background:#111;border-bottom:1px solid #2a2a2a;overflow-x:auto}
     .tab{flex:1;background:none;border:none;color:#6b7280;padding:11px 4px;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:0.3px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.15s}

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { MaintenanceBill, MaintenanceConfig, OutstandingInfo } from '../models/maintenance.model';
+import { environment } from '@env/environment';
+import { MaintenanceBill, MaintenanceConfig, OutstandingInfo } from '@models/maintenance.model';
 
 export interface ApiResponse<T> { success: boolean; message: string; data: T; }
 

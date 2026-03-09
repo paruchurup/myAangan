@@ -67,6 +67,7 @@ public enum Permission {
     VAULT_VIEW,             // View society & own documents
     VAULT_UPLOAD,           // Admin/President/Secretary: upload society/NOC/maintenance docs
     VAULT_NOC_REQUEST,      // Resident: request an NOC
+    NOTIFICATION_VIEW,      // View own notifications
     HELPDESK_RAISE,         // Resident raises a service request
 
 

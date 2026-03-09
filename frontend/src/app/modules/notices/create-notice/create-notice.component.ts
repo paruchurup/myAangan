@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { NoticeService } from '../../../core/services/notice.service';
+import { NoticeService } from '@services/notice.service';
 
 @Component({
   selector: 'app-create-notice',
@@ -10,10 +10,12 @@ import { NoticeService } from '../../../core/services/notice.service';
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <div class="page">
-  <div class="hdr">
-    <button class="back" routerLink="/notices/manage">← Back</button>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/notices">← Back</a>
+    </div>
     <h1>📢 Post Notice</h1>
-    <p>Broadcast an announcement to your society</p>
+    <p>Share an announcement with the community</p>
   </div>
 
   <div class="form">
@@ -130,10 +132,11 @@ import { NoticeService } from '../../../core/services/notice.service';
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Serif+4:wght@400;600&display=swap');
     .page{min-height:100vh;background:#faf8f4;padding-bottom:80px;font-family:'Source Serif 4',Georgia,serif}
-    .hdr{background:#1a1a1a;padding:20px 20px 24px;color:#faf8f4;border-bottom:3px solid #c9a84c}
-    .back{background:rgba(255,255,255,0.1);border:none;color:#c9a84c;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;margin-bottom:12px;display:block;font-family:'Source Serif 4',serif}
-    h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;margin:0 0 4px}
-    .hdr p{font-size:13px;color:rgba(255,255,255,0.5);margin:0}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
     .form{padding:14px;display:flex;flex-direction:column;gap:14px}
     .card{background:#fff;border:1px solid #e5e0d8;border-radius:12px;padding:16px}
     h2{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#1a1a1a;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.5px}

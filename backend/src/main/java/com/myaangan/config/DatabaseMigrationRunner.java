@@ -277,7 +277,7 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("Could not ensure visitor pass tables: {}", e.getMessage());
         }
-    
+
         try {
             jdbc.execute("""
                 CREATE TABLE IF NOT EXISTS maintenance_config (
@@ -571,7 +571,39 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("Could not ensure vault tables: {}", e.getMessage());
         }
-  }
+
+
+        try {
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS notifications (
+                    id           BIGINT       NOT NULL AUTO_INCREMENT,
+                    recipient_id BIGINT       NOT NULL,
+                    type         VARCHAR(30)  NOT NULL,
+                    title        VARCHAR(150) NOT NULL,
+                    body         TEXT,
+                    deeplink     VARCHAR(200),
+                    `read`       TINYINT(1)   NOT NULL DEFAULT 0,
+                    created_at   DATETIME,
+                    PRIMARY KEY (id),
+                    INDEX idx_notif_recipient (recipient_id),
+                    INDEX idx_notif_read (recipient_id, `read`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            jdbc.execute("""
+                CREATE TABLE IF NOT EXISTS fcm_device_tokens (
+                    id         BIGINT       NOT NULL AUTO_INCREMENT,
+                    user_id    BIGINT       NOT NULL,
+                    token      VARCHAR(500) NOT NULL,
+                    updated_at DATETIME,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uk_user_token (user_id, token(255))
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """);
+            log.info("Notification tables ensured");
+        } catch (Exception e) {
+            log.warn("Could not ensure notification tables: {}", e.getMessage());
+        }
+    }
 
     private void ensureVisitorPassTables() { /* tables created above inline */ }
 

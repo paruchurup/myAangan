@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG, ParkingViolation, PassValidationResult, DAY_NAMES } from '../../../core/models/vehicle.model';
+import { VehicleService } from '@services/vehicle.service';
+import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG, ParkingViolation, PassValidationResult, DAY_NAMES } from '@models/vehicle.model';
 
 @Component({
   selector: 'app-guard-vehicles',
@@ -12,14 +12,13 @@ import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG, ParkingViolation, PassV
   template: `
 <div class="page">
 
-  <div class="header">
+  <div class="page-header">
     <div class="header-row">
-      <div>
-        <div class="eyebrow">GATE CONTROL</div>
-        <h1>Vehicle Registry</h1>
-      </div>
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
       <div class="live-dot"><span class="dot"></span>LIVE</div>
     </div>
+    <h1>🚪 Vehicle Registry</h1>
+    <p>Gate vehicle check and entry log</p>
   </div>
 
   <!-- Tab strip -->
@@ -293,12 +292,13 @@ import { Vehicle, VisitorVehicle, VIOLATION_TYPE_CONFIG, ParkingViolation, PassV
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121}
 
-    .header{background:linear-gradient(180deg,#111 0%,#161616 100%);border-bottom:3px solid #f59e0b;padding:18px 16px 14px}
-    .header-row{display:flex;justify-content:space-between;align-items:flex-start}
-    .eyebrow{font-size:10px;color:#f59e0b;letter-spacing:3px;text-transform:uppercase;font-family:'Oswald',sans-serif;margin-bottom:2px}
-    h1{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;margin:0;letter-spacing:1px}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .live-dot{display:flex;align-items:center;gap:6px;font-size:10px;color:#10b981;font-family:'Oswald',sans-serif;letter-spacing:2px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);padding:5px 10px;border-radius:20px}
     .dot{width:7px;height:7px;background:#10b981;border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}

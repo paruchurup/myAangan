@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 
 interface Matrix { [role: string]: { [perm: string]: boolean } }
 
@@ -43,12 +44,15 @@ const PERM_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-permissions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
 <div class="page">
-  <div class="header">
-    <h1>⚙️ Role Permissions</h1>
-    <p>Toggle permissions per role. Changes take effect immediately — no redeploy needed.</p>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+    </div>
+    <h1>🔑 Permissions</h1>
+    <p>Configure role-based permissions</p>
     <div class="admin-note">🔒 Admin always has all permissions and cannot be restricted.</div>
   </div>
 
@@ -97,9 +101,11 @@ const PERM_LABELS: Record<string, string> = {
   `,
   styles: [`
     .page { min-height:100vh; background:#f5f6fa; padding-bottom:80px }
-    .header { background:linear-gradient(135deg,#1a1a2e,#0f3460); padding:20px 20px 28px; color:white }
-    .header h1 { font-size:22px; margin:0 0 6px }
-    .header p  { font-size:13px; color:rgba(255,255,255,0.7); margin:0 0 10px }
+    .page-header { background:linear-gradient(135deg,#1a1a2e,#0f3460); padding:16px 16px 24px; color:white }
+    .header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
+    .back-btn { background:rgba(255,255,255,0.15); border:none; color:white; padding:6px 12px; border-radius:20px; font-size:13px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center }
+    .page-header h1 { font-size:22px; margin:0 0 4px; font-weight:700 }
+    .page-header p  { font-size:13px; color:rgba(255,255,255,0.7); margin:0 0 10px }
     .admin-note { font-size:12px; background:rgba(255,255,255,0.12); padding:6px 12px; border-radius:8px; display:inline-block }
     .loading { display:flex; justify-content:center; padding:60px }
     .spinner { width:32px; height:32px; border:3px solid #eee; border-top-color:#0f3460; border-radius:50%; animation:spin 0.8s linear infinite }

@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class VisitorPassService {
 
     private final VisitorPassRepository    passRepo;
+    private final NotificationService notifSvc;
     private final VisitorPassLogRepository logRepo;
     private final UserRepository           userRepo;
 
@@ -65,6 +66,7 @@ public class VisitorPassService {
             .build();
 
         pass = passRepo.save(pass);
+        notifSvc.visitorArrived(pass.getCreatedBy().getEmail(), pass.getVisitorName(), pass.getId());
         log.info("Pass {} created by {} for visitor '{}'", token, email, req.getVisitorName());
         return pass;
     }
@@ -76,6 +78,7 @@ public class VisitorPassService {
         if (pass.getStatus() == PassStatus.USED || pass.getStatus() == PassStatus.EXPIRED)
             throw new IllegalStateException("Cannot cancel a " + pass.getStatus() + " pass");
         pass.setStatus(PassStatus.CANCELLED);
+        notifSvc.visitorArrived(pass.getCreatedBy().getEmail(), pass.getVisitorName(), pass.getId());
         log.info("Pass {} cancelled by {}", pass.getToken(), email);
         return passRepo.save(pass);
     }
@@ -201,6 +204,7 @@ public class VisitorPassService {
             .build();
 
         entry = logRepo.save(entry);
+        notifSvc.visitorArrived(pass.getCreatedBy().getEmail(), pass.getVisitorName(), pass.getId());
         log.info("Pass {} checked in by guard {} [{}]", token, guardEmail,
             override ? "OVERRIDE: " + overrideReason : "VALID");
         return entry;

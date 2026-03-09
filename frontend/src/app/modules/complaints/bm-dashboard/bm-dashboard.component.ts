@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ComplaintService } from '../../../core/services/complaint.service';
-import { Complaint, STATUS_CONFIG, EscalationLevel } from '../../../core/models/complaint.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { ComplaintService } from '@services/complaint.service';
+import { Complaint, STATUS_CONFIG, EscalationLevel } from '@models/complaint.model';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-bm-dashboard',
@@ -12,8 +12,11 @@ import { AuthService } from '../../../core/services/auth.service';
   template: `
 <div class="page">
   <div class="header">
-    <h1>{{ isBda ? '🏛️ BDA Engineer' : '🏗️ Builder Manager' }} Dashboard</h1>
-    <p>{{ isBda ? 'Complaints escalated to BDA level' : 'Complaints escalated to Builder Manager' }}</p>
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+    </div>
+    <h1>🏛️ BM Dashboard</h1>
+    <p>Complaints escalated to Building Manager</p>
     <div class="summary">{{ complaints.length }} complaints · {{ breachedCount }} overdue</div>
   </div>
   <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
@@ -42,6 +45,8 @@ import { AuthService } from '../../../core/services/auth.service';
   styles: [`
     .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px}
     .header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
     .header h1{font-size:22px;margin:0 0 4px}.header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0 0 8px}
     .summary{font-size:13px;color:#fcd34d;font-weight:600}
     .loading{display:flex;justify-content:center;padding:60px}

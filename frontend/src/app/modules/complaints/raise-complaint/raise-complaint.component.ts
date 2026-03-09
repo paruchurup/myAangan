@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ComplaintService } from '../../../core/services/complaint.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { COMPLAINT_CATEGORIES } from '../../../core/models/complaint.model';
+import { ComplaintService } from '@services/complaint.service';
+import { AuthService } from '@services/auth.service';
+import { COMPLAINT_CATEGORIES } from '@models/complaint.model';
 
 @Component({
   selector: 'app-raise-complaint',

@@ -1,0 +1,15 @@
+package com.myaangan.enums;
+public enum NotificationType {
+    VISITOR_ARRIVED,
+    DELIVERY_OTP,
+    COMPLAINT_STATUS,
+    MAINTENANCE_BILL,
+    MAINTENANCE_PAYMENT,
+    NOTICE_POSTED,
+    POLL_OPENED,
+    POLL_CLOSED,
+    EVENT_VOTING_OPENED,
+    HELPDESK_STATUS,
+    NOC_FULFILLED,
+    NOC_REJECTED
+}

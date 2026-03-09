@@ -1,29 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EventService } from '../../../core/services/event.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { EVENT_STATUS_CONFIG } from '../../../core/models/event.model';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { EventService } from '@services/event.service';
+import { AuthService } from '@services/auth.service';
+import { EVENT_STATUS_CONFIG } from '@models/event.model';
 
 declare const Razorpay: any;
 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <div class="page">
-  <div class="header" *ngIf="detail">
-    <button class="back-btn" (click)="router.navigate(['/events'])">←</button>
-    <div class="header-main">
-      <div class="event-title">{{ detail.event.name }}</div>
-      <div class="status-pill"
-        [style.background]="statusCfg[detail.event.status]?.bg"
-        [style.color]="statusCfg[detail.event.status]?.color">
-        {{ statusCfg[detail.event.status]?.icon }} {{ statusCfg[detail.event.status]?.label }}
-      </div>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/events">← Back</a>
     </div>
+    <h1>{{ detail?.event?.name || '🎉 Event Details' }}</h1>
+    <p>{{ detail?.event?.eventDate ? (detail.event.eventDate | date:'d MMM yyyy, h:mm a') : (detail?.event?.venue || 'Society event') }}</p>
   </div>
 
   <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
@@ -274,11 +270,12 @@ declare const Razorpay: any;
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8;position:relative}
-    .header{background:linear-gradient(180deg,#111 0%,#161616 100%);border-bottom:3px solid #f59e0b;padding:12px 14px;display:flex;align-items:center;gap:10px}
-    .back-btn{background:none;border:1px solid #333;color:#9ca3af;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0}
-    .header-main{flex:1;display:flex;justify-content:space-between;align-items:center;gap:8px}
-    .event-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:0.5px}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121;position:relative}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
     .status-pill{font-size:10px;font-family:'Oswald',sans-serif;padding:3px 8px;border-radius:10px;font-weight:700;white-space:nowrap}
 
     .org-bar{display:flex;gap:8px;padding:8px 14px;background:#111;border-bottom:1px solid #2a2a2a;flex-wrap:wrap}

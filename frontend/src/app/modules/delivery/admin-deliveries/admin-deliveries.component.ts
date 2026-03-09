@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { DeliveryService } from '../../../core/services/delivery.service';
-import { Delivery } from '../../../core/models/delivery.model';
+import { DeliveryService } from '@services/delivery.service';
+import { Delivery } from '@models/delivery.model';
 
 @Component({
   selector: 'app-admin-deliveries',

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DeliveryService } from '../../../core/services/delivery.service';
-import { Delivery, OtpGenerateResponse } from '../../../core/models/delivery.model';
+import { DeliveryService } from '@services/delivery.service';
+import { Delivery, OtpGenerateResponse } from '@models/delivery.model';
 
 @Component({
   selector: 'app-guard-dashboard',
@@ -12,14 +12,13 @@ import { Delivery, OtpGenerateResponse } from '../../../core/models/delivery.mod
   template: `
     <div class="page">
       <div class="page-header">
-        <div class="header-top">
-          <div>
-            <h1>🚪 Gate Deliveries</h1>
-            <p>{{ today | date:'EEEE, MMM d' }}</p>
-          </div>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/dashboard">← Back</a>
           <a routerLink="/delivery/log" class="btn-log">+ Log New</a>
         </div>
-        <div class="summary-row">
+        <h1>🚪 Gate Deliveries</h1>
+        <p>Today's incoming deliveries</p>
+        <div class="summary-row" style="margin-top:12px">
           <div class="summary-chip total"><span class="chip-num">{{ deliveries.length }}</span><span class="chip-lbl">Today</span></div>
           <div class="summary-chip pending"><span class="chip-num">{{ pendingCount }}</span><span class="chip-lbl">Pending</span></div>
           <div class="summary-chip done"><span class="chip-num">{{ collectedCount }}</span><span class="chip-lbl">Collected</span></div>
@@ -159,10 +158,11 @@ import { Delivery, OtpGenerateResponse } from '../../../core/models/delivery.mod
   `,
   styles: [`
     .page { min-height: 100vh; background: #f5f6fa; padding-bottom: 80px; }
-    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 20px; color: white; }
-    .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-    .page-header h1 { font-size: 22px; margin: 0 0 2px; }
-    .page-header p  { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .btn-log { background: #e94560; color: white; padding: 9px 16px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600; }
     .summary-row { display: flex; gap: 10px; }
     .summary-chip { flex: 1; border-radius: 12px; padding: 10px 8px; text-align: center; }

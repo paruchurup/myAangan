@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
-import { Role } from '../../core/models/user.model';
+import { AuthService } from '@services/auth.service';
+import { Role } from '@models/user.model';
 
 // Roles that can self-register via the public form
 const SELF_REGISTER_ROLES: { value: Role; label: string; description: string }[] = [

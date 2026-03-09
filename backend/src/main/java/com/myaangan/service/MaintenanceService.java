@@ -31,6 +31,7 @@ public class MaintenanceService {
 
     private final MaintenanceConfigRepository configRepo;
     private final MaintenanceBillRepository   billRepo;
+    private final NotificationService notifSvc;
     private final UserRepository              userRepo;
     private final MaintenanceReceiptService   receiptService;
 
@@ -229,6 +230,7 @@ public class MaintenanceService {
         billRepo.findByRazorpayOrderId(orderId).ifPresent(bill -> {
             if (bill.getStatus() == BillStatus.PAID) return; // idempotent
             bill.setStatus(BillStatus.PAID);
+                notifSvc.maintenancePaymentConfirmed(bill.getResident().getEmail(), monthName(bill.getBillMonth()) + " " + bill.getBillYear(), bill.getId());
             bill.setRazorpayPaymentId(paymentId);
             bill.setPaidAt(LocalDateTime.now());
             bill.setTotalAmount(new BigDecimal(payment.getInt("amount")).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
@@ -311,7 +313,9 @@ public class MaintenanceService {
         bill.setWaiverNote(note);
         bill.setWaivedBy(adminEmail);
         log.info("Bill {} waived by {}", id, adminEmail);
-        return billRepo.save(bill);
+        MaintenanceBill saved = billRepo.save(bill);
+        notifSvc.maintenanceBillGenerated(saved.getResident().getEmail(), monthName(saved.getBillMonth()) + " " + saved.getBillYear(), saved.getTotalAmount().doubleValue(), saved.getId());
+        return saved;
     }
 
     // ═══════════════════════════════════════════════════════════════════════

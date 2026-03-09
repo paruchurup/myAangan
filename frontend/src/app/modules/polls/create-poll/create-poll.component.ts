@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { PollService } from '../../../core/services/poll.service';
+import { PollService } from '@services/poll.service';
 
 interface OptionDraft { text: string; emoji: string; }
 
@@ -19,10 +19,12 @@ interface OptionDraft { text: string; emoji: string; }
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <div class="page">
-  <div class="hdr">
-    <button class="back" routerLink="/polls/manage">← Back</button>
-    <h1>✨ Create Poll</h1>
-    <p>Set up a new poll for your society</p>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/polls">← Back</a>
+    </div>
+    <h1>🗳️ Create Poll</h1>
+    <p>Start a new community vote</p>
   </div>
 
   <div class="form">
@@ -152,11 +154,12 @@ interface OptionDraft { text: string; emoji: string; }
   </div>
 </div>`,
   styles: [`
-    .page{min-height:100vh;background:#0f0f1a;padding-bottom:80px;font-family:'Segoe UI',sans-serif}
-    .hdr{background:linear-gradient(135deg,#1a0533,#0f3460 70%,#1a1a2e);padding:20px 20px 28px;color:#fff}
-    .back{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;margin-bottom:14px;display:block}
-    h1{font-size:22px;font-weight:800;margin:0 0 4px}
-    .hdr p{color:rgba(255,255,255,0.5);font-size:13px;margin:0}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;color:#212121}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .form{padding:14px;display:flex;flex-direction:column;gap:14px}
     .card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:16px}
     h2{color:#e2e8f0;font-size:14px;font-weight:700;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.5px}

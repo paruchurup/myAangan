@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { PollService } from '../../../core/services/poll.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Poll, POLL_TYPE_CONFIG } from '../../../core/models/poll.model';
+import { PollService } from '@services/poll.service';
+import { AuthService } from '@services/auth.service';
+import { Poll, POLL_TYPE_CONFIG } from '@models/poll.model';
 
 @Component({
   selector: 'app-poll-list',
@@ -11,19 +11,13 @@ import { Poll, POLL_TYPE_CONFIG } from '../../../core/models/poll.model';
   imports: [CommonModule, RouterModule],
   template: `
 <div class="page">
-  <div class="hero">
-    <div class="hero-content">
-      <h1>🗳️ Polls &amp; Voting</h1>
-      <p>Your voice shapes our community</p>
-      <div class="stat-row">
-        <div class="stat"><span class="n">{{ stats.active||0 }}</span><span class="l">Active</span></div>
-        <div class="div"></div>
-        <div class="stat"><span class="n warn">{{ stats.pendingVote||0 }}</span><span class="l">Need Your Vote</span></div>
-        <div class="div"></div>
-        <div class="stat"><span class="n">{{ stats.closed||0 }}</span><span class="l">Completed</span></div>
-      </div>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <a routerLink="/polls/create" class="new-btn" *ngIf="canManage">+ New Poll</a>
     </div>
-    <a routerLink="/polls/create" class="new-btn" *ngIf="canManage">+ New Poll</a>
+    <h1>🗳️ Polls &amp; Voting</h1>
+    <p>Community polls and decisions</p>
   </div>
 
   <div class="loading" *ngIf="loading"><div class="sp"></div></div>
@@ -85,17 +79,13 @@ import { Poll, POLL_TYPE_CONFIG } from '../../../core/models/poll.model';
   </div>
 </div>`,
   styles:[`
-    .page{min-height:100vh;background:#0f0f1a;padding-bottom:80px;font-family:'Segoe UI',sans-serif}
-    .hero{background:linear-gradient(135deg,#1a0533,#0f3460 60%,#1a1a2e);padding:24px 20px 28px}
-    .hero-content{margin-bottom:16px}
-    h1{color:#fff;font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-0.5px}
-    .hero p{color:rgba(255,255,255,0.5);font-size:13px;margin:0 0 18px}
-    .stat-row{display:flex;align-items:center;gap:12px}
-    .stat{display:flex;flex-direction:column;align-items:center}
-    .n{font-size:22px;font-weight:800;color:#fff}.n.warn{color:#fbbf24}
-    .l{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
-    .div{width:1px;height:28px;background:rgba(255,255,255,0.12)}
-    .new-btn{display:inline-block;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 4px 16px rgba(124,58,237,0.5)}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;color:#212121}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+    .new-btn{display:inline-block;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;}
     .loading{display:flex;justify-content:center;padding:60px}
     .sp{width:32px;height:32px;border:3px solid rgba(255,255,255,0.1);border-top-color:#7c3aed;border-radius:50%;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}

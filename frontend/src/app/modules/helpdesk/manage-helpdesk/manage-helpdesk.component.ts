@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HelpdeskService } from '../../../core/services/helpdesk.service';
-import { CATEGORY_CONFIG, STATUS_CONFIG } from '../../../core/models/helpdesk.model';
+import { HelpdeskService } from '@services/helpdesk.service';
+import { CATEGORY_CONFIG, STATUS_CONFIG } from '@models/helpdesk.model';
 
 @Component({
   selector: 'app-manage-helpdesk',
@@ -10,11 +10,12 @@ import { CATEGORY_CONFIG, STATUS_CONFIG } from '../../../core/models/helpdesk.mo
   imports: [CommonModule, RouterModule],
   template: `
 <div class="page">
-  <div class="header">
-    <div>
-      <div class="eyebrow">FM · HELPDESK</div>
-      <h1>🛠️ Service Requests</h1>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
+    <h1>⚙️ Manage Helpdesk</h1>
+    <p>Manage and assign service requests</p>
   </div>
 
   <!-- Status count cards -->
@@ -72,10 +73,12 @@ import { CATEGORY_CONFIG, STATUS_CONFIG } from '../../../core/models/helpdesk.mo
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8}
-    .header{background:linear-gradient(180deg,#111 0%,#161616 100%);border-bottom:3px solid #3b82f6;padding:16px 16px 12px}
-    .eyebrow{font-size:10px;color:#3b82f6;letter-spacing:3px;font-family:'Oswald',sans-serif}
-    h1{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;margin:0;letter-spacing:1px}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
 
     .count-strip{display:flex;gap:6px;padding:10px 14px;overflow-x:auto}
     .count-card{background:#252525;border:1.5px solid #333;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:58px;cursor:pointer;transition:all 0.15s;flex-shrink:0}

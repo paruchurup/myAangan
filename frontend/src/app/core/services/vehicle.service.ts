@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Vehicle, ParkingSlot, VisitorVehicle, ParkingViolation, ParkingStats, ParkingNotification, VisitorPass, VisitorPassLog, PassValidationResult } from '../models/vehicle.model';
+import { environment } from '@env/environment';
+import { Vehicle, ParkingSlot, VisitorVehicle, ParkingViolation, ParkingStats, ParkingNotification, VisitorPass, VisitorPassLog, PassValidationResult } from '@models/vehicle.model';
 
 export interface ApiResponse<T> { success: boolean; message: string; data: T; }
 

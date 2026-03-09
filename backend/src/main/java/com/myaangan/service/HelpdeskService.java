@@ -24,6 +24,7 @@ import java.util.*;
 public class HelpdeskService {
 
     private final ServiceRequestRepository          requestRepo;
+    private final NotificationService notifSvc;
     private final ServiceRequestPhotoRepository     photoRepo;
     private final ServiceRequestStatusLogRepository logRepo;
     private final UserRepository                    userRepo;
@@ -59,6 +60,7 @@ public class HelpdeskService {
             }
         }
         logStatusChange(req, ServiceRequestStatus.PENDING, ServiceRequestStatus.PENDING, resident, "Request raised");
+        notifSvc.helpdeskStatusChanged(residentEmail, req.getTitle(), "PENDING", req.getId());
         log.info("Service request #{} raised by {} — {}", req.getId(), residentEmail, category);
         return req;
     }
@@ -98,6 +100,7 @@ public class HelpdeskService {
         req = requestRepo.save(req);
         User fm = findUser(fmEmail);
         logStatusChange(req, prev, next, fm, note);
+        notifSvc.helpdeskStatusChanged(req.getResident().getEmail(), req.getTitle(), next.name(), req.getId());
         log.info("Request #{} {} → {} by {}", id, prev, next, fmEmail);
         return req;
     }

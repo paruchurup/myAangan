@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByPhone(String phone);
     List<User> findByRole(Role role);
     List<User> findByStatus(UserStatus status);
+    List<User> findAllByEmailIn(java.util.List<String> emails);
     List<User> findByRoleAndStatus(Role role, UserStatus status);
 
     // Delivery: find resident by flat number to auto-link delivery

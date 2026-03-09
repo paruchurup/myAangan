@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { NoticeService } from '../../../core/services/notice.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Notice, NOTICE_TYPE_CONFIG, NOTICE_PRIORITY_CONFIG } from '../../../core/models/notice.model';
+import { NoticeService } from '@services/notice.service';
+import { AuthService } from '@services/auth.service';
+import { Notice, NOTICE_TYPE_CONFIG, NOTICE_PRIORITY_CONFIG } from '@models/notice.model';
 
 @Component({
   selector: 'app-notice-detail',
@@ -13,12 +13,13 @@ import { Notice, NOTICE_TYPE_CONFIG, NOTICE_PRIORITY_CONFIG } from '../../../cor
   template: `
 <div class="page" *ngIf="notice">
 
-  <!-- Type/priority colour bar -->
-  <div class="type-bar" [style.background]="typeAccent()"></div>
-
   <!-- Header -->
-  <div class="header">
-    <button class="back" onclick="history.back()">← Back</button>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/notices">← Back</a>
+    </div>
+    <h1>{{ notice.title }}</h1>
+    <p>{{ typeLabel() }}</p>
     <div class="badges">
       <span class="type-badge" [style.background]="typeAccentFaint()" [style.color]="typeAccent()">
         {{ typeIcon() }} {{ typeLabel() }}
@@ -28,7 +29,6 @@ import { Notice, NOTICE_TYPE_CONFIG, NOTICE_PRIORITY_CONFIG } from '../../../cor
         *ngIf="notice.priority !== 'NORMAL'">{{ notice.priority }}</span>
       <span class="pinned-badge" *ngIf="notice.pinned">📌 Pinned</span>
     </div>
-    <h1 class="notice-title">{{ notice.title }}</h1>
     <div class="byline">
       <span>By {{ notice.createdByName }}</span>
       <span class="dot">·</span>
@@ -149,19 +149,20 @@ import { Notice, NOTICE_TYPE_CONFIG, NOTICE_PRIORITY_CONFIG } from '../../../cor
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap');
     .page{min-height:100vh;background:#faf8f4;padding-bottom:80px;font-family:'Source Serif 4',Georgia,serif}
-    .type-bar{height:4px;width:100%}
-    .header{background:#fff;padding:16px 20px 20px;border-bottom:1px solid #e5e0d8}
-    .back{background:none;border:1px solid #e5e0d8;color:#6b7280;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;margin-bottom:14px;display:block;font-family:'Source Serif 4',serif}
-    .badges{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0 0 10px}
+    .badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
     .type-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
     .priority-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.5px}
     .pinned-badge{font-size:11px;color:#92400e;background:#fef3c7;padding:3px 10px;border-radius:20px}
-    .notice-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#1a1a1a;margin:0 0 10px;line-height:1.25}
-    .byline{display:flex;gap:6px;font-size:12px;color:#9ca3af;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-    .dot{color:#d1c9bc}
-    .expires{color:#92400e}
+    .byline{display:flex;gap:6px;font-size:12px;color:rgba(255,255,255,0.7);flex-wrap:wrap;align-items:center;margin-top:8px}
+    .dot{color:rgba(255,255,255,0.4)}
+    .expires{color:#fbbf24}
     .read-stat{display:flex;gap:14px;margin-top:10px}
-    .rs-item{font-size:12px;color:#6b7280;background:#f3f4f6;padding:4px 10px;border-radius:8px}
+    .rs-item{font-size:12px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:8px}
     .loading{display:flex;justify-content:center;padding:60px}
     .sp{width:28px;height:28px;border:2px solid #e5e0d8;border-top-color:#c9a84c;border-radius:50%;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}

@@ -22,6 +22,7 @@ import java.util.*;
 public class VaultService {
 
     private final VaultDocumentRepository docRepo;
+    private final NotificationService notifSvc;
     private final NocRequestRepository    nocRepo;
     private final UserRepository          userRepo;
 
@@ -60,6 +61,7 @@ public class VaultService {
                 nocRequest = nocRepo.findById(nocRequestId)
                     .orElseThrow(() -> new ResourceNotFoundException("NOC request not found"));
                 nocRequest.setStatus(NocRequestStatus.FULFILLED);
+                notifSvc.nocFulfilled(resident.getEmail(), nocRequest.getPurpose(), nocRequest.getId());
                 nocRequest.setHandledBy(uploader);
                 nocRepo.save(nocRequest);
             }
@@ -99,7 +101,8 @@ public class VaultService {
             .status(NocRequestStatus.PENDING)
             .build();
         log.info("NOC request raised by {} for: {}", residentEmail, purpose);
-        return nocRepo.save(req);
+        NocRequest saved = nocRepo.save(req);
+        return saved;
     }
 
     // ── Admin: reject an NOC request ─────────────────────────────────────
@@ -110,6 +113,7 @@ public class VaultService {
             throw new IllegalStateException("Only PENDING NOC requests can be rejected.");
         req.setStatus(NocRequestStatus.REJECTED);
         req.setRejectionReason(reason);
+        notifSvc.nocRejected(req.getResident().getEmail(), req.getPurpose(), reason);
         req.setHandledBy(findUser(adminEmail));
         return nocRepo.save(req);
     }

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DeliveryService } from '../../../core/services/delivery.service';
-import { DELIVERY_TYPES, Delivery } from '../../../core/models/delivery.model';
+import { DeliveryService } from '@services/delivery.service';
+import { DELIVERY_TYPES, Delivery } from '@models/delivery.model';
 
 @Component({
   selector: 'app-log-delivery',

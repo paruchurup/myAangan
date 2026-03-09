@@ -20,7 +20,7 @@ import {
   helpdeskManageGuard,
   vaultGuard,
   vaultUploadGuard
-} from './core/guards/auth.guard';
+} from '@guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -59,11 +59,16 @@ export const routes: Routes = [
   {
     path: 'delivery', canActivate: [authGuard, deliveryGuard],
     children: [
-      { path: 'guard',       canActivate: [guardOnlyGuard], loadComponent: () => import('./modules/delivery/guard-dashboard/guard-dashboard.component').then(m => m.GuardDashboardComponent) },
-      { path: 'log',         canActivate: [guardOnlyGuard], loadComponent: () => import('./modules/delivery/log-delivery/log-delivery.component').then(m => m.LogDeliveryComponent) },
-      { path: 'my',          canActivate: [residentGuard],  loadComponent: () => import('./modules/delivery/my-deliveries/my-deliveries.component').then(m => m.MyDeliveriesComponent) },
-      { path: 'preferences', canActivate: [residentGuard],  loadComponent: () => import('./modules/delivery/delivery-preferences/delivery-preferences.component').then(m => m.DeliveryPreferencesComponent) },
-      { path: 'all',         canActivate: [adminGuard],     loadComponent: () => import('./modules/delivery/admin-deliveries/admin-deliveries.component').then(m => m.AdminDeliveriesComponent) }
+      { path: 'guard', canActivate: [guardOnlyGuard],
+        loadComponent: () => import('./modules/delivery/guard-dashboard/guard-dashboard.component').then(m => m.GuardDashboardComponent) },
+      { path: 'log', canActivate: [guardOnlyGuard],
+        loadComponent: () => import('./modules/delivery/log-delivery/log-delivery.component').then(m => m.LogDeliveryComponent) },
+      { path: 'my', canActivate: [residentGuard],
+        loadComponent: () => import('./modules/delivery/my-deliveries/my-deliveries.component').then(m => m.MyDeliveriesComponent) },
+      { path: 'preferences', canActivate: [residentGuard],
+        loadComponent: () => import('./modules/delivery/delivery-preferences/delivery-preferences.component').then(m => m.DeliveryPreferencesComponent) },
+      { path: 'all', canActivate: [adminGuard],
+        loadComponent: () => import('./modules/delivery/admin-deliveries/admin-deliveries.component').then(m => m.AdminDeliveriesComponent) }
     ]
   },
 
@@ -71,12 +76,18 @@ export const routes: Routes = [
   {
     path: 'complaints', canActivate: [authGuard],
     children: [
-      { path: 'my',                                              loadComponent: () => import('./modules/complaints/my-complaints/my-complaints.component').then(m => m.MyComplaintsComponent) },
-      { path: 'raise',  canActivate: [complaintRaiserGuard],    loadComponent: () => import('./modules/complaints/raise-complaint/raise-complaint.component').then(m => m.RaiseComplaintComponent) },
-      { path: 'fm',     canActivate: [fmGuard],                 loadComponent: () => import('./modules/complaints/fm-dashboard/fm-dashboard.component').then(m => m.FmDashboardComponent) },
-      { path: 'bm',     canActivate: [bmGuard],                 loadComponent: () => import('./modules/complaints/bm-dashboard/bm-dashboard.component').then(m => m.BmDashboardComponent) },
-      { path: 'report', canActivate: [presidentGuard],          loadComponent: () => import('./modules/complaints/president-report/president-report.component').then(m => m.PresidentReportComponent) },
-      { path: ':id',                                             loadComponent: () => import('./modules/complaints/complaint-detail/complaint-detail.component').then(m => m.ComplaintDetailComponent) }
+      { path: 'my',
+        loadComponent: () => import('./modules/complaints/my-complaints/my-complaints.component').then(m => m.MyComplaintsComponent) },
+      { path: 'raise', canActivate: [complaintRaiserGuard],
+        loadComponent: () => import('./modules/complaints/raise-complaint/raise-complaint.component').then(m => m.RaiseComplaintComponent) },
+      { path: 'fm', canActivate: [fmGuard],
+        loadComponent: () => import('./modules/complaints/fm-dashboard/fm-dashboard.component').then(m => m.FmDashboardComponent) },
+      { path: 'bm', canActivate: [bmGuard],
+        loadComponent: () => import('./modules/complaints/bm-dashboard/bm-dashboard.component').then(m => m.BmDashboardComponent) },
+      { path: 'report', canActivate: [presidentGuard],
+        loadComponent: () => import('./modules/complaints/president-report/president-report.component').then(m => m.PresidentReportComponent) },
+      { path: ':id',
+        loadComponent: () => import('./modules/complaints/complaint-detail/complaint-detail.component').then(m => m.ComplaintDetailComponent) }
     ]
   },
 
@@ -91,9 +102,12 @@ export const routes: Routes = [
     ]
   },
 
+  // ── Notifications ─────────────────────────────────────────────────────────
+  { path: 'notifications', canActivate: [authGuard], loadComponent: () => import('./modules/notifications/notifications.component').then(m => m.NotificationsComponent) },
+
   // ── Document Vault ────────────────────────────────────────────────────────
   {
-    path: 'vault', canActivate: [authGuard, vaultGuard],
+    path: 'vault', canActivate: [authGuard],
     children: [
       { path: '',      loadComponent: () => import('./modules/vault/vault-home/vault-home.component').then(m => m.VaultHomeComponent) },
       { path: 'admin', canActivate: [vaultUploadGuard], loadComponent: () => import('./modules/vault/admin-vault/admin-vault.component').then(m => m.AdminVaultComponent) },

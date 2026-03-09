@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { NotificationPushService } from '@services/notification-push.service';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
-import { ApiResponse, AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
+import { environment } from '@env/environment';
+import { ApiResponse, AuthResponse, LoginRequest, RegisterRequest, User } from '@models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(this.getStoredUser());
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private notifSvc: NotificationPushService, private router: Router) {}
 
   login(request: LoginRequest): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${environment.apiUrl}/auth/login`, request).pipe(
@@ -40,6 +41,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.notifSvc.deregisterCurrentDevice();
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);

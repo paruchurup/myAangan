@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VehicleService } from '../../../core/services/vehicle.service';
-import { VisitorPass, PASS_STATUS_CONFIG, DAY_NAMES } from '../../../core/models/vehicle.model';
+import { RouterModule } from '@angular/router';
+import { VehicleService } from '@services/vehicle.service';
+import { VisitorPass, PASS_STATUS_CONFIG, DAY_NAMES } from '@models/vehicle.model';
 
 // QR code library loaded from CDN via script tag in index.html
 declare const QRCode: any;
@@ -10,18 +11,16 @@ declare const QRCode: any;
 @Component({
   selector: 'app-my-passes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <div class="page">
 
-  <div class="header">
-    <div>
-      <div class="eyebrow">VISITOR PRE-APPROVAL</div>
-      <h1>🎫 My Passes</h1>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/vehicles">← Back</a>
     </div>
-    <button class="add-btn" (click)="toggleForm()">
-      {{ showForm ? '✕ Cancel' : '+ New Pass' }}
-    </button>
+    <h1>🎫 My Parking Passes</h1>
+    <p>Your parking pass requests</p>
   </div>
 
   <!-- ── CREATE FORM ──────────────────────────────────────────────────── -->
@@ -170,11 +169,12 @@ declare const QRCode: any;
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8}
-    .header{background:linear-gradient(180deg,#111 0%,#161616 100%);border-bottom:3px solid #a78bfa;padding:18px 16px 14px;display:flex;justify-content:space-between;align-items:flex-start}
-    .eyebrow{font-size:10px;color:#a78bfa;letter-spacing:3px;font-family:'Oswald',sans-serif}
-    h1{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;margin:0;letter-spacing:1px}
-    .add-btn{background:#a78bfa;border:none;color:#111;padding:8px 14px;border-radius:6px;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121}
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
 
     /* Form */
     .form-card{background:#252525;border:1px solid #333;border-radius:12px;margin:12px 14px;padding:16px;display:flex;flex-direction:column;gap:12px}

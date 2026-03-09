@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ComplaintService } from '../../../core/services/complaint.service';
-import { Complaint, STATUS_CONFIG, ComplaintStatus } from '../../../core/models/complaint.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { ComplaintService } from '@services/complaint.service';
+import { Complaint, STATUS_CONFIG, ComplaintStatus } from '@models/complaint.model';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-complaint-detail',

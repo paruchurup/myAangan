@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Notice } from '../models/notice.model';
+import { environment } from '@env/environment';
+import { Notice } from '@models/notice.model';
 
 export interface ApiResponse<T> { success: boolean; message: string; data: T; }
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { ApiResponse, ChangePasswordRequest, UpdateRequest, User, UserStatus } from '../models/user.model';
+import { environment } from '@env/environment';
+import { ApiResponse, ChangePasswordRequest, UpdateRequest, User, UserStatus } from '@models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {

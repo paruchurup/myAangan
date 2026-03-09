@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { HelpdeskService } from '../../../core/services/helpdesk.service';
-import { CATEGORY_CONFIG } from '../../../core/models/helpdesk.model';
+import { Router, RouterModule } from '@angular/router';
+import { HelpdeskService } from '@services/helpdesk.service';
+import { CATEGORY_CONFIG } from '@models/helpdesk.model';
 
 @Component({
   selector: 'app-raise-request',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <div class="page">
-  <div class="header">
-    <button class="back-btn" (click)="router.navigate(['/helpdesk'])">← Back</button>
-    <div><div class="eyebrow">NEW REQUEST</div><h1>🛠️ Raise Service Request</h1></div>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/helpdesk">← Back</a>
+    </div>
+    <h1>🛠️ Raise Service Request</h1>
+    <p>Submit a maintenance or service request</p>
   </div>
   <div class="form-body">
     <div class="section-label">CATEGORY</div>
@@ -57,11 +60,12 @@ import { CATEGORY_CONFIG } from '../../../core/models/helpdesk.model';
 </div>`,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
-    .page{min-height:100vh;background:#1c1c1c;padding-bottom:80px;font-family:'IBM Plex Sans',sans-serif;color:#e8e8e8}
-    .header{background:linear-gradient(180deg,#111,#161616);border-bottom:3px solid #3b82f6;padding:12px 16px;display:flex;align-items:center;gap:12px}
-    .back-btn{background:none;border:1px solid #333;color:#9ca3af;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer}
-    .eyebrow{font-size:10px;color:#3b82f6;letter-spacing:3px;font-family:'Oswald',sans-serif}
-    h1{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:#fff;margin:0}
+    .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
     .form-body{padding:14px;display:flex;flex-direction:column;gap:12px}
     .section-label{font-family:'Oswald',sans-serif;font-size:10px;color:#3b82f6;letter-spacing:2px;border-bottom:1px solid #2a2a2a;padding-bottom:4px;margin-top:4px}
     .optional{color:#4b5563;font-size:9px}

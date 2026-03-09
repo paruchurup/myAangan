@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class EventService {
 
     private final EventRepository              eventRepo;
+    private final NotificationService notifSvc;
     private final EventVoteRepository          voteRepo;
     private final EventVolunteerSlotRepository slotRepo;
     private final EventVolunteerSignupRepository signupRepo;
@@ -83,7 +84,9 @@ public class EventService {
         if (event.getStatus() != EventStatus.DRAFT)
             throw new IllegalStateException("Only DRAFT events can be opened for voting.");
         event.setStatus(EventStatus.VOTING);
-        return eventRepo.save(event);
+        Event saved = eventRepo.save(event);
+        notifSvc.eventVotingOpened(event.getName(), event.getId());
+        return saved;
     }
 
     public Event castApprovalVote(Long eventId, String choice, String voterEmail) {

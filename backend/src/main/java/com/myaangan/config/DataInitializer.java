@@ -244,6 +244,11 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.SECURITY_GUARD, Permission.VEHICLE_VIEW_ALL);
         grant(Role.SECURITY_GUARD, Permission.VISITOR_VEHICLE_LOG);
 
+        // Notification permissions
+        for (Role r : Role.values()) {
+            grant(r, Permission.NOTIFICATION_VIEW);
+        }
+
         // Vault permissions
         grant(Role.RESIDENT,         Permission.VAULT_VIEW);
         grant(Role.RESIDENT,         Permission.VAULT_NOC_REQUEST);
@@ -263,6 +268,11 @@ public class DataInitializer implements CommandLineRunner {
         grant(Role.FACILITY_MANAGER, Permission.HELPDESK_MANAGE);
         grant(Role.PRESIDENT,        Permission.HELPDESK_MANAGE);
         grant(Role.SECRETARY,        Permission.HELPDESK_MANAGE);
+
+        // Notification permissions
+        for (Role r : Role.values()) {
+            grant(r, Permission.NOTIFICATION_VIEW);
+        }
 
         // Vault permissions
         grant(Role.RESIDENT,         Permission.VAULT_VIEW);

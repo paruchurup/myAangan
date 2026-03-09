@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ServiceDirectoryService } from '../../../core/services/service-directory.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { ProviderDetail } from '../../../core/models/service.model';
-import { Category } from '../../../core/models/service.model';
+import { ServiceDirectoryService } from '@services/service-directory.service';
+import { AuthService } from '@services/auth.service';
+import { ProviderDetail } from '@models/service.model';
+import { Category } from '@models/service.model';
 
 @Component({
   selector: 'app-provider-detail',
@@ -16,7 +16,9 @@ import { Category } from '../../../core/models/service.model';
 
       <!-- Header -->
       <div class="page-header">
-        <button class="back-btn" (click)="goBack()">← Back</button>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/services">← Back</a>
+        </div>
         <div class="header-content">
 
           <!-- Photo or Avatar -->
@@ -190,15 +192,9 @@ import { Category } from '../../../core/models/service.model';
   styles: [`
     .page { background: #f5f6fa; min-height: 100vh; padding-bottom: 80px; }
 
-    .page-header {
-      background: linear-gradient(135deg, #1a1a2e, #0f3460);
-      padding: 16px 16px 24px; color: white; text-align: center; position: relative;
-    }
-    .back-btn {
-      position: absolute; left: 16px; top: 16px;
-      background: rgba(255,255,255,0.15); border: none; color: white;
-      padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer;
-    }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; text-align: center; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; text-align: left; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
 
     .photo-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
     .provider-photo, .big-avatar {

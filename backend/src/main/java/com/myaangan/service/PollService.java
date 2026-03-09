@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class PollService {
 
     private final PollRepository       pollRepo;
+    private final NotificationService notifSvc;
     private final PollVoteRepository   voteRepo;
     private final PollCommentRepository commentRepo;
     private final UserRepository       userRepo;
@@ -79,6 +80,7 @@ public class PollService {
         if (poll.getStatus() != PollStatus.DRAFT)
             throw new IllegalStateException("Only DRAFT polls can be published");
         poll.setStatus(PollStatus.ACTIVE);
+        notifSvc.pollOpened(poll.getQuestion(), poll.getId());
         poll.setPublishedAt(LocalDateTime.now());
         return toResponse(pollRepo.save(poll), email, true);
     }
@@ -90,6 +92,7 @@ public class PollService {
         if (poll.getStatus() != PollStatus.ACTIVE)
             throw new IllegalStateException("Only ACTIVE polls can be closed");
         poll.setStatus(PollStatus.CLOSED);
+        notifSvc.pollClosed(poll.getQuestion(), poll.getId());
         poll.setClosedAt(LocalDateTime.now());
         return toResponse(pollRepo.save(poll), email, true);
     }

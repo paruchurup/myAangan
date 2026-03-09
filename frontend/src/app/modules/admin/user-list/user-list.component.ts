@@ -1,17 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { User, UserStatus } from '../../../core/models/user.model';
+import { UserService } from '@services/user.service';
+import { User, UserStatus } from '@models/user.model';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <div class="page">
       <div class="page-header">
-        <h2>All Users</h2>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/dashboard">← Back</a>
+        </div>
+        <h1>👥 User Management</h1>
+        <p>Manage society residents and staff</p>
+      </div>
+
+      <div class="filters-row">
         <div class="filters">
           <select [(ngModel)]="filterRole" (change)="applyFilter()">
             <option value="">All Roles</option>
@@ -73,13 +81,17 @@ import { User, UserStatus } from '../../../core/models/user.model';
     </div>
   `,
   styles: [`
-    .page { max-width: 1000px; margin: 0 auto; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-    h2 { margin: 0; color: #1a237e; }
+    .page { min-height: 100vh; background: #f5f6fa; padding-bottom: 80px; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+    .filters-row { padding: 16px 16px 0; display: flex; justify-content: flex-end; }
     .filters { display: flex; gap: 10px; }
-    select { padding: 8px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 13px; }
+    select { padding: 8px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 13px; background: white; }
     .loading { text-align: center; padding: 40px; color: #666; }
-    .table-wrapper { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow-x: auto; }
+    .table-wrapper { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow-x: auto; margin: 16px; }
     table { width: 100%; border-collapse: collapse; }
     th { background: #1a237e; color: white; padding: 14px 16px; text-align: left; font-size: 13px; }
     td { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }

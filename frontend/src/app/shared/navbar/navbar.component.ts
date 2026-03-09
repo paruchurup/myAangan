@@ -1,9 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
-import { NoticeService } from '../../core/services/notice.service';
-import { User } from '../../core/models/user.model';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { Location } from '@angular/common';
+import { AuthService } from '@services/auth.service';
+import { NoticeService } from '@services/notice.service';
+import { User } from '@models/user.model';
+import { filter } from 'rxjs/operators';
+
+// Routes where the back button should NOT appear
+const HOME_ROUTES = ['/dashboard', '/auth/login', '/auth/register',
+                     '/auth/forgot-password', '/auth/reset-password'];
 
 @Component({
   selector: 'app-navbar',
@@ -11,9 +17,14 @@ import { User } from '../../core/models/user.model';
   imports: [CommonModule, RouterModule],
   template: `
     <nav class="navbar" *ngIf="authService.isLoggedIn()">
-      <div class="navbar-brand">
-        <span class="brand-icon">🏠</span>
-        <span class="brand-name">MyAangan</span>
+      <div class="navbar-left">
+        <button class="back-btn" *ngIf="showBack" (click)="goBack()" aria-label="Go back">
+          &#8592;
+        </button>
+        <div class="navbar-brand" [class.has-back]="showBack">
+          <span class="brand-icon">🏠</span>
+          <span class="brand-name">MyAangan</span>
+        </div>
       </div>
       <div class="navbar-menu">
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
@@ -48,6 +59,27 @@ import { User } from '../../core/models/user.model';
       flex-wrap: wrap;
       gap: 8px;
     }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.3); }
     .navbar-brand {
       display: flex;
       align-items: center;
@@ -133,24 +165,34 @@ export class NavbarComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   unreadCount = 0;
   canViewNotices = false;
+  showBack = false;
 
   private pollInterval: any;
 
   constructor(
     public authService: AuthService,
-    private noticeSvc: NoticeService
+    private noticeSvc: NoticeService,
+    private location: Location,
+    private router: Router
   ) {
     authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.canViewNotices = user ? this.authService.can('NOTICE_VIEW') : false;
       if (this.canViewNotices) this.noticeSvc.refreshUnreadCount();
     });
-    // Always reflect the shared count — no local copy needed
     this.noticeSvc.unread$.subscribe(n => this.unreadCount = n);
+
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe((e: any) => {
+      const url: string = e.urlAfterRedirects.split('?')[0];
+      this.showBack = !HOME_ROUTES.some(r => url === r || url.startsWith(r + '/'));
+    });
   }
 
+  goBack() { this.location.back(); }
+
   ngOnInit() {
-    // Refresh from server every 60 seconds while the app is open
     this.pollInterval = setInterval(() => {
       if (this.canViewNotices) this.noticeSvc.refreshUnreadCount();
     }, 60_000);

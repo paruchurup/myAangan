@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ComplaintService } from '../../../core/services/complaint.service';
-import { Complaint, STATUS_CONFIG } from '../../../core/models/complaint.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { ComplaintService } from '@services/complaint.service';
+import { Complaint, STATUS_CONFIG } from '@models/complaint.model';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-president-report',
@@ -13,8 +13,11 @@ import { AuthService } from '../../../core/services/auth.service';
   template: `
 <div class="page">
   <div class="header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+    </div>
     <h1>🏛️ Complaints Report</h1>
-    <p>All society complaints · Download PDF for BDA submission</p>
+    <p>All society complaints overview</p>
     <div class="stats-grid">
       <div class="stat-chip" *ngFor="let s of statItems">
         <span class="stat-n">{{ stats[s.key]||0 }}</span>
@@ -77,6 +80,8 @@ import { AuthService } from '../../../core/services/auth.service';
   styles: [`
     .page{min-height:100vh;background:#f5f6fa;padding-bottom:80px}
     .header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 20px;color:white}
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
     .header h1{font-size:22px;margin:0 0 4px}.header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0 0 16px}
     .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
     .stat-chip{background:rgba(255,255,255,0.12);border-radius:10px;padding:10px;text-align:center}

@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../../core/services/user.service';
-import { User } from '../../../core/models/user.model';
+import { RouterModule } from '@angular/router';
+import { UserService } from '@services/user.service';
+import { User } from '@models/user.model';
 
 @Component({
   selector: 'app-pending-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="page">
       <div class="page-header">
-        <h2>⏳ Pending Approvals</h2>
-        <span class="count" *ngIf="users.length > 0">{{ users.length }} pending</span>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/dashboard">← Back</a>
+          <span class="count" *ngIf="users.length > 0">{{ users.length }} pending</span>
+        </div>
+        <h1>⏳ Pending Approvals</h1>
+        <p>New registrations awaiting approval</p>
       </div>
 
       <div class="empty-state" *ngIf="!loading && users.length === 0">
@@ -49,9 +54,12 @@ import { User } from '../../../core/models/user.model';
     </div>
   `,
   styles: [`
-    .page { max-width: 700px; margin: 0 auto; }
-    .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    h2 { margin: 0; color: #1a237e; }
+    .page { min-height: 100vh; background: #f5f6fa; padding-bottom: 80px; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .count {
       background: #ff8f00;
       color: white;
@@ -66,10 +74,11 @@ import { User } from '../../../core/models/user.model';
       background: white;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 16px;
     }
     .empty-state span { font-size: 48px; }
     .empty-state p { color: #666; margin-top: 16px; }
-    .cards { display: flex; flex-direction: column; gap: 16px; }
+    .cards { display: flex; flex-direction: column; gap: 16px; padding: 16px; }
     .user-card {
       background: white;
       border-radius: 12px;

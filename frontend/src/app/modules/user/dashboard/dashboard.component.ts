@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { DeliveryService } from '../../../core/services/delivery.service';
-import { User } from '../../../core/models/user.model';
-import {MaintenanceService} from "../../../core/services/maintenance.service";
+import { AuthService } from '@services/auth.service';
+import { DeliveryService } from '@services/delivery.service';
+import { User } from '@models/user.model';
+import {MaintenanceService} from "@services/maintenance.service";
 
 @Component({
   selector: 'app-dashboard',

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ServiceDirectoryService } from '../../../core/services/service-directory.service';
-import { Category } from '../../../core/models/service.model';
+import { ServiceDirectoryService } from '@services/service-directory.service';
+import { Category } from '@models/service.model';
 
 @Component({
   selector: 'app-add-provider',
@@ -12,9 +12,11 @@ import { Category } from '../../../core/models/service.model';
   template: `
     <div class="page">
       <div class="page-header">
-        <button class="back-btn" routerLink="/services">← Back</button>
-        <h1>Add Service Provider</h1>
-        <p>Help your community find trusted workers</p>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/services">← Back</a>
+        </div>
+        <h1>🔧 Add Service Provider</h1>
+        <p>Recommend a trusted worker to the community</p>
       </div>
 
       <div class="form-container">
@@ -92,16 +94,10 @@ import { Category } from '../../../core/models/service.model';
   styles: [`
     .page { min-height: 100vh; background: #f5f6fa; padding-bottom: 80px; }
 
-    .page-header {
-      background: linear-gradient(135deg, #1a1a2e, #0f3460);
-      padding: 16px 16px 28px; color: white;
-    }
-    .back-btn {
-      background: rgba(255,255,255,0.15); border: none; color: white;
-      padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer;
-      margin-bottom: 12px; display: inline-block;
-    }
-    .page-header h1 { font-size: 22px; margin: 0 0 4px; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
     .page-header p  { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
 
     .form-container { padding: 20px 16px; }

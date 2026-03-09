@@ -1,16 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { User } from '../../../core/models/user.model';
+import { UserService } from '@services/user.service';
+import { User } from '@models/user.model';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   template: `
     <div class="page">
-      <h2>My Profile</h2>
+      <div class="page-header">
+        <div class="header-row">
+          <a class="back-btn" routerLink="/dashboard">← Back</a>
+        </div>
+        <h1>👤 My Profile</h1>
+        <p>Your account details</p>
+      </div>
 
       <div class="card" *ngIf="user">
         <div class="avatar">{{ user.firstName[0] }}{{ user.lastName[0] }}</div>
@@ -70,8 +77,12 @@ import { User } from '../../../core/models/user.model';
     </div>
   `,
   styles: [`
-    .page { max-width: 600px; margin: 0 auto; }
-    h2 { color: #1a237e; margin-bottom: 20px; }
+    .page { min-height: 100vh; background: #f5f6fa; padding-bottom: 80px; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
     .card {
       background: white;
       border-radius: 12px;
@@ -80,7 +91,7 @@ import { User } from '../../../core/models/user.model';
       align-items: center;
       gap: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
+      margin: 16px 16px 0;
     }
     .avatar {
       width: 64px; height: 64px;
@@ -112,7 +123,7 @@ import { User } from '../../../core/models/user.model';
       border-radius: 12px;
       padding: 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
+      margin: 16px;
     }
     h3 { margin: 0 0 20px; color: #333; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

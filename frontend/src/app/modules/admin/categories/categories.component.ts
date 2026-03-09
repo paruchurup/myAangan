@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ServiceDirectoryService } from '../../../core/services/service-directory.service';
-import { Category } from '../../../core/models/service.model';
+import { ServiceDirectoryService } from '@services/service-directory.service';
+import { Category } from '@models/service.model';
 
 @Component({
   selector: 'app-categories',
@@ -13,9 +13,11 @@ import { Category } from '../../../core/models/service.model';
     <div class="page">
 
       <div class="page-header">
-        <button class="back-btn" routerLink="/dashboard">← Back</button>
-        <h1>⚙️ Manage Categories</h1>
-        <p>Add or remove service categories</p>
+        <div class="header-row">
+          <a class="back-btn" routerLink="/dashboard">← Back</a>
+        </div>
+        <h1>📂 Service Categories</h1>
+        <p>Manage service directory categories</p>
       </div>
 
       <!-- Add Category Form -->
@@ -89,16 +91,10 @@ import { Category } from '../../../core/models/service.model';
   styles: [`
     .page { min-height: 100vh; background: #f5f6fa; padding-bottom: 80px; }
 
-    .page-header {
-      background: linear-gradient(135deg, #1a1a2e, #0f3460);
-      padding: 16px 16px 24px; color: white;
-    }
-    .back-btn {
-      background: rgba(255,255,255,0.15); border: none; color: white;
-      padding: 6px 12px; border-radius: 20px; font-size: 13px;
-      cursor: pointer; margin-bottom: 12px; display: inline-block;
-    }
-    .page-header h1 { font-size: 20px; margin: 0 0 4px; }
+    .page-header { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 16px 16px 24px; color: white; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
     .page-header p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
 
     .add-form {

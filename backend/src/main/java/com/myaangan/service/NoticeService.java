@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class NoticeService {
 
     private final NoticeRepository       noticeRepo;
+    private final NotificationService notifSvc;
     private final NoticeReadRepository   readRepo;
     private final NoticeCommentRepository commentRepo;
     private final UserRepository         userRepo;

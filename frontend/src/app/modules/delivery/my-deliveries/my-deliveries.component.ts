@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DeliveryService } from '../../../core/services/delivery.service';
-import { Delivery, OtpGenerateResponse } from '../../../core/models/delivery.model';
+import { DeliveryService } from '@services/delivery.service';
+import { Delivery, OtpGenerateResponse } from '@models/delivery.model';
 
 @Component({
   selector: 'app-my-deliveries',

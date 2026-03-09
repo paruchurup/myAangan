@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NoticeService } from '../../../core/services/notice.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Notice, NOTICE_TYPE_CONFIG } from '../../../core/models/notice.model';
+import { NoticeService } from '@services/notice.service';
+import { AuthService } from '@services/auth.service';
+import { Notice, NOTICE_TYPE_CONFIG } from '@models/notice.model';
 
 @Component({
   selector: 'app-notice-feed',
@@ -40,18 +40,13 @@ import { Notice, NOTICE_TYPE_CONFIG } from '../../../core/models/notice.model';
     </div>
   </div>
 
-  <div class="masthead">
-    <div class="masthead-left">
-      <div class="masthead-tag">SOCIETY BULLETIN</div>
-      <h1 class="masthead-title">Notices &amp;<br>Announcements</h1>
-    </div>
-    <div class="masthead-right">
-      <div class="unread-badge" *ngIf="unreadCount > 0">
-        <span class="unread-n">{{ unreadCount }}</span>
-        <span class="unread-l">unread</span>
-      </div>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
       <a routerLink="/notices/manage" class="post-btn" *ngIf="canManage">+ Post</a>
     </div>
+    <h1>📢 Notices</h1>
+    <p>Community announcements and updates</p>
   </div>
 
   <div class="filter-strip">
@@ -206,14 +201,12 @@ import { Notice, NOTICE_TYPE_CONFIG } from '../../../core/models/notice.model';
     .ac-view:hover{border-bottom-color:#c9a84c}
     .ac-close{position:absolute;top:8px;right:8px;background:none;border:none;color:#9ca3af;font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color 0.15s;line-height:1}
     .ac-close:hover{color:#374151}
-    .masthead{background:#1a1a1a;padding:24px 20px 20px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #c9a84c}
-    .masthead-tag{font-size:10px;letter-spacing:3px;color:#c9a84c;text-transform:uppercase;margin-bottom:6px}
-    .masthead-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:#faf8f4;margin:0;line-height:1.1}
-    .masthead-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-    .unread-badge{display:flex;flex-direction:column;align-items:center;background:#c9a84c;border-radius:8px;padding:6px 12px;min-width:48px}
-    .unread-n{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#1a1a1a;line-height:1}
-    .unread-l{font-size:9px;color:#1a1a1a;text-transform:uppercase;letter-spacing:1px}
-    .post-btn{background:#c9a84c;color:#1a1a1a;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none}
+    .page-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:16px 16px 24px;color:white}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .back-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .page-header h1{font-size:22px;margin:0 0 4px;font-weight:700}
+    .page-header p{font-size:13px;color:rgba(255,255,255,0.7);margin:0}
+    .post-btn{background:rgba(255,255,255,0.15);color:white;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none}
     .filter-strip{display:flex;gap:0;overflow-x:auto;background:#1a1a1a;border-bottom:2px solid #333;padding:0 12px}
     .fc{background:none;border:none;color:#666;padding:10px 12px;font-size:11px;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;font-family:'Source Serif 4',serif}
     .fc.active{color:#c9a84c;border-bottom-color:#c9a84c}

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ComplaintService } from '../../../core/services/complaint.service';
-import { Complaint, STATUS_CONFIG } from '../../../core/models/complaint.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { ComplaintService } from '@services/complaint.service';
+import { Complaint, STATUS_CONFIG } from '@models/complaint.model';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-president-dashboard',
