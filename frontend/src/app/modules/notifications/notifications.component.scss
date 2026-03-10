@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
 
 .page {
   min-height: 100vh;
@@ -35,7 +35,7 @@
   color: white;
   padding: 7px 12px;
   border-radius: 7px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   cursor: pointer;
 }
@@ -51,7 +51,7 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .notif-empty-title {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   margin: 0;
 }
@@ -83,7 +83,7 @@
 }
 
 .ni-title {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: #e8e8e8;
@@ -96,7 +96,7 @@
   color: #9ca3af;
   padding: 8px 16px;
   border-radius: 7px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   cursor: pointer;
   &:disabled { opacity: 0.4; cursor: not-allowed; }

@@ -44,7 +44,7 @@
 
     <div class="flex justify-center py-[30px]" *ngIf="billsLoading"><div class="spinner"></div></div>
     <div class="text-center py-10 px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!billsLoading && !bills.length">
-      <div class="text-[36px]">📋</div><p class="text-base" style="font-family:'Oswald',sans-serif">No bills for this month</p>
+      <div class="text-[36px]">📋</div><p class="text-base" style="font-family:'Poppins',sans-serif">No bills for this month</p>
       <small class="text-xs">Tap "Generate Bills" to create bills for all active flats</small>
     </div>
 
@@ -75,7 +75,7 @@
     <div class="text-xs text-[#6b7280] bg-[#252525] border border-[#333] rounded-md py-2 px-3">Flats with 2 or more unpaid bills</div>
     <div class="flex justify-center py-[30px]" *ngIf="defLoading"><div class="spinner"></div></div>
     <div class="text-center py-10 px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!defLoading && !defaulters.length">
-      <div class="text-[36px]">🎉</div><p class="text-base" style="font-family:'Oswald',sans-serif">No defaulters</p><small class="text-xs">All flats are up to date</small>
+      <div class="text-[36px]">🎉</div><p class="text-base" style="font-family:'Poppins',sans-serif">No defaulters</p><small class="text-xs">All flats are up to date</small>
     </div>
     <div class="flex items-center gap-3 bg-[#252525] border border-[rgba(239,68,68,0.2)] border-l-4 border-l-[#ef4444] rounded-lg py-[10px] px-[14px]" *ngFor="let d of defaulters; let i = index">
       <div class="def-rank">{{ i + 1 }}</div>

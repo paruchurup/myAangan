@@ -17,11 +17,12 @@
 
     <section *ngIf="activePolls.length">
       <div class="flex items-center gap-2 mb-[10px]">
-        <h2 class="text-[#e2e8f0] text-[15px] font-bold m-0">Active</h2>
+        <h2 class="text-[#1a1a2e] text-[15px] font-bold m-0">Active</h2>
         <span class="bc">{{ activePolls.length }}</span>
       </div>
-      <div class="flex flex-col gap-3 mb-6">
-        <a class="card ac" *ngFor="let p of activePolls" [routerLink]="['/polls', p.id]">
+      <div class="flex flex-col gap-3 mb-6 list-rows">
+        <a class="card ac" *ngFor="let p of activePolls; let i = index" [routerLink]="['/polls', p.id]"
+           [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
           <div class="flex items-center gap-2 mb-[10px]">
             <span class="tc">{{ typeIcon(p.type) }} {{ typeLabel(p.type) }}</span>
             <span class="vt" *ngIf="p.hasVoted">✓ Voted</span>
@@ -53,11 +54,12 @@
 
     <section *ngIf="closedPolls.length" style="margin-top:8px">
       <div class="flex items-center gap-2 mb-[10px]">
-        <h2 class="text-[#e2e8f0] text-[15px] font-bold m-0">Completed</h2>
+        <h2 class="text-[#1a1a2e] text-[15px] font-bold m-0">Completed</h2>
         <span class="bc dim">{{ closedPolls.length }}</span>
       </div>
-      <div class="flex flex-col gap-2">
-        <a class="cc" *ngFor="let p of closedPolls" [routerLink]="['/polls', p.id]">
+      <div class="flex flex-col gap-2 list-rows">
+        <a class="cc" *ngFor="let p of closedPolls; let i = index" [routerLink]="['/polls', p.id]"
+           [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
           <span class="tc dim">{{ typeIcon(p.type) }}</span>
           <span class="cq">{{ p.question }}</span>
           <span class="cv">{{ p.totalVoters }} voters</span>

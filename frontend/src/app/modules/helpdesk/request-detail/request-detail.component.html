@@ -10,7 +10,7 @@
   <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
 
   <div class="p-[14px] flex flex-col gap-3" *ngIf="detail">
-    <div class="text-[11px] text-[#4b5563]" style="font-family:'Oswald',sans-serif;letter-spacing:1px">Request #{{ detail.request.id }}</div>
+    <div class="text-[11px] text-[#4b5563]" style="font-family:'Poppins',sans-serif;letter-spacing:1px">Request #{{ detail.request.id }}</div>
     <div class="req-title">{{ detail.request.title }}</div>
     <div class="text-sm text-[#9ca3af] leading-relaxed bg-[#252525] border border-[#333] rounded-lg py-[10px] px-3" *ngIf="detail.request.description">{{ detail.request.description }}</div>
 

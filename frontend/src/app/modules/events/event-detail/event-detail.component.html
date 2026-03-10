@@ -68,9 +68,9 @@
     <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='VOTE'">
       <div class="bg-[#252525] border border-[#333] rounded-[10px] p-[14px] flex flex-col gap-[10px]">
         <div class="flex justify-between items-center">
-          <span class="text-sm font-bold text-[#10b981]" style="font-family:'Oswald',sans-serif">✅ YES: {{ detail.yesVotes }}</span>
+          <span class="text-sm font-bold text-[#10b981]" style="font-family:'Poppins',sans-serif">✅ YES: {{ detail.yesVotes }}</span>
           <span class="text-[11px] text-[#6b7280]">{{ detail.totalVotes }} votes cast</span>
-          <span class="text-sm font-bold text-[#ef4444]" style="font-family:'Oswald',sans-serif">❌ NO: {{ detail.noVotes }}</span>
+          <span class="text-sm font-bold text-[#ef4444]" style="font-family:'Poppins',sans-serif">❌ NO: {{ detail.noVotes }}</span>
         </div>
         <div class="bg-[#1c1c1c] rounded h-2 flex overflow-hidden">
           <div class="bg-[#10b981] transition-all duration-[400ms]" [style.width.%]="detail.totalVotes > 0 ? detail.yesVotes * 100 / detail.totalVotes : 0"></div>
@@ -136,7 +136,7 @@
       </div>
 
       <!-- Contribution list -->
-      <div class="text-[11px] text-[#6b7280]" style="font-family:'Oswald',sans-serif;letter-spacing:1px">💰 Cash Contributions ({{ detail.contributions?.length || 0 }})</div>
+      <div class="text-[11px] text-[#6b7280]" style="font-family:'Poppins',sans-serif;letter-spacing:1px">💰 Cash Contributions ({{ detail.contributions?.length || 0 }})</div>
       <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-3 flex justify-between items-center" *ngFor="let c of detail.contributions">
         <div class="text-sm text-[#e8e8e8]">{{ c.resident?.firstName }} {{ c.resident?.lastName }} <span class="text-[11px] text-[#6b7280]">· {{ c.resident?.flatNumber }}</span></div>
         <div class="text-sm font-semibold" [class.text-\[\#f59e0b\]]="!c.confirmed" [class.text-\[\#10b981\]]="c.confirmed" style="font-family:'IBM Plex Mono',monospace">₹{{ c.amount | number:'1.0-0' }} {{ !c.confirmed ? '(pending)' : '' }}</div>
@@ -210,13 +210,13 @@
     <!-- ── SETTLEMENT ─────────────────────────────────────────────── -->
     <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='SETTLE'">
       <div class="bg-[#252525] border border-[#333] rounded-[10px] overflow-hidden">
-        <div class="flex justify-between py-2 px-[14px] text-[10px] text-[#6b7280] border-b border-[#1c1c1c]" style="font-family:'Oswald',sans-serif;letter-spacing:1px"><span>Item</span><span>Amount</span></div>
+        <div class="flex justify-between py-2 px-[14px] text-[10px] text-[#6b7280] border-b border-[#1c1c1c]" style="font-family:'Poppins',sans-serif;letter-spacing:1px"><span>Item</span><span>Amount</span></div>
         <div class="flex justify-between py-[10px] px-[14px] text-sm border-b border-[#1c1c1c] text-[#10b981]"><span>Total Contributions</span><span>₹{{ detail.raised | number:'1.2-2' }}</span></div>
         <div class="flex justify-between py-[10px] px-[14px] text-sm border-b border-[#1c1c1c] text-[#ef4444]"><span>Total Expenses</span><span>₹{{ detail.spent | number:'1.2-2' }}</span></div>
         <div class="flex justify-between py-[10px] px-[14px] text-sm font-bold bg-[#1c1c1c]"
           [class.text-\[\#10b981\]]="detail.raised - detail.spent >= 0"
           [class.text-\[\#ef4444\]]="detail.raised - detail.spent < 0"
-          style="font-family:'Oswald',sans-serif;font-size:14px">
+          style="font-family:'Poppins',sans-serif;font-size:14px">
           <span>{{ detail.raised - detail.spent >= 0 ? 'Surplus' : 'Deficit' }}</span>
           <span>₹{{ Math.abs(detail.raised - detail.spent) | number:'1.2-2' }}</span>
         </div>

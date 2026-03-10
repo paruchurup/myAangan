@@ -1,135 +1,123 @@
 <div class="page">
   <div class="page-header">
-    <div class="flex justify-between items-center mb-[12px]">
+    <div class="header-row">
       <a class="back-btn" routerLink="/polls">← Back</a>
     </div>
     <h1>🗳️ Create Poll</h1>
     <p>Start a new community vote</p>
   </div>
 
-  <div class="flex flex-col gap-[14px] p-[14px]">
-    <!-- Step 1: Basic -->
-    <div class="card">
-      <h2>1 · The Question</h2>
-      <label>Question *</label>
-      <textarea [(ngModel)]="q.question" rows="2" placeholder="What would you like to ask residents?" maxlength="300"></textarea>
-      <span class="hint">{{ q.question.length }}/300</span>
+  <div class="form-wrap">
 
-      <label>Background / Context</label>
-      <textarea [(ngModel)]="q.description" rows="3" placeholder="Optional: provide context to help residents vote informedly…" maxlength="1000"></textarea>
+    <!-- Question -->
+    <div class="form-section">
+      <div class="form-section-title">1 · The Question</div>
+      <div class="field">
+        <label>Question *</label>
+        <textarea [(ngModel)]="q.question" rows="2" placeholder="What would you like to ask residents?" maxlength="300"></textarea>
+        <span class="opt" style="text-align:right">{{ q.question.length }}/300</span>
+      </div>
+      <div class="field">
+        <label>Background / Context</label>
+        <textarea [(ngModel)]="q.description" rows="3" placeholder="Optional: provide context to help residents vote informedly…" maxlength="1000"></textarea>
+      </div>
     </div>
 
-    <!-- Step 2: Type -->
-    <div class="card">
-      <h2>2 · Poll Type</h2>
+    <!-- Poll Type -->
+    <div class="form-section">
+      <div class="form-section-title">2 · Poll Type</div>
       <div class="grid grid-cols-2 gap-[10px]">
         <button *ngFor="let t of types" class="type-btn"
           [class.sel]="q.type===t.value" (click)="q.type=t.value; resetOptions()">
-          <span class="text-[20px]">{{ t.icon }}</span>
-          <span class="text-[#e2e8f0] text-sm font-bold">{{ t.label }}</span>
-          <span class="text-[#6b7280] text-[11px]">{{ t.desc }}</span>
+          <span style="font-size:20px">{{ t.icon }}</span>
+          <span class="type-label">{{ t.label }}</span>
+          <span class="type-desc">{{ t.desc }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Options (for choice polls) -->
-    <div class="card" *ngIf="q.type==='SINGLE_CHOICE'||q.type==='MULTIPLE_CHOICE'">
-      <h2>3 · Options</h2>
+    <!-- Options (choice polls) -->
+    <div class="form-section" *ngIf="q.type==='SINGLE_CHOICE'||q.type==='MULTIPLE_CHOICE'">
+      <div class="form-section-title">3 · Options</div>
       <div class="flex flex-col gap-2 mb-[10px]">
         <div class="flex gap-2 items-center" *ngFor="let o of options; let i=index">
-          <input class="emoji-in" [(ngModel)]="o.emoji" placeholder="😊" maxlength="2" />
-          <input class="text-in" [(ngModel)]="o.text" [placeholder]="'Option '+(i+1)" maxlength="300" />
-          <button class="rm" (click)="rmOption(i)" [disabled]="options.length<=2">×</button>
+          <input class="opt-emoji" [(ngModel)]="o.emoji" placeholder="😊" maxlength="2" />
+          <input class="opt-text" [(ngModel)]="o.text" [placeholder]="'Option '+(i+1)" maxlength="300" />
+          <button class="opt-rm" (click)="rmOption(i)" [disabled]="options.length<=2">×</button>
         </div>
       </div>
       <button class="add-opt" (click)="addOption()" [disabled]="options.length>=10">+ Add Option</button>
       <div *ngIf="q.type==='MULTIPLE_CHOICE'" class="flex items-center gap-3 mt-3">
-        <label class="m-0 whitespace-nowrap">Max choices per voter</label>
-        <select [(ngModel)]="q.maxChoices" class="w-auto flex-shrink-0">
+        <label style="white-space:nowrap;margin:0">Max choices per voter</label>
+        <select [(ngModel)]="q.maxChoices" style="width:auto;flex-shrink:0">
           <option [value]="0">Unlimited</option>
           <option *ngFor="let n of [2,3,4,5]" [value]="n">{{ n }}</option>
         </select>
       </div>
     </div>
 
-    <!-- Step: Settings -->
-    <div class="card">
-      <h2>⚙️ Settings</h2>
-
+    <!-- Settings -->
+    <div class="form-section">
+      <div class="form-section-title">⚙️ Settings</div>
       <div class="setting-row">
-        <div class="flex flex-col gap-[3px]">
-          <span class="text-[#e2e8f0] text-sm">🔒 Anonymous voting</span>
-          <small class="text-[#4b5563] text-[11px]">Voter names hidden from results</small>
+        <div class="setting-info">
+          <span>🔒 Anonymous voting</span><small>Voter names hidden from results</small>
         </div>
-        <label class="tog">
-          <input type="checkbox" [(ngModel)]="q.anonymous" />
-          <span class="slider"></span>
-        </label>
+        <label class="tog"><input type="checkbox" [(ngModel)]="q.anonymous" /><span class="slider"></span></label>
       </div>
-
       <div class="setting-row">
-        <div class="flex flex-col gap-[3px]">
-          <span class="text-[#e2e8f0] text-sm">🔄 Allow vote change</span>
-          <small class="text-[#4b5563] text-[11px]">Voters can update their vote before close</small>
+        <div class="setting-info">
+          <span>🔄 Allow vote change</span><small>Voters can update their vote before close</small>
         </div>
-        <label class="tog">
-          <input type="checkbox" [(ngModel)]="q.allowVoteChange" />
-          <span class="slider"></span>
-        </label>
+        <label class="tog"><input type="checkbox" [(ngModel)]="q.allowVoteChange" /><span class="slider"></span></label>
       </div>
-
       <div class="setting-row">
-        <div class="flex flex-col gap-[3px]">
-          <span class="text-[#e2e8f0] text-sm">💬 Allow comments</span>
-          <small class="text-[#4b5563] text-[11px]">Residents can discuss the poll</small>
+        <div class="setting-info">
+          <span>💬 Allow comments</span><small>Residents can discuss the poll</small>
         </div>
-        <label class="tog">
-          <input type="checkbox" [(ngModel)]="q.allowComments" />
-          <span class="slider"></span>
-        </label>
+        <label class="tog"><input type="checkbox" [(ngModel)]="q.allowComments" /><span class="slider"></span></label>
       </div>
-
-      <label>Result visibility</label>
-      <select [(ngModel)]="q.resultVisibility">
-        <option value="AFTER_VOTE">After voting — voter sees results immediately</option>
-        <option value="AFTER_CLOSE">After poll closes — hidden until closed</option>
-        <option value="ADMIN_ONLY">Organisers only — never visible to voters</option>
-      </select>
-
-      <label>Target audience</label>
-      <select [(ngModel)]="q.targetBlocks">
-        <option value="">All residents</option>
-        <option *ngFor="let b of blocks" [value]="b">Block {{ b }} only</option>
-      </select>
+      <div class="field" style="margin-top:12px">
+        <label>Result visibility</label>
+        <select [(ngModel)]="q.resultVisibility">
+          <option value="AFTER_VOTE">After voting — voter sees results immediately</option>
+          <option value="AFTER_CLOSE">After poll closes — hidden until closed</option>
+          <option value="ADMIN_ONLY">Organisers only — never visible to voters</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Target audience</label>
+        <select [(ngModel)]="q.targetBlocks">
+          <option value="">All residents</option>
+          <option *ngFor="let b of blocks" [value]="b">Block {{ b }} only</option>
+        </select>
+      </div>
     </div>
 
     <!-- Scheduling -->
-    <div class="card">
-      <h2>📅 Scheduling</h2>
-      <p class="text-xs text-[#4b5563] m-0 mb-3">Leave blank to publish manually. Set dates for auto-publish and auto-close.</p>
-      <div class="grid grid-cols-1 gap-3">
-        <div class="flex flex-col gap-1">
-          <label>Opens at</label>
-          <input type="datetime-local" [(ngModel)]="q.startsAt" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Closes at</label>
-          <input type="datetime-local" [(ngModel)]="q.endsAt" />
-        </div>
+    <div class="form-section">
+      <div class="form-section-title">📅 Scheduling</div>
+      <p style="font-size:12px;color:#888;margin:0 0 12px">Leave blank to publish manually. Set dates for auto-publish and auto-close.</p>
+      <div class="field">
+        <label>Opens at</label>
+        <input type="datetime-local" [(ngModel)]="q.startsAt" />
+      </div>
+      <div class="field">
+        <label>Closes at</label>
+        <input type="datetime-local" [(ngModel)]="q.endsAt" />
       </div>
     </div>
 
-    <!-- Errors -->
-    <div class="err" *ngIf="error">{{ error }}</div>
+    <div class="form-err" *ngIf="error">{{ error }}</div>
 
-    <!-- Actions -->
     <div class="flex gap-[10px]">
-      <button class="save-draft" (click)="submit(false)" [disabled]="submitting">
+      <button class="btn-draft" (click)="submit(false)" [disabled]="submitting">
         {{ submitting ? 'Saving…' : '💾 Save as Draft' }}
       </button>
-      <button class="publish" (click)="submit(true)" [disabled]="submitting||!isValid()">
+      <button class="btn-publish" (click)="submit(true)" [disabled]="submitting||!isValid()">
         {{ submitting ? 'Publishing…' : '▶ Publish Now' }}
       </button>
     </div>
+
   </div>
 </div>

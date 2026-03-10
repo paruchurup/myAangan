@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* MyAangan Global Styles */
 * {
@@ -21,3 +26,204 @@ html {
 @media (max-width: 480px) {
   html { font-size: 15px; }
 }
+
+/* ═══════════════════════════════════════════════════
+   SHARED PAGE LAYOUT
+   ═══════════════════════════════════════════════════ */
+
+.page {
+  min-height: 100vh;
+  background: #f5f6fa;
+  padding-bottom: 80px;
+  color: #212121;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  padding: 16px 16px 24px;
+  color: white;
+}
+.page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+.page-header p  { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.new-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   SHARED FORM STYLES
+   ═══════════════════════════════════════════════════ */
+
+/* Outer form padding container */
+.form-wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* White card section inside a form */
+.form-section {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.form-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 14px;
+}
+
+/* Field group (label + input) */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.field:last-child { margin-bottom: 0; }
+
+/* Labels */
+.form-wrap label,
+.form-section label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Inputs, textareas, selects — scoped to avoid leaking to nav/other UI */
+.form-wrap input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.form-wrap textarea,
+.form-wrap select,
+.form-section input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.form-section textarea,
+.form-section select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+  background: white;
+  box-sizing: border-box;
+  color: #1a1a2e;
+  font-family: inherit;
+}
+
+.form-wrap input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,
+.form-wrap textarea:focus,
+.form-wrap select:focus,
+.form-section input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,
+.form-section textarea:focus,
+.form-section select:focus {
+  border-color: #0f3460;
+}
+
+.form-wrap textarea,
+.form-section textarea { resize: vertical; }
+
+/* Optional label suffix */
+.opt { font-weight: 400; color: #999; font-size: 12px; }
+
+/* Field-level validation error */
+.field-err {
+  color: #dc2626;
+  font-size: 12px;
+  display: block;
+}
+
+/* Legacy alias used in log-delivery */
+.err { color: #dc2626; font-size: 12px; display: block; }
+
+/* Form-level error / success banners */
+.form-err,
+.err-banner {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #991b1b;
+}
+
+.form-success {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #166534;
+}
+
+/* Primary submit button */
+.btn-submit {
+  width: 100%;
+  background: #0f3460;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════════
+   ALTERNATING LIST ROW COLORS
+   Add class="list-rows" to the parent container of any list
+   ═══════════════════════════════════════════════════ */
+.list-rows > *:nth-child(odd)  { background: #ffffff !important; }
+.list-rows > *:nth-child(even) { background: #f0f5ff !important; }
+/* Table rows */
+.list-rows tbody tr:nth-child(even) td { background: #f0f5ff; }
+
+/* ═══════════════════════════════════════════════════
+   SHARED LOADING / SPINNER
+   ═══════════════════════════════════════════════════ */
+
+.loading { display: flex; justify-content: center; padding: 60px; }
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #eee;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: _spin 0.8s linear infinite;
+}
+
+@keyframes _spin { to { transform: rotate(360deg); } }

@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit {
       this.isAdmin     = user?.role === 'ADMIN';
       this.isVisitor   = user?.role === 'VISITOR';
       // All flags now derived from permissions — no hardcoded role lists
-      this.isResident  = this.auth.canAny('DELIVERY_VIEW_OWN', 'COMPLAINT_VIEW_OWN');
+      this.isResident  = this.auth.can('DELIVERY_VIEW_OWN') && this.auth.can('COMPLAINT_VIEW_OWN');
       this.isGuard     = this.auth.canAny('DELIVERY_LOG', 'DELIVERY_VIEW_ALL');
       this.isFm        = this.auth.can('COMPLAINT_MANAGE');
       this.isBm        = this.auth.can('COMPLAINT_ESCALATE');

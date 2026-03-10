@@ -1,125 +1,129 @@
 
-    <div class="min-h-screen pb-20">
-      <div class="min-h-screen pb-20 -header">
-        <div class="flex justify-between items-center mb-3">
-          <button class="cursor-pointer text-[13px] text-white rounded-[20px]" routerLink="/dashboard">← Back</button>
-          <a routerLink="/delivery/preferences" class="no-underline text-[13px] text-white rounded-[20px]">⚙️ Preferences</a>
-        </div>
-        <h1>📦 My Deliveries</h1>
-        <p>Track parcels and packages at the gate</p>
+<div class="page">
+
+  <div class="page-header">
+    <div class="header-row">
+      <button class="back-btn" routerLink="/dashboard">← Back</button>
+      <a routerLink="/delivery/preferences" class="prefs-btn">⚙️ Preferences</a>
+    </div>
+    <h1>📦 My Deliveries</h1>
+    <p>Track parcels and packages at the gate</p>
+  </div>
+
+  <div class="pending-banner" *ngIf="pendingDeliveries.length > 0">
+    <div class="banner-icon">🔔</div>
+    <div class="banner-text">
+      <strong>{{ pendingDeliveries.length }} delivery{{ pendingDeliveries.length > 1 ? 'ies' : '' }} waiting at the gate!</strong>
+      <span>Please collect at your earliest convenience</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+      🔔 Pending
+      <span class="badge" *ngIf="pendingDeliveries.length > 0">{{ pendingDeliveries.length }}</span>
+    </button>
+    <button class="tab" [class.active]="activeTab === 'history'" (click)="loadHistory()">📋 History</button>
+  </div>
+
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
+
+  <!-- Pending tab -->
+  <div class="list list-rows" *ngIf="!loading && activeTab === 'pending'">
+    <div class="empty-state" *ngIf="pendingDeliveries.length === 0">
+      <div class="empty-icon">✅</div>
+      <p>No pending deliveries — all caught up!</p>
+    </div>
+
+    <div class="delivery-card" *ngFor="let d of pendingDeliveries; let i = index"
+         [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
+      <div class="card-top">
+        <span class="type-lbl">{{ d.deliveryTypeLabel }}</span>
+        <span class="time-lbl">{{ d.createdAt | date:'h:mm a, MMM d' }}</span>
       </div>
 
-      <div class="flex items-center gap-3" *ngIf="pendingDeliveries.length > 0">
-        <div class="text-[28px]">🔔</div>
-        <div class="banner-text">
-          <strong>{{ pendingDeliveries.length }} delivery{{ pendingDeliveries.length > 1 ? 'ies' : '' }} waiting at the gate!</strong>
-          <span>Please collect at your earliest convenience</span>
-        </div>
+      <div class="detail-rows">
+        <div class="detail-row" *ngIf="d.senderName"><span>From</span><strong>{{ d.senderName }}</strong></div>
+        <div class="detail-row" *ngIf="d.description"><span>Item</span><strong>{{ d.description }}</strong></div>
+        <div class="detail-row"><span>Status</span><strong class="status" [class]="d.status.toLowerCase()">{{ d.statusLabel }}</strong></div>
+        <div class="detail-row"><span>Logged by</span><strong>{{ d.loggedByName }}</strong></div>
       </div>
 
-      <div class="flex bg-white">
-        <button class="flex justify-center items-center flex-1 cursor-pointer font-semibold text-sm p-[14px] gap-[6px] bg-transparent text-[#888]" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
-          🔔 Pending
-          <span class="flex justify-center items-center font-bold text-[11px] text-white rounded-full" *ngIf="pendingDeliveries.length > 0">{{ pendingDeliveries.length }}</span>
-        </button>
-        <button class="flex justify-center items-center flex-1 cursor-pointer font-semibold text-sm p-[14px] gap-[6px] bg-transparent text-[#888]" [class.active]="activeTab === 'history'" (click)="loadHistory()">📋 History</button>
+      <!-- OTP guard-generated -->
+      <div class="otp-guard-display" *ngIf="d.otpPending && d.otpInitiatedBy === 'GUARD'">
+        <div class="otp-label">Guard has generated an OTP. Enter it on the guard's screen:</div>
+        <div class="otp-hint">Ask the guard to show you their screen to verify</div>
       </div>
 
-      <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="rounded-full"></div></div>
+      <!-- Action section -->
+      <div class="action-section">
 
-      <!-- Pending tab -->
-      <div class="flex flex-col gap-[10px]" *ngIf="!loading && activeTab === 'pending'">
-        <div class="text-center" *ngIf="pendingDeliveries.length === 0">
-          <div class="text-5xl mb-3">✅</div>
-          <p>No pending deliveries — all caught up!</p>
-        </div>
+        <!-- Default: collect + OTP buttons -->
+        <ng-container *ngIf="activeDeliveryId !== d.id">
+          <div class="note-input">
+            <input type="text" [(ngModel)]="notes[d.id]" placeholder="Add note (e.g. Wife will collect)" />
+          </div>
+          <div class="action-btns">
+            <button class="btn-collect" (click)="markCollected(d)">✅ I'll Collect It</button>
+            <button class="btn-otp" (click)="startOtp(d)">🔑 Generate OTP</button>
+          </div>
+        </ng-container>
 
-        <div class="p-[14px] bg-white rounded-[14px]" *ngFor="let d of pendingDeliveries">
-          <div class="flex justify-between items-center mb-[10px]">
-            <span class="font-semibold text-sm text-[#1a1a2e]">{{ d.deliveryTypeLabel }}</span>
-            <span class="text-xs text-[#aaa]">{{ d.createdAt | date:'h:mm a, MMM d' }}</span>
+        <!-- OTP panel -->
+        <div class="otp-panel" *ngIf="activeDeliveryId === d.id">
+          <div class="otp-panel-header">
+            <span>🔑 OTP for Gate Collection</span>
+            <button class="cancel-btn" (click)="cancelOtp()">✕</button>
           </div>
 
-          <div class="flex flex-col mb-3">
-            <div class="flex justify-between text-[13px]" *ngIf="d.senderName"><span>From</span><strong>{{ d.senderName }}</strong></div>
-            <div class="flex justify-between text-[13px]" *ngIf="d.description"><span>Item</span><strong>{{ d.description }}</strong></div>
-            <div class="flex justify-between text-[13px]"><span>Status</span><strong class="status" [class]="d.status.toLowerCase()">{{ d.statusLabel }}</strong></div>
-            <div class="flex justify-between text-[13px]"><span>Logged by</span><strong>{{ d.loggedByName }}</strong></div>
-          </div>
+          <!-- Before generating -->
+          <ng-container *ngIf="!currentOtp || currentOtp.deliveryId !== d.id">
+            <p class="otp-info">Generate a one-time code. Show it to the guard to confirm your parcel is collected.</p>
+            <button class="btn-generate" (click)="generateOtp(d)" [disabled]="generatingOtp">
+              {{ generatingOtp ? 'Generating...' : '🎲 Generate OTP' }}
+            </button>
+          </ng-container>
 
-          <!-- OTP guard-generated — show code to enter on guard's screen -->
-          <div class="text-[13px] mb-[10px] text-[#5b21b6] rounded-lg" *ngIf="d.otpPending && d.otpInitiatedBy === 'GUARD'">
-            <div class="font-semibold mb-1">Guard has generated an OTP. Enter it on the guard's screen:</div>
-            <div class="text-xs opacity-80">Ask the guard to show you their screen to verify</div>
-          </div>
-
-          <!-- Action section -->
-          <div class="action-section">
-
-            <!-- Default: collect + OTP buttons -->
-            <ng-container *ngIf="activeDeliveryId !== d.id">
-              <div class="mb-2">
-                <input type="text" [(ngModel)]="notes[d.id]" placeholder="Add note (e.g. Wife will collect)" />
-              </div>
-              <div class="flex gap-2">
-                <button class="text-white" (click)="markCollected(d)">✅ I'll Collect It</button>
-                <button class="flex-1 cursor-pointer font-semibold text-[13px] p-[11px] text-[#5b21b6] rounded-[10px]" (click)="startOtp(d)">🔑 Generate OTP</button>
-              </div>
-            </ng-container>
-
-            <!-- OTP generation screen for resident -->
-            <div class="p-4 text-white rounded-[14px]" *ngIf="activeDeliveryId === d.id">
-              <div class="p-4 text-white rounded-[14px] -header">
-                <span>🔑 OTP for Gate Collection</span>
-                <button class="flex justify-center items-center cursor-pointer text-sm text-white rounded-full" (click)="cancelOtp()">✕</button>
-              </div>
-
-              <!-- Before generating -->
-              <ng-container *ngIf="!currentOtp || currentOtp.deliveryId !== d.id">
-                <p class="text-[13px]">Generate a one-time code. Show it to the guard to confirm your parcel is collected.</p>
-                <button class="cursor-pointer w-full font-semibold text-[15px] p-3 text-white rounded-[10px]" (click)="generateOtp(d)" [disabled]="generatingOtp">
-                  {{ generatingOtp ? 'Generating...' : '🎲 Generate OTP' }}
-                </button>
-              </ng-container>
-
-              <!-- After generating — large code display -->
-              <div class="text-center" *ngIf="currentOtp && currentOtp.deliveryId === d.id">
-                <div class="text-center -label">Show this code to the guard:</div>
-                <div class="font-[900] text-[52px] mb-3 text-white">{{ currentOtp.otp }}</div>
-                <div class="mb-3">
-                  <span class="text-sm text-[#86efac]" [class.urgent]="otpCountdown < 60">
-                    ⏱ Expires in {{ formatCountdown(otpCountdown) }}
-                  </span>
-                </div>
-                <button class="cursor-pointer text-[13px] text-white rounded-[10px]" (click)="generateOtp(d)" [disabled]="generatingOtp">
-                  🔄 Regenerate
-                </button>
-              </div>
+          <!-- After generating -->
+          <div class="otp-display" *ngIf="currentOtp && currentOtp.deliveryId === d.id">
+            <div class="otp-display-label">Show this code to the guard:</div>
+            <div class="otp-big-code">{{ currentOtp.otp }}</div>
+            <div class="otp-expire-row">
+              <span class="otp-countdown" [class.urgent]="otpCountdown < 60">
+                ⏱ Expires in {{ formatCountdown(otpCountdown) }}
+              </span>
             </div>
+            <button class="btn-regen" (click)="generateOtp(d)" [disabled]="generatingOtp">
+              🔄 Regenerate
+            </button>
+          </div>
+        </div>
 
-          </div>
-        </div>
-      </div>
-
-      <!-- History tab -->
-      <div class="flex flex-col gap-[10px]" *ngIf="!loading && activeTab === 'history'">
-        <div class="text-center" *ngIf="history.length === 0">
-          <div class="text-5xl mb-3">📭</div><p>No delivery history yet</p>
-        </div>
-        <div class="p-[14px] bg-white rounded-[14px] history-card" *ngFor="let d of history">
-          <div class="flex justify-between items-center mb-[10px]">
-            <span class="font-semibold text-sm text-[#1a1a2e]">{{ d.deliveryTypeLabel }}</span>
-            <span class="status- flex justify-center items-center font-bold text-[11px] text-white rounded-full" [class]="d.status.toLowerCase()">{{ d.statusLabel }}</span>
-          </div>
-          <div class="flex flex-col mb-3">
-            <div class="flex justify-between text-[13px]" *ngIf="d.senderName"><span>From</span><strong>{{ d.senderName }}</strong></div>
-            <div class="flex justify-between text-[13px]" *ngIf="d.description"><span>Item</span><strong>{{ d.description }}</strong></div>
-            <div class="flex justify-between text-[13px]"><span>Arrived</span><strong>{{ d.createdAt | date:'MMM d, h:mm a' }}</strong></div>
-            <div class="flex justify-between text-[13px]" *ngIf="d.collectedAt"><span>Collected</span><strong>{{ d.collectedAt | date:'MMM d, h:mm a' }}</strong></div>
-            <div class="flex justify-between text-[13px]" *ngIf="d.collectedBy"><span>By</span><strong>{{ d.collectedBy }}</strong></div>
-            <div class="flex justify-between text-[13px]" *ngIf="d.otpVerified"><span>Verified</span><strong>🔑 OTP verified</strong></div>
-          </div>
-        </div>
       </div>
     </div>
-  
+  </div>
+
+  <!-- History tab -->
+  <div class="list list-rows" *ngIf="!loading && activeTab === 'history'">
+    <div class="empty-state" *ngIf="history.length === 0">
+      <div class="empty-icon">📭</div>
+      <p>No delivery history yet</p>
+    </div>
+    <div class="delivery-card history-card" *ngFor="let d of history; let i = index"
+         [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
+      <div class="card-top">
+        <span class="type-lbl">{{ d.deliveryTypeLabel }}</span>
+        <span class="status-badge" [class]="d.status.toLowerCase()">{{ d.statusLabel }}</span>
+      </div>
+      <div class="detail-rows">
+        <div class="detail-row" *ngIf="d.senderName"><span>From</span><strong>{{ d.senderName }}</strong></div>
+        <div class="detail-row" *ngIf="d.description"><span>Item</span><strong>{{ d.description }}</strong></div>
+        <div class="detail-row"><span>Arrived</span><strong>{{ d.createdAt | date:'MMM d, h:mm a' }}</strong></div>
+        <div class="detail-row" *ngIf="d.collectedAt"><span>Collected</span><strong>{{ d.collectedAt | date:'MMM d, h:mm a' }}</strong></div>
+        <div class="detail-row" *ngIf="d.collectedBy"><span>By</span><strong>{{ d.collectedBy }}</strong></div>
+        <div class="detail-row" *ngIf="d.otpVerified"><span>Verified</span><strong>🔑 OTP verified</strong></div>
+      </div>
+    </div>
+  </div>
+
+</div>

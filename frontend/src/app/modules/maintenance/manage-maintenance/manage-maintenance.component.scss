@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
 .back-btn {
   background: rgba(255,255,255,0.15);
@@ -20,7 +20,7 @@
   color: #6b7280;
   padding: 11px 4px;
   font-size: 11px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   letter-spacing: 0.3px;
   cursor: pointer;
   white-space: nowrap;
@@ -43,7 +43,7 @@
   justify-content: center;
 }
 .month-label {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: #fff;
@@ -54,7 +54,7 @@
   color: #fff;
   padding: 7px 12px;
   border-radius: 6px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -64,7 +64,7 @@
 .gen-btn:disabled { opacity: 0.4; }
 
 .sv {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #fff;
@@ -86,7 +86,7 @@
 }
 .status-pill {
   font-size: 10px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: 700;
@@ -99,12 +99,12 @@
   border-radius: 5px;
   font-size: 10px;
   cursor: pointer;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .waive-btn:hover { border-color: #a78bfa; color: #a78bfa; }
 
 .def-rank {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   color: #4b5563;
   font-weight: 700;
@@ -121,7 +121,7 @@
   border: 1px solid rgba(239,68,68,0.3);
   color: #f87171;
   font-size: 11px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   padding: 3px 8px;
   border-radius: 8px;
   font-weight: 700;
@@ -136,7 +136,7 @@
   border-radius: 6px;
 }
 .summary-row.header-row {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 10px;
   color: #6b7280;
   letter-spacing: 1px;
@@ -145,7 +145,7 @@
 .summary-row.alt { background: #252525; }
 
 .cfg-section {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 10px;
   color: #10b981;
   letter-spacing: 2px;
@@ -159,7 +159,7 @@ label {
   color: #6b7280;
   letter-spacing: 1px;
   text-transform: uppercase;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 input {
   background: #1c1c1c;
@@ -182,7 +182,7 @@ small { font-size: 10px; color: #4b5563; }
   color: #fff;
   padding: 12px;
   border-radius: 7px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -201,7 +201,7 @@ small { font-size: 10px; color: #4b5563; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .modal-title {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   color: #fff;
   font-weight: 700;
@@ -230,7 +230,7 @@ small { font-size: 10px; color: #4b5563; }
   color: #6b7280;
   padding: 10px;
   border-radius: 7px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   cursor: pointer;
 }
@@ -240,7 +240,7 @@ small { font-size: 10px; color: #4b5563; }
   color: #111;
   padding: 10px;
   border-radius: 7px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;

@@ -39,8 +39,9 @@
           <th class="bg-[#1a237e] text-white py-[14px] px-4 text-left text-[13px]">Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr class="hover:bg-[#f8f9ff]" *ngFor="let user of filteredUsers">
+      <tbody class="list-rows">
+        <tr *ngFor="let user of filteredUsers; let i = index"
+            [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
           <td class="py-3 px-4 border-b border-[#f0f0f0] text-[13px]"><strong>{{ user.firstName }} {{ user.lastName }}</strong></td>
           <td class="py-3 px-4 border-b border-[#f0f0f0] text-[13px]">{{ user.email }}</td>
           <td class="py-3 px-4 border-b border-[#f0f0f0] text-[13px]"><span class="badge role">{{ user.role }}</span></td>

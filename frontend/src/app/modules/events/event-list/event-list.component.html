@@ -20,8 +20,9 @@
     <small *ngIf="canCreate">Tap "+ New Event" to create the first one</small>
   </div>
 
-  <div class="flex flex-col gap-[10px] p-[12px_14px]">
-    <a class="event-card" [routerLink]="['/events', e.id]" *ngFor="let e of displayEvents">
+  <div class="flex flex-col gap-[10px] p-[12px_14px] list-rows">
+    <a class="event-card" [routerLink]="['/events', e.id]" *ngFor="let e of displayEvents; let i = index"
+       [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
       <div class="w-[5px] flex-shrink-0" [style.background]="statusCfg[e.status]?.color"></div>
       <div class="flex-1 p-[12px_14px] flex flex-col gap-[7px]">
         <div class="flex justify-between items-start gap-2">

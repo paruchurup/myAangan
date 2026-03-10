@@ -1,12 +1,33 @@
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #eee;
-  border-top-color: #0f3460;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+/* Preference row layout */
+.pref-row  { display: flex; gap: 14px; align-items: flex-start; }
+.pref-icon { font-size: 22px; padding-top: 2px; flex-shrink: 0; }
+.pref-hint { font-size: 12px; color: #999; margin: 0 0 10px; }
+.char-count { font-size: 11px; color: #ccc; text-align: right; margin-top: 4px; }
+
+/* DND time row */
+.dnd-row   { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dnd-label { font-size: 13px; color: #888; }
+.dnd-arrow { font-size: 16px; color: #ccc; }
+.time-input { width: auto !important; padding: 8px 10px !important; font-size: 14px !important; }
+.dnd-clear {
+  background: #fee2e2; border: none; color: #991b1b;
+  border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* DND status badges */
+.dnd-status  { margin-top: 8px; font-size: 13px; padding: 6px 10px; border-radius: 8px; }
+.dnd-active  { color: #991b1b; background: #fee2e2; }
+.dnd-inactive { color: #166534; background: #dcfce7; }
+
+/* Guard preview section */
+.guard-preview { padding: 0 16px 24px; }
+.guard-preview-title { font-size: 13px; color: #555; margin: 0 0 10px; }
+.guard-preview-card {
+  background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 14px;
 }
+.guard-row {
+  display: flex; gap: 10px; padding: 6px 0;
+  border-bottom: 1px solid #fef3c7; font-size: 13px;
+}
+.guard-row:last-child { border-bottom: none; }
+.guard-key { font-weight: 600; color: #92400e; min-width: 80px; flex-shrink: 0; }

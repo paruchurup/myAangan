@@ -1,1 +1,27 @@
-// All styles converted to Tailwind utility classes
+/* Category buttons */
+.cat-btn {
+  padding: 10px 6px; border: 1.5px solid #e5e7eb; border-radius: 10px;
+  background: white; font-size: 12px; cursor: pointer; text-align: left;
+  transition: all 0.15s; color: #555;
+}
+.cat-btn.selected { background: #0f3460; color: white; border-color: #0f3460; }
+
+/* Char count */
+.char-count { font-size: 11px; color: #ccc; text-align: right; }
+
+/* File upload zone */
+.file-drop {
+  border: 2px dashed #c7d2fe; border-radius: 12px; padding: 24px 16px;
+  text-align: center; cursor: pointer; background: #f8f9ff; transition: all 0.15s;
+  &:hover { border-color: #0f3460; background: #eef2ff; }
+}
+.file-drop-icon  { font-size: 32px; margin-bottom: 8px; }
+.file-drop-label { font-size: 14px; font-weight: 600; color: #3730a3; margin-bottom: 4px; }
+.file-drop-hint  { font-size: 12px; color: #888; }
+
+.file-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.file-item { display: flex; align-items: center; gap: 8px; background: #f8f9ff; border-radius: 8px; padding: 8px 10px; }
+.file-item-icon { font-size: 18px; }
+.file-item-name { flex: 1; font-size: 13px; color: #1a1a2e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item-size { font-size: 11px; color: #888; flex-shrink: 0; }
+.file-item-rm   { background: #fee2e2; border: none; color: #dc2626; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 11px; flex-shrink: 0; }

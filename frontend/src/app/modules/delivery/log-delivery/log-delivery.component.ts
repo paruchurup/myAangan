@@ -25,7 +25,7 @@ export class LogDeliveryComponent implements OnInit {
 
   get f() { return this.form.controls; }
 
-  constructor(private fb: FormBuilder, private svc: DeliveryService) {}
+  constructor(private fb: FormBuilder, private deliveryService: DeliveryService) {}
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -44,7 +44,7 @@ export class LogDeliveryComponent implements OnInit {
     this.residentNotFound = false;
     if (val && val.length >= 1) {
       this.flatTimer = setTimeout(() => {
-        this.svc.searchFlats(val).subscribe({
+        this.deliveryService.searchFlats(val).subscribe({
           next: r => this.flatSuggestions = r.data
         });
       }, 300);
@@ -95,7 +95,7 @@ export class LogDeliveryComponent implements OnInit {
     this.submitError = '';
 
     const v = this.form.value;
-    this.svc.logDelivery({
+    this.deliveryService.logDelivery({
       flatNumber:   v.flatNumber.trim().toUpperCase(),
       block:        v.block?.trim().toUpperCase() || undefined,
       deliveryType: v.deliveryType,

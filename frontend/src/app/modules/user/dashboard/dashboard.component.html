@@ -48,24 +48,20 @@
       <!-- Guard actions -->
       <a routerLink="/delivery/guard" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fde68a]" *ngIf="isGuard">
         <span class="text-[30px]">🚪</span>
-        <span>Gate Log</span>
-      </a>
-      <a routerLink="/delivery/log" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fde68a]" *ngIf="isGuard">
-        <span class="text-[30px]">📦</span>
-        <span>Log Delivery</span>
+        <span>Delivery</span>
       </a>
 
       <!-- Services (non-visitor) -->
-      <a routerLink="/services" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="!isVisitor">
+      <a routerLink="/services" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="!isVisitor && !isGuard">
         <span class="text-[30px]">🔧</span>
         <span>Services</span>
       </a>
 
       <!-- Profile always -->
-      <a routerLink="/profile" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150">
-        <span class="text-[30px]">👤</span>
-        <span>My Profile</span>
-      </a>
+<!--      <a routerLink="/profile" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150">-->
+<!--        <span class="text-[30px]">👤</span>-->
+<!--        <span>My Profile</span>-->
+<!--      </a>-->
 
       <!-- Admin actions -->
       <ng-container *ngIf="isAdmin">
@@ -80,7 +76,7 @@
 
       <!-- Complaint: Raise for Resident & Guard -->
       <a routerLink="/complaints/my"    class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]" *ngIf="isResident||isGuard"><span class="text-[30px]">📢</span><span>My Complaints</span></a>
-      <a routerLink="/complaints/raise" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]" *ngIf="isResident||isGuard"><span class="text-[30px]">✏️</span><span>Report Issue</span></a>
+<!--      <a routerLink="/complaints/raise" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]" *ngIf="isResident||isGuard"><span class="text-[30px]">✏️</span><span>Report Issue</span></a>-->
       <a routerLink="/polls" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canPollView"><span class="text-[30px]">🗳️</span><span>Polls &amp; Voting</span></a>
       <a [routerLink]="canVaultUpload ? '/vault/admin' : '/vault'" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canVault"><span class="text-[30px]">📂</span><span>Vault</span></a>
       <a routerLink="/helpdesk" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canHelpdeskRaise"><span class="text-[30px]">🛠️</span><span>Helpdesk</span></a>

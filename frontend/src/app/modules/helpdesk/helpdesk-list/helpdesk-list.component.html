@@ -13,12 +13,13 @@
 
   <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
   <div class="text-center py-[50px] px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && requests.length === 0">
-    <div class="text-[42px]">🛠️</div><p class="text-lg" style="font-family:'Oswald',sans-serif">No requests yet</p>
+    <div class="text-[42px]">🛠️</div><p class="text-lg" style="font-family:'Poppins',sans-serif">No requests yet</p>
     <small class="text-xs">Tap "+ New Request" to raise your first service request</small>
   </div>
 
-  <div class="py-3 px-[14px] flex flex-col gap-[10px]">
-    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests">
+  <div class="py-3 px-[14px] flex flex-col gap-[10px] list-rows">
+    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests; let i = index"
+       [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
       <div class="req-stripe" [style.background]="catCfg[r.category]?.color"></div>
       <div class="flex-1 py-3 px-[14px] flex flex-col gap-[7px]">
         <div class="flex justify-between items-center">

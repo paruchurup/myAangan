@@ -1,34 +1,42 @@
 
-<div class="min-h-screen pb-20 text-[#212121]">
+<div class="page">
 
-  <div class="min-h-screen pb-20 text-[#212121] -header">
-    <div class="flex justify-between items-center mb-3">
-      <a class="inline-flex items-center cursor-pointer no-underline text-[13px] text-white rounded-[20px]" routerLink="/vehicles">← Back</a>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/vehicles">← Back</a>
     </div>
     <h1>🎫 My Parking Passes</h1>
     <p>Your parking pass requests</p>
   </div>
 
+  <!-- Toggle form button -->
+  <div class="flex justify-end px-4 py-3">
+    <button (click)="toggleForm()"
+      class="flex items-center gap-2 bg-[#a78bfa] text-[#111] font-bold text-sm px-4 py-2 rounded-lg cursor-pointer border-none">
+      {{ showForm ? '✕ Cancel' : '＋ New Pass' }}
+    </button>
+  </div>
+
   <!-- ── CREATE FORM ──────────────────────────────────────────────────── -->
-  <div class="flex flex-col p-4 gap-3 rounded-xl" *ngIf="showForm">
-    <div class="uppercase text-[13px] text-[#a78bfa]">New Visitor Pass</div>
+  <div class="form-card" *ngIf="showForm">
+    <div class="form-title">New Visitor Pass</div>
 
     <!-- Pass type toggle -->
-    <div class="grid gap-2">
+    <div class="type-toggle">
       <button [class.active]="form.passType==='ONE_TIME'"  (click)="form.passType='ONE_TIME'">📅 One-Time Visit</button>
       <button [class.active]="form.passType==='STANDING'"  (click)="form.passType='STANDING'">🔄 Standing Pass</button>
     </div>
 
-    <div class="grid gap-[10px]">
-      <div class="flex flex-col gap-1"><label>Visitor Name *</label>
+    <div class="fg2">
+      <div class="field"><label>Visitor Name *</label>
         <input [(ngModel)]="form.visitorName" placeholder="Ravi Kumar" /></div>
-      <div class="flex flex-col gap-1"><label>Phone</label>
+      <div class="field"><label>Phone</label>
         <input [(ngModel)]="form.visitorPhone" placeholder="+91 99999 00000" type="tel" /></div>
     </div>
 
-    <div class="flex flex-col gap-1"><label>Purpose</label>
-      <div class="flex flex-wrap gap-[6px]">
-        <button *ngFor="let p of purposes" class="cursor-pointer text-[11px] text-[#9ca3af] rounded-[20px]"
+    <div class="field"><label>Purpose</label>
+      <div class="purpose-chips">
+        <button *ngFor="let p of purposes" class="chip"
           [class.active]="form.purpose===p" (click)="form.purpose=p">{{ p }}</button>
       </div>
       <input [(ngModel)]="form.purpose" placeholder="Or type custom purpose…" style="margin-top:6px" />
@@ -36,80 +44,80 @@
 
     <!-- ONE_TIME fields -->
     <ng-container *ngIf="form.passType==='ONE_TIME'">
-      <div class="flex flex-col gap-1"><label>Visit Date *</label>
+      <div class="field"><label>Visit Date *</label>
         <input type="date" [(ngModel)]="form.validDate" [min]="today" /></div>
-      <div class="grid gap-[10px]">
-        <div class="flex flex-col gap-1"><label>Entry Window — From</label>
+      <div class="fg2">
+        <div class="field"><label>Entry Window — From</label>
           <input type="time" [(ngModel)]="form.windowStart" /></div>
-        <div class="flex flex-col gap-1"><label>Entry Window — To</label>
+        <div class="field"><label>Entry Window — To</label>
           <input type="time" [(ngModel)]="form.windowEnd" /></div>
       </div>
     </ng-container>
 
     <!-- STANDING fields -->
     <ng-container *ngIf="form.passType==='STANDING'">
-      <div class="flex flex-col gap-1"><label>Allowed Days *</label>
-        <div class="grid gap-[5px]">
-          <button *ngFor="let d of dayOptions" class="cursor-pointer text-[11px] text-[#6b7280] rounded-md"
+      <div class="field"><label>Allowed Days *</label>
+        <div class="day-grid">
+          <button *ngFor="let d of dayOptions" class="day-btn"
             [class.active]="isDaySelected(d.num)"
             (click)="toggleDay(d.num)">{{ d.label }}</button>
         </div>
       </div>
-      <div class="grid gap-[10px]">
-        <div class="flex flex-col gap-1"><label>Valid From *</label>
+      <div class="fg2">
+        <div class="field"><label>Valid From *</label>
           <input type="date" [(ngModel)]="form.standingFrom" [min]="today" /></div>
-        <div class="flex flex-col gap-1"><label>Valid Until (leave blank = indefinite)</label>
+        <div class="field"><label>Valid Until (leave blank = indefinite)</label>
           <input type="date" [(ngModel)]="form.standingUntil" [min]="form.standingFrom || today" /></div>
       </div>
-      <div class="grid gap-[10px]">
-        <div class="flex flex-col gap-1"><label>Daily Entry From</label>
+      <div class="fg2">
+        <div class="field"><label>Daily Entry From</label>
           <input type="time" [(ngModel)]="form.windowStart" /></div>
-        <div class="flex flex-col gap-1"><label>Daily Entry Until</label>
+        <div class="field"><label>Daily Entry Until</label>
           <input type="time" [(ngModel)]="form.windowEnd" /></div>
       </div>
     </ng-container>
 
-    <div class="flex flex-col gap-1"><label>Notes for Guard</label>
+    <div class="field"><label>Notes for Guard</label>
       <textarea [(ngModel)]="form.notes" rows="2" placeholder="e.g. Will arrive by car, wearing blue jacket…"></textarea>
     </div>
 
-    <div class="text-xs p-[9px] text-[#f87171] rounded-md" *ngIf="formError">{{ formError }}</div>
-    <button class="cursor-pointer font-bold text-sm p-3 text-[#111] rounded-[7px]" (click)="createPass()" [disabled]="creating">
+    <div class="err" *ngIf="formError">{{ formError }}</div>
+    <button class="submit-btn" (click)="createPass()" [disabled]="creating">
       {{ creating ? 'Generating…' : '🎫 Generate Pass' }}
     </button>
   </div>
 
   <!-- Loading -->
-  <div class="flex justify-center" *ngIf="loading"><div class="rounded-full"></div></div>
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
 
   <!-- Empty -->
-  <div class="flex flex-col items-center text-center gap-2 text-[#4b5563]" *ngIf="!loading && !passes.length && !showForm">
+  <div class="empty" *ngIf="!loading && !passes.length && !showForm">
     <div>🎫</div><p>No visitor passes yet</p>
     <small>Create a pass to pre-approve visitors at the gate</small>
   </div>
 
   <!-- ── PASS CARDS ───────────────────────────────────────────────────── -->
-  <div *ngFor="let pass of passes" class="flex overflow-hidden rounded-xl" [class]="'s-' + pass.status.toLowerCase()">
+  <div *ngFor="let pass of passes" class="pass-card" [class]="'pass-card s-' + pass.status.toLowerCase()">
 
     <!-- Status stripe -->
-    <div class="flex-shrink-0" [class]="'stripe-' + pass.status.toLowerCase()"></div>
+    <div class="stripe" [class]="'stripe-' + pass.status.toLowerCase()"></div>
 
-    <div class="flex flex-col flex-1 gap-[7px]">
+    <div class="pass-body">
 
       <!-- Top row -->
-      <div class="flex justify-between items-center">
-        <div class="font-bold text-lg text-white">{{ pass.visitorName }}</div>
-        <div class="font-bold text-[11px] rounded-[10px]" [style.background]="statusCfg[pass.status]?.bg"
+      <div class="pass-top">
+        <div class="visitor-name">{{ pass.visitorName }}</div>
+        <div class="status-pill" [style.background]="statusCfg[pass.status]?.bg"
              [style.color]="statusCfg[pass.status]?.color">
           {{ statusCfg[pass.status]?.icon }} {{ statusCfg[pass.status]?.label }}
         </div>
       </div>
 
-      <div class="text-xs text-[#9ca3af]" *ngIf="pass.purpose">{{ pass.purpose }}</div>
-      <div class="text-xs text-[#9ca3af]" *ngIf="pass.visitorPhone">📱 {{ pass.visitorPhone }}</div>
+      <div class="pass-purpose" *ngIf="pass.purpose">{{ pass.purpose }}</div>
+      <div class="pass-phone" *ngIf="pass.visitorPhone">📱 {{ pass.visitorPhone }}</div>
 
       <!-- Validity badge -->
-      <div class="font-medium text-xs text-[#c4b5fd]">
+      <div class="validity">
         <span *ngIf="pass.passType==='ONE_TIME'">
           📅 {{ pass.validDate | date:'EEE, d MMM yyyy' }}
           <span *ngIf="pass.windowStart"> · {{ pass.windowStart }} – {{ pass.windowEnd }}</span>
@@ -122,29 +130,29 @@
         </span>
       </div>
 
-      <div class="italic text-xs text-[#6b7280]" *ngIf="pass.notes">💬 {{ pass.notes }}</div>
+      <div class="pass-notes" *ngIf="pass.notes">💬 {{ pass.notes }}</div>
 
       <!-- QR + code (active passes only) -->
-      <div class="flex items-center p-3 mt-1 gap-4 rounded-[10px]" *ngIf="pass.status==='ACTIVE'">
-        <div class="flex-shrink-0 p-[6px] rounded-md">
+      <div class="pass-qr-section" *ngIf="pass.status==='ACTIVE'">
+        <div class="qr-wrap">
           <div [id]="'qr-' + pass.id" class="qr-canvas"></div>
         </div>
-        <div class="flex flex-col gap-1">
-          <div class="text-[10px] text-[#6b7280]">Pass Code</div>
-          <div class="font-bold text-[26px] text-[#a78bfa]">{{ formatCode(pass.token) }}</div>
-          <div class="text-[11px] text-[#4b5563]">Show this to the guard</div>
+        <div class="pass-code-block">
+          <div class="code-label">Pass Code</div>
+          <div class="pass-code">{{ formatCode(pass.token) }}</div>
+          <div class="code-hint">Show this to the guard</div>
         </div>
       </div>
 
       <!-- Log: last check-in -->
-      <div class="text-xs text-[#10b981]" *ngIf="pass.logs?.length">
+      <div class="last-checkin" *ngIf="pass.logs?.length">
         ✅ Last entry: {{ pass.logs[0].checkedInAt | date:'d MMM, h:mm a' }}
-        <span *ngIf="pass.logs[0].checkInStatus==='OVERRIDE'" class="text-[10px] text-[#f59e0b] rounded">OVERRIDE</span>
+        <span *ngIf="pass.logs[0].checkInStatus==='OVERRIDE'" class="override-tag">OVERRIDE</span>
       </div>
 
       <!-- Actions -->
-      <div class="flex mt-[2px] gap-2" *ngIf="pass.status==='ACTIVE'">
-        <button class="cursor-pointer text-[11px] bg-none text-[#6b7280] rounded-md" (click)="cancelPass(pass)"
+      <div class="pass-actions" *ngIf="pass.status==='ACTIVE'">
+        <button class="action-cancel" (click)="cancelPass(pass)"
           [disabled]="cancellingId===pass.id">
           {{ cancellingId===pass.id ? 'Cancelling…' : '✕ Cancel Pass' }}
         </button>

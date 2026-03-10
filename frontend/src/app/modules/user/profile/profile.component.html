@@ -1,65 +1,55 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20">
+<div class="page">
   <div class="page-header">
-    <div class="flex justify-between items-center mb-3">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
-    <h1 class="text-[22px] font-bold m-0 mb-1">👤 My Profile</h1>
-    <p class="text-[13px] text-white/70 m-0">Your account details</p>
+    <h1>👤 My Profile</h1>
+    <p>Your account details</p>
   </div>
 
-  <div class="bg-white rounded-xl p-6 flex items-center gap-5 shadow-md mx-4 mt-4" *ngIf="user">
-    <div class="avatar">{{ user.firstName[0] }}{{ user.lastName[0] }}</div>
-    <div>
-      <h3 class="m-0 mb-1">{{ user.firstName }} {{ user.lastName }}</h3>
-      <p class="m-0 mb-2 text-[#666] text-sm">{{ user.email }}</p>
-      <span class="badge">{{ user.role }}</span>
-      <span class="status-badge" [class.active]="user.status === 'ACTIVE'">{{ user.status }}</span>
+  <!-- Profile summary card -->
+  <div class="form-wrap">
+    <div class="form-section" *ngIf="user">
+      <div class="profile-summary">
+        <div class="avatar">{{ user.firstName[0] }}{{ user.lastName[0] }}</div>
+        <div>
+          <h3 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h3>
+          <p class="profile-email">{{ user.email }}</p>
+          <span class="badge">{{ user.role }}</span>
+          <span class="status-badge" [class.active]="user.status === 'ACTIVE'">{{ user.status }}</span>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Edit Profile Form -->
-  <div class="bg-white rounded-xl p-6 shadow-md m-4">
-    <h3 class="m-0 mb-5 text-[#333]">Edit Profile</h3>
-    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-      <div class="grid grid-cols-2 gap-3">
-        <div class="mb-4">
-          <label class="block font-semibold mb-[5px] text-[#555] text-[13px]">First Name</label>
-          <input formControlName="firstName" />
+    <!-- Edit Profile -->
+    <div class="form-section">
+      <div class="form-section-title">Edit Profile</div>
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="field"><label>First Name</label><input formControlName="firstName" /></div>
+          <div class="field"><label>Last Name</label><input formControlName="lastName" /></div>
         </div>
-        <div class="mb-4">
-          <label class="block font-semibold mb-[5px] text-[#555] text-[13px]">Last Name</label>
-          <input formControlName="lastName" />
-        </div>
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold mb-[5px] text-[#555] text-[13px]">Phone</label>
-        <input formControlName="phone" />
-      </div>
-      <div class="success" *ngIf="profileSuccess">{{ profileSuccess }}</div>
-      <div class="error" *ngIf="profileError">{{ profileError }}</div>
-      <button type="submit" class="btn-primary" [disabled]="savingProfile">
-        {{ savingProfile ? 'Saving...' : 'Save Changes' }}
-      </button>
-    </form>
-  </div>
+        <div class="field"><label>Phone</label><input formControlName="phone" /></div>
+        <div class="form-success" *ngIf="profileSuccess">{{ profileSuccess }}</div>
+        <div class="form-err" *ngIf="profileError">{{ profileError }}</div>
+        <button type="submit" class="btn-submit" [disabled]="savingProfile">
+          {{ savingProfile ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </form>
+    </div>
 
-  <!-- Change Password Form -->
-  <div class="bg-white rounded-xl p-6 shadow-md m-4">
-    <h3 class="m-0 mb-5 text-[#333]">Change Password</h3>
-    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-      <div class="mb-4">
-        <label class="block font-semibold mb-[5px] text-[#555] text-[13px]">Current Password</label>
-        <input type="password" formControlName="currentPassword" />
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold mb-[5px] text-[#555] text-[13px]">New Password</label>
-        <input type="password" formControlName="newPassword" />
-      </div>
-      <div class="success" *ngIf="passwordSuccess">{{ passwordSuccess }}</div>
-      <div class="error" *ngIf="passwordError">{{ passwordError }}</div>
-      <button type="submit" class="btn-secondary" [disabled]="changingPassword">
-        {{ changingPassword ? 'Changing...' : 'Change Password' }}
-      </button>
-    </form>
+    <!-- Change Password -->
+    <div class="form-section">
+      <div class="form-section-title">Change Password</div>
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <div class="field"><label>Current Password</label><input type="password" formControlName="currentPassword" /></div>
+        <div class="field"><label>New Password</label><input type="password" formControlName="newPassword" /></div>
+        <div class="form-success" *ngIf="passwordSuccess">{{ passwordSuccess }}</div>
+        <div class="form-err" *ngIf="passwordError">{{ passwordError }}</div>
+        <button type="submit" class="btn-submit btn-secondary" [disabled]="changingPassword">
+          {{ changingPassword ? 'Changing...' : 'Change Password' }}
+        </button>
+      </form>
+    </div>
   </div>
 </div>

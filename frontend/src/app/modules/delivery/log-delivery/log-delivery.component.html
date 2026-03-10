@@ -1,113 +1,105 @@
 
-    <div class="min-h-screen pb-20">
-      <div class="min-h-screen pb-20 -header">
-        <button class="cursor-pointer text-[13px] mb-3 text-white rounded-[20px]" routerLink="/delivery/guard">← Back</button>
-        <h1>📦 Log New Delivery</h1>
-        <p>Record a delivery arrival at the gate</p>
-      </div>
+<div class="page">
 
-      <div class="form-wrap">
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="page-header">
+    <button class="back-btn" routerLink="/delivery/guard">← Back</button>
+    <h1>📦 Log New Delivery</h1>
+    <p>Record a delivery arrival at the gate</p>
+  </div>
 
-          <!-- Flat Number with autocomplete -->
-          <div class="mb-[18px]">
-            <label>Flat Number *</label>
-            <div class="relative">
-              <input type="text" formControlName="flatNumber"
-                placeholder="e.g. 101 or A-101"
-                autocomplete="off"
-                (input)="onFlatInput()"
-                (blur)="hideSuggestions()" />
-              <div class="overflow-y-auto absolute z-[100] bg-white" *ngIf="flatSuggestions.length > 0">
-                <div class="cursor-pointer text-sm" *ngFor="let s of flatSuggestions"
-                  (mousedown)="$event.preventDefault()"
-                  (click)="selectFlat(s)">
-                  🏠 {{ displayLabel(s) }}
-                </div>
-              </div>
+  <div class="form-wrap">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- Flat Number with autocomplete -->
+      <div class="field">
+        <label>Flat Number *</label>
+        <div class="flat-input-wrap">
+          <input type="text" formControlName="flatNumber"
+            placeholder="e.g. 101 or A-101"
+            autocomplete="off"
+            (input)="onFlatInput()"
+            (blur)="hideSuggestions()" />
+          <div class="suggestions" *ngIf="flatSuggestions.length > 0">
+            <div class="suggestion" *ngFor="let s of flatSuggestions"
+              (mousedown)="$event.preventDefault()"
+              (click)="selectFlat(s)">
+              🏠 {{ displayLabel(s) }}
             </div>
-            <span class="block text-xs mt-1 text-[#dc2626]" *ngIf="f['flatNumber'].touched && f['flatNumber'].errors?.['required']">
-              Flat number is required
-            </span>
-            <!-- Resident resolution feedback -->
-            <div class="text-[13px] mt-[6px] text-[#166534] rounded-lg" *ngIf="residentPreview">
-              ✅ {{ residentPreview }}
-            </div>
-            <div class="text-[13px] mt-[6px] text-[#92400e] rounded-lg" *ngIf="residentNotFound">
-              ⚠️ No resident found for this flat — delivery will still be logged
-            </div>
-          </div>
-
-          <!-- Block (optional) -->
-          <div class="mb-[18px]">
-            <label>Block <span class="font-normal text-xs text-[#999]">(optional)</span></label>
-            <input type="text" formControlName="block" placeholder="e.g. A, B, C" maxlength="5" />
-          </div>
-
-          <!-- Delivery Type -->
-          <div class="mb-[18px]">
-            <label>Delivery Type *</label>
-            <div class="grid gap-2">
-              <button type="button"
-                *ngFor="let t of deliveryTypes"
-                class="cursor-pointer text-center text-[13px] bg-white text-[#555] rounded-[10px]"
-                [class.selected]="f['deliveryType'].value === t.value"
-                (click)="selectType(t.value)">
-                {{ t.label }}
-              </button>
-            </div>
-            <span class="block text-xs mt-1 text-[#dc2626]" *ngIf="f['deliveryType'].touched && f['deliveryType'].errors?.['required']">
-              Please select delivery type
-            </span>
-          </div>
-
-          <!-- Sender Name -->
-          <div class="mb-[18px]">
-            <label>Sender / Company <span class="font-normal text-xs text-[#999]">(optional)</span></label>
-            <input type="text" formControlName="senderName"
-              placeholder="e.g. Amazon, Swiggy, DTDC" />
-          </div>
-
-          <!-- Description -->
-          <div class="mb-[18px]">
-            <label>Description <span class="font-normal text-xs text-[#999]">(optional)</span></label>
-            <input type="text" formControlName="description"
-              placeholder="e.g. 2 boxes, envelope" />
-          </div>
-
-          <div class="block text-xs mt-1 text-[#dc2626] -banner" *ngIf="submitError">{{ submitError }}</div>
-
-          <button type="submit" class="cursor-pointer w-full font-semibold text-base p-[14px] text-white rounded-xl"
-            [disabled]="form.invalid || submitting">
-            {{ submitting ? 'Logging...' : '✅ Log Delivery' }}
-          </button>
-        </form>
-      </div>
-
-      <!-- Success state -->
-      <div class="text-center p-6 bg-white rounded-2xl" *ngIf="lastLogged">
-        <div class="text-5xl mb-2">✅</div>
-        <h3>Delivery Logged!</h3>
-        <div class="mb-5">
-          <div class="flex justify-between text-sm">
-            <span>Flat</span>
-            <strong>{{ lastLogged.block ? lastLogged.block + '-' : '' }}{{ lastLogged.flatNumber }}</strong>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span>Resident</span>
-            <strong>{{ lastLogged.residentFound ? lastLogged.residentName : 'Not found' }}</strong>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span>Type</span>
-            <strong>{{ lastLogged.deliveryTypeLabel }}</strong>
-          </div>
-          <div class="flex justify-between text-sm" *ngIf="lastLogged.senderName">
-            <span>From</span>
-            <strong>{{ lastLogged.senderName }}</strong>
           </div>
         </div>
-        <button class="cursor-pointer w-full font-semibold text-[15px] p-3 text-white rounded-[10px]" (click)="logAnother()">+ Log Another</button>
+        <span class="err" *ngIf="f['flatNumber'].touched && f['flatNumber'].errors?.['required']">
+          Flat number is required
+        </span>
+        <div class="resident-found" *ngIf="residentPreview">✅ {{ residentPreview }}</div>
+        <div class="resident-not-found" *ngIf="residentNotFound">⚠️ No resident found for this flat — delivery will still be logged</div>
       </div>
 
+      <!-- Block (optional) -->
+      <div class="field">
+        <label>Block <span class="opt">(optional)</span></label>
+        <input type="text" formControlName="block" placeholder="e.g. A, B, C" maxlength="5" />
+      </div>
+
+      <!-- Delivery Type -->
+      <div class="field">
+        <label>Delivery Type *</label>
+        <div class="type-grid">
+          <button type="button"
+            *ngFor="let t of deliveryTypes"
+            class="type-btn"
+            [class.selected]="f['deliveryType'].value === t.value"
+            (click)="selectType(t.value)">
+            {{ t.label }}
+          </button>
+        </div>
+        <span class="err" *ngIf="f['deliveryType'].touched && f['deliveryType'].errors?.['required']">
+          Please select delivery type
+        </span>
+      </div>
+
+      <!-- Sender Name -->
+      <div class="field">
+        <label>Sender / Company <span class="opt">(optional)</span></label>
+        <input type="text" formControlName="senderName" placeholder="e.g. Amazon, Swiggy, DTDC" />
+      </div>
+
+      <!-- Description -->
+      <div class="field">
+        <label>Description <span class="opt">(optional)</span></label>
+        <input type="text" formControlName="description" placeholder="e.g. 2 boxes, envelope" />
+      </div>
+
+      <div class="err-banner" *ngIf="submitError">{{ submitError }}</div>
+
+      <button type="submit" class="btn-submit" [disabled]="form.invalid || submitting">
+        {{ submitting ? 'Logging...' : '✅ Log Delivery' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Success state -->
+  <div class="success-card" *ngIf="lastLogged">
+    <div class="success-icon">✅</div>
+    <h3>Delivery Logged!</h3>
+    <div class="success-details">
+      <div class="sd-row">
+        <span>Flat</span>
+        <strong>{{ lastLogged.block ? lastLogged.block + '-' : '' }}{{ lastLogged.flatNumber }}</strong>
+      </div>
+      <div class="sd-row">
+        <span>Resident</span>
+        <strong>{{ lastLogged.residentFound ? lastLogged.residentName : 'Not found' }}</strong>
+      </div>
+      <div class="sd-row">
+        <span>Type</span>
+        <strong>{{ lastLogged.deliveryTypeLabel }}</strong>
+      </div>
+      <div class="sd-row" *ngIf="lastLogged.senderName">
+        <span>From</span>
+        <strong>{{ lastLogged.senderName }}</strong>
+      </div>
     </div>
-  
+    <button class="btn-another" (click)="logAnother()">+ Log Another</button>
+  </div>
+
+</div>

@@ -100,15 +100,16 @@
   <!-- Vehicle list -->
   <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
 
-  <div class="p-[14px] flex flex-col gap-3" *ngIf="!loading">
+  <div class="p-[14px] flex flex-col gap-3 list-rows" *ngIf="!loading">
     <div class="text-center p-[50px_20px]" *ngIf="!vehicles.length">
       <div class="text-[48px] mb-3">🅿️</div>
-      <p class="text-[20px] text-[#9ca3af] m-0 mb-[6px]" style="font-family:'Oswald',sans-serif">No vehicles registered yet</p>
+      <p class="text-[20px] text-[#9ca3af] m-0 mb-[6px]" style="font-family:'Poppins',sans-serif">No vehicles registered yet</p>
       <small class="text-[13px] text-[#4b5563] block mb-5">Register your vehicle to get a parking slot assigned</small>
       <button class="es-btn" (click)="showForm=true">+ Register Now</button>
     </div>
 
-    <div class="vehicle-card" *ngFor="let v of vehicles">
+    <div class="vehicle-card" *ngFor="let v of vehicles; let i = index"
+         [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
       <div class="w-[5px] flex-shrink-0" [style.background]="statusColor(v)"></div>
       <div class="p-[14px] flex-1">
         <div class="flex items-center gap-[10px] mb-2">
@@ -130,7 +131,7 @@
           🅿️ No slot assigned yet —
           <button class="claim-btn" (click)="openClaimForm(v)">Claim your slot</button>
         </div>
-        <div class="text-[12px] text-[#9ca3af] bg-[#333] rounded p-[6px_10px] mb-1" *ngIf="v.adminNote">
+        <div class="text-[12px] text-[#92400e] bg-[#fef3c7] rounded p-[6px_10px] mb-1" *ngIf="v.adminNote">
           📝 {{ v.adminNote }}
         </div>
         <div class="flex justify-between text-[11px] text-[#4b5563] mt-[6px]">

@@ -2,7 +2,7 @@
   <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] px-4 pt-4 pb-6 text-white">
     <div class="flex justify-between items-center mb-3">
       <button class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer" routerLink="/dashboard">← Back</button>
-      <a routerLink="/complaints/raise" class="bg-[#e94560] text-white py-[7px] px-[14px] rounded-full no-underline text-[13px] font-semibold">+ New</a>
+      <a routerLink="/complaints/raise" class="new-btn">+ New</a>
     </div>
     <h1 class="text-[22px] m-0 mb-1">📢 My Complaints</h1>
     <p class="text-[13px] text-white/70 m-0">Track issues you have reported</p>
@@ -13,8 +13,9 @@
     <p class="text-base text-[#555] mb-5">No complaints yet</p>
     <a routerLink="/complaints/raise" class="bg-[#0f3460] text-white py-[10px] px-6 rounded-full no-underline text-sm font-semibold">Report an Issue</a>
   </div>
-  <div class="py-3 px-4 flex flex-col gap-[10px]" *ngIf="!loading&&complaints.length>0">
-    <a class="bg-white rounded-xl p-[14px] shadow-md no-underline block border-l-4 border-[#e5e7eb]" *ngFor="let c of complaints" [routerLink]="['/complaints', c.id]">
+  <div class="py-3 px-4 flex flex-col gap-[10px] list-rows" *ngIf="!loading&&complaints.length>0">
+    <a class="bg-white rounded-xl p-[14px] shadow-md no-underline block border-l-4 border-[#e5e7eb]" *ngFor="let c of complaints; let i = index" [routerLink]="['/complaints', c.id]"
+       [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
       <div class="flex justify-between items-center mb-2">
         <span class="text-[13px] text-[#666]">{{ c.categoryLabel }}</span>
         <span class="text-xs font-semibold py-[3px] px-[10px] rounded-[10px]" [style.background]="statusBg(c.status)" [style.color]="statusColor(c.status)">{{ c.statusLabel }}</span>

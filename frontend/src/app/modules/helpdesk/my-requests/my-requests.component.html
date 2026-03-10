@@ -2,7 +2,7 @@
   <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
     <div class="flex justify-between items-center mb-3">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
-      <button class="raise-btn" routerLink="/helpdesk/raise">+ New</button>
+      <button class="new-btn" routerLink="/helpdesk/raise">+ New</button>
     </div>
     <h1 class="text-[22px] font-bold mb-1 mt-0">🛠️ My Service Requests</h1>
     <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Track your helpdesk service requests</p>
@@ -10,7 +10,7 @@
 
   <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
   <div class="text-center py-[50px] px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && !requests.length">
-    <div class="text-[42px]">🛠️</div><p class="text-lg" style="font-family:'Oswald',sans-serif">No requests yet</p>
+    <div class="text-[42px]">🛠️</div><p class="text-lg" style="font-family:'Poppins',sans-serif">No requests yet</p>
     <small class="text-xs">Tap "+ New" to raise a service request</small>
   </div>
 

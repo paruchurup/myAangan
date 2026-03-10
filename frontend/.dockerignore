@@ -3,5 +3,6 @@ dist/
 android/
 ios/
 .angular/
-*.md
+*.md/
+.idea/
 .git/
