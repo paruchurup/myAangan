@@ -1,4 +1,3 @@
-
 <div class="page">
 
   <div class="page-header">
@@ -12,25 +11,25 @@
 
   <!-- Tab strip -->
   <div class="tabs">
-    <button class="tab" [class.active]="tab==='LOOKUP'"   (click)="tab='LOOKUP'">🔍 Lookup</button>
-    <button class="tab" [class.active]="tab==='VISITORS'" (click)="tab='VISITORS'; loadVisitors()">
+    <button class="tab amber" [class.active]="tab==='LOOKUP'"   (click)="tab='LOOKUP'">🔍 Lookup</button>
+    <button class="tab amber" [class.active]="tab==='VISITORS'" (click)="tab='VISITORS'; loadVisitors()">
       🚙 Visitors <span class="tc" *ngIf="currentVisitors.length">{{ currentVisitors.length }}</span>
     </button>
-    <button class="tab" [class.active]="tab==='LOG_IN'"  (click)="tab='LOG_IN'">➕ Log Entry</button>
-    <button class="tab" [class.active]="tab==='VIOLATE'" (click)="tab='VIOLATE'">⚠️ Violation</button>
-    <button class="tab" [class.active]="tab==='PASS'"    (click)="tab='PASS'; resetPassScan()">🎫 Pass Scan</button>
+    <button class="tab amber" [class.active]="tab==='LOG_IN'"   (click)="tab='LOG_IN'">➕ Log Entry</button>
+    <button class="tab amber" [class.active]="tab==='VIOLATE'"  (click)="tab='VIOLATE'">⚠️ Violation</button>
+    <button class="tab amber" [class.active]="tab==='PASS'"     (click)="tab='PASS'; resetPassScan()">🎫 Pass Scan</button>
   </div>
 
-  <!-- ── PLATE LOOKUP ─────────────────────────────────────────────────── -->
+  <!-- ── PLATE LOOKUP ──────────────────────────────────────────────────── -->
   <div class="body" *ngIf="tab==='LOOKUP'">
     <div class="search-box">
-      <input [(ngModel)]="lookupPlate" class="plate-search"
+      <input class="plate-search" [(ngModel)]="lookupPlate"
         placeholder="Enter plate number…" (input)="onSearch()"
         style="text-transform:uppercase" />
       <div class="search-hint">Live search across all registered vehicles</div>
     </div>
 
-    <div class="loading-sm" *ngIf="lookupLoading"><div class="spinner-sm"></div></div>
+    <div class="loading" *ngIf="lookupLoading"><div class="spinner amber sm"></div></div>
 
     <ng-container *ngIf="!lookupLoading">
       <div class="result-card" *ngFor="let v of lookupResults"
@@ -39,7 +38,10 @@
            [class.rejected]="v.status==='REJECTED' || v.status==='SUSPENDED'">
         <div class="rc-top">
           <div class="rc-plate">{{ v.plateNumber }}</div>
-          <div class="status-lamp" [class.green]="v.status==='APPROVED'" [class.amber]="v.status==='PENDING'" [class.red]="v.status==='REJECTED'||v.status==='SUSPENDED'">
+          <div class="status-lamp"
+            [class.green]="v.status==='APPROVED'"
+            [class.amber]="v.status==='PENDING'"
+            [class.red]="v.status==='REJECTED' || v.status==='SUSPENDED'">
             <span class="lamp"></span>
             <span class="lamp-lbl">{{ v.status }}</span>
           </div>
@@ -50,15 +52,15 @@
           <span>🏠 Flat {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
           <span *ngIf="v.ownerPhone">📱 {{ v.ownerPhone }}</span>
         </div>
-        <div class="rc-slot" *ngIf="v.assignedSlotLabel">🅿️ {{ v.assignedSlotLabel }}</div>
-        <div class="rc-note" *ngIf="v.adminNote">⚠️ {{ v.adminNote }}</div>
+        <div class="rc-slot"       *ngIf="v.assignedSlotLabel">🅿️ {{ v.assignedSlotLabel }}</div>
+        <div class="rc-note"       *ngIf="v.adminNote">⚠️ {{ v.adminNote }}</div>
         <div class="rc-violations" *ngIf="v.violationCount > 0">
           🚨 {{ v.violationCount }} violation{{ v.violationCount > 1 ? 's' : '' }} on record
         </div>
       </div>
 
-      <div class="no-result" *ngIf="lookupPlate.length > 2 && !lookupResults.length && !lookupLoading">
-        <div class="nr-icon">❓</div>
+      <div class="empty-state" *ngIf="lookupPlate.length > 2 && !lookupResults.length && !lookupLoading">
+        <div class="empty-icon">❓</div>
         <p>Not registered</p>
         <small>This vehicle is not in the society registry</small>
         <button class="cta-btn" (click)="tab='LOG_IN'; visitorForm.plateNumber=lookupPlate">
@@ -66,16 +68,16 @@
         </button>
       </div>
 
-      <div class="lookup-empty" *ngIf="!lookupPlate">
-        <div class="le-icon">🔍</div>
+      <div class="lookup-hint" *ngIf="!lookupPlate">
+        <div class="lookup-hint-icon">🔍</div>
         <p>Search any plate number to verify</p>
       </div>
     </ng-container>
   </div>
 
-  <!-- ── VISITORS INSIDE ──────────────────────────────────────────────── -->
+  <!-- ── VISITORS INSIDE ───────────────────────────────────────────────── -->
   <div class="body" *ngIf="tab==='VISITORS'">
-    <div class="loading-sm" *ngIf="visitorsLoading"><div class="spinner-sm"></div></div>
+    <div class="loading" *ngIf="visitorsLoading"><div class="spinner amber sm"></div></div>
 
     <div class="visitor-card" *ngFor="let vv of currentVisitors">
       <div class="vi-top">
@@ -89,101 +91,102 @@
       <button class="exit-btn" (click)="logExit(vv)">✓ Log Exit</button>
     </div>
 
-    <div class="no-visitors" *ngIf="!visitorsLoading && !currentVisitors.length">
-      <div>🟢</div>
+    <div class="empty-state" *ngIf="!visitorsLoading && !currentVisitors.length">
+      <div class="empty-icon">🟢</div>
       <p>No visitor vehicles currently inside</p>
     </div>
   </div>
 
-  <!-- ── LOG VISITOR ENTRY ────────────────────────────────────────────── -->
+  <!-- ── LOG VISITOR ENTRY ─────────────────────────────────────────────── -->
   <div class="body" *ngIf="tab==='LOG_IN'">
-    <h2>Log Visitor Vehicle</h2>
-
-    <div class="field">
-      <label>Plate Number *</label>
-      <input class="plate-input" [(ngModel)]="visitorForm.plateNumber"
-        placeholder="KA01AB1234" style="text-transform:uppercase" />
+    <div class="form-wrap">
+      <div class="form-section">
+        <div class="form-section-title">Log Visitor Vehicle</div>
+        <div class="grid grid-cols-2 gap-[10px]">
+          <div class="field col-span-2">
+            <label>Plate Number *</label>
+            <input class="plate-input" [(ngModel)]="visitorForm.plateNumber"
+              placeholder="KA01AB1234" style="text-transform:uppercase" />
+          </div>
+          <div class="field col-span-2">
+            <label>Vehicle Description</label>
+            <input [(ngModel)]="visitorForm.vehicleDescription" placeholder="e.g. White Honda City" />
+          </div>
+          <div class="field">
+            <label>Visitor Name *</label>
+            <input [(ngModel)]="visitorForm.visitorName" placeholder="Full name" />
+          </div>
+          <div class="field">
+            <label>Visitor Phone *</label>
+            <input [(ngModel)]="visitorForm.visitorPhone" placeholder="10-digit mobile" type="tel" />
+          </div>
+          <div class="field">
+            <label>Host Flat *</label>
+            <input [(ngModel)]="visitorForm.hostFlat" placeholder="e.g. A-101" />
+          </div>
+          <div class="field">
+            <label>Notes</label>
+            <input [(ngModel)]="visitorForm.notes" placeholder="Optional notes" />
+          </div>
+        </div>
+      </div>
+      <div class="form-err" *ngIf="visitorError">{{ visitorError }}</div>
+      <div class="form-success" *ngIf="visitorSuccess">✅ Visitor vehicle logged successfully</div>
+      <button class="btn-submit" (click)="logEntry()" [disabled]="visitorSubmitting">
+        {{ visitorSubmitting ? 'Logging…' : '✓ Log Entry' }}
+      </button>
     </div>
-    <div class="field">
-      <label>Vehicle Description</label>
-      <input [(ngModel)]="visitorForm.vehicleDescription" placeholder="e.g. White Honda City" />
-    </div>
-    <div class="field">
-      <label>Visitor Name *</label>
-      <input [(ngModel)]="visitorForm.visitorName" placeholder="Full name" />
-    </div>
-    <div class="field">
-      <label>Visitor Phone *</label>
-      <input [(ngModel)]="visitorForm.visitorPhone" placeholder="10-digit mobile" type="tel" />
-    </div>
-    <div class="field">
-      <label>Host Flat *</label>
-      <input [(ngModel)]="visitorForm.hostFlat" placeholder="e.g. A-101" />
-    </div>
-    <div class="field">
-      <label>Notes</label>
-      <input [(ngModel)]="visitorForm.notes" placeholder="Optional notes" />
-    </div>
-
-    <div class="err" *ngIf="visitorError">{{ visitorError }}</div>
-    <button class="submit-btn" (click)="logEntry()" [disabled]="visitorSubmitting">
-      {{ visitorSubmitting ? 'Logging…' : '✓ Log Entry' }}
-    </button>
-    <div class="success-banner" *ngIf="visitorSuccess">✅ Visitor vehicle logged successfully</div>
   </div>
 
-  <!-- ── REPORT VIOLATION ─────────────────────────────────────────────── -->
+  <!-- ── REPORT VIOLATION ──────────────────────────────────────────────── -->
   <div class="body" *ngIf="tab==='VIOLATE'">
-    <h2>Report Violation</h2>
-
-    <div class="field">
-      <label>Plate Number *</label>
-      <input class="plate-input" [(ngModel)]="violForm.plateNumber"
-        placeholder="KA01AB1234" style="text-transform:uppercase" />
-    </div>
-
-    <div class="field">
-      <label>Violation Type *</label>
-      <div class="type-grid">
-        <button *ngFor="let vt of violationTypes" class="vtype-btn"
-          [class.active]="violForm.violationType===vt.value"
-          (click)="violForm.violationType=vt.value">
-          {{ vt.icon }} {{ vt.label }}
-        </button>
+    <div class="form-wrap">
+      <div class="form-section">
+        <div class="form-section-title">Report Violation</div>
+        <div class="field">
+          <label>Plate Number *</label>
+          <input class="plate-input" [(ngModel)]="violForm.plateNumber"
+            placeholder="KA01AB1234" style="text-transform:uppercase" />
+        </div>
+        <div class="field">
+          <label>Violation Type *</label>
+          <div class="type-grid">
+            <button *ngFor="let vt of violationTypes" class="vtype-btn"
+              [class.active]="violForm.violationType===vt.value"
+              (click)="violForm.violationType=vt.value">
+              {{ vt.icon }} {{ vt.label }}
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Description *</label>
+          <textarea [(ngModel)]="violForm.description" rows="3"
+            placeholder="Describe the violation in detail…"></textarea>
+        </div>
+        <div class="field">
+          <label>Photo Evidence <span class="opt">(optional)</span></label>
+          <div class="file-drop" (click)="violPhotoInput.click()">
+            <span *ngIf="!violPhoto">📷 Tap to attach photo</span>
+            <span *ngIf="violPhoto">✅ {{ violPhoto.name }}</span>
+          </div>
+          <input #violPhotoInput type="file" accept="image/*" style="display:none" (change)="onViolPhoto($event)" />
+        </div>
       </div>
-    </div>
-
-    <div class="field">
-      <label>Description *</label>
-      <textarea [(ngModel)]="violForm.description" rows="3"
-        placeholder="Describe the violation in detail…"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Photo Evidence (optional)</label>
-      <div class="photo-drop" (click)="violPhotoInput.click()">
-        <span *ngIf="!violPhoto">📷 Tap to attach photo</span>
-        <span *ngIf="violPhoto">✅ {{ violPhoto.name }}</span>
+      <div class="form-err" *ngIf="violError">{{ violError }}</div>
+      <div class="form-success" *ngIf="violSuccess && lastViolation?.status === 'ACTION_REQUIRED'">
+        🚨 Violation reported — owner notified to move their vehicle
       </div>
-      <input #violPhotoInput type="file" accept="image/*" style="display:none" (change)="onViolPhoto($event)" />
-    </div>
-
-    <div class="err" *ngIf="violError">{{ violError }}</div>
-    <button class="submit-btn" (click)="submitViolation()" [disabled]="violSubmitting">
-      {{ violSubmitting ? 'Reporting…' : '🚨 Report Violation' }}
-    </button>
-    <div class="success-banner" *ngIf="violSuccess && lastViolation?.status === 'ACTION_REQUIRED'">
-      🚨 Violation reported — owner notified to move their vehicle
-    </div>
-    <div class="success-banner" *ngIf="violSuccess && lastViolation?.status !== 'ACTION_REQUIRED'">
-      ✅ Violation reported — admin notified
+      <div class="form-success" *ngIf="violSuccess && lastViolation?.status !== 'ACTION_REQUIRED'">
+        ✅ Violation reported — admin notified
+      </div>
+      <button class="btn-submit danger" (click)="submitViolation()" [disabled]="violSubmitting">
+        {{ violSubmitting ? 'Reporting…' : '🚨 Report Violation' }}
+      </button>
     </div>
   </div>
 
-  <!-- ── VISITOR PASS SCAN ─────────────────────────────────────────────── -->
+  <!-- ── VISITOR PASS SCAN ──────────────────────────────────────────────── -->
   <div class="body" *ngIf="tab==='PASS'">
-    <h2>🎫 Visitor Pass Scan</h2>
-
     <div *ngIf="!passResult">
       <div class="scan-area">
         <div class="cam-ring" *ngIf="!cameraActive" (click)="startCamera()">📷</div>
@@ -197,7 +200,7 @@
 
       <div class="code-entry">
         <input class="code-input" [(ngModel)]="passToken"
-          placeholder="X K Y M  9 2 P Q"
+          placeholder="XKYM 92PQ"
           (input)="onPassTokenInput($event)"
           maxlength="8" />
         <button class="lookup-btn" (click)="validatePass()" [disabled]="!passToken || passLooking">
@@ -211,47 +214,48 @@
     <div class="pass-result" *ngIf="passResult">
 
       <!-- VALID -->
-      <div class="result-card valid" *ngIf="passResult.valid">
-        <div class="result-header valid-hdr">
-          <span class="result-icon">✅</span>
-          <span class="result-title">PASS VALID</span>
+      <div class="pass-result-card valid" *ngIf="passResult.valid">
+        <div class="prc-header valid">
+          <span class="prc-icon">✅</span>
+          <span class="prc-title">PASS VALID</span>
         </div>
-        <div class="result-visitor">{{ passResult.pass?.visitorName }}</div>
-        <div class="result-meta" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
-        <div class="result-meta" *ngIf="passResult.pass?.visitorPhone">📱 {{ passResult.pass?.visitorPhone }}</div>
-        <div class="result-host">
+        <div class="prc-visitor">{{ passResult.pass?.visitorName }}</div>
+        <div class="prc-meta" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
+        <div class="prc-meta" *ngIf="passResult.pass?.visitorPhone">📱 {{ passResult.pass?.visitorPhone }}</div>
+        <div class="prc-host">
           🏠 Flat {{ passResult.pass?.createdBy?.block }}-{{ passResult.pass?.createdBy?.flatNumber }}
           · {{ passResult.pass?.createdBy?.firstName }} {{ passResult.pass?.createdBy?.lastName }}
         </div>
-        <div class="result-validity">
-          <span *ngIf="passResult.pass?.passType==='ONE_TIME'">📅 One-time pass · {{ passResult.pass?.validDate | date:'d MMM' }}
+        <div class="prc-validity">
+          <span *ngIf="passResult.pass?.passType==='ONE_TIME'">
+            📅 One-time · {{ passResult.pass?.validDate | date:'d MMM' }}
             <span *ngIf="passResult.pass?.windowStart"> · {{ passResult.pass?.windowStart }}–{{ passResult.pass?.windowEnd }}</span>
           </span>
-          <span *ngIf="passResult.pass?.passType==='STANDING'">🔄 Standing · {{ formatPassDays(passResult.pass?.allowedDays) }}</span>
+          <span *ngIf="passResult.pass?.passType==='STANDING'">
+            🔄 Standing · {{ formatPassDays(passResult.pass?.allowedDays) }}
+          </span>
         </div>
-        <div class="result-notes" *ngIf="passResult.pass?.notes">💬 {{ passResult.pass?.notes }}</div>
+        <div class="prc-notes" *ngIf="passResult.pass?.notes">💬 {{ passResult.pass?.notes }}</div>
         <button class="checkin-btn" (click)="checkIn(false)" [disabled]="checkingIn">
           {{ checkingIn ? 'Checking in…' : '✅ Allow Entry' }}
         </button>
       </div>
 
       <!-- INVALID -->
-      <div class="result-card invalid" *ngIf="!passResult.valid">
-        <div class="result-header invalid-hdr">
-          <span class="result-icon">🚫</span>
-          <span class="result-title">PASS INVALID</span>
+      <div class="pass-result-card invalid" *ngIf="!passResult.valid">
+        <div class="prc-header invalid">
+          <span class="prc-icon">🚫</span>
+          <span class="prc-title">PASS INVALID</span>
         </div>
-        <div class="result-reason">{{ passResult.errorReason }}</div>
-
+        <div class="prc-reason">{{ passResult.errorReason }}</div>
         <ng-container *ngIf="passResult.pass">
-          <div class="result-visitor mt">{{ passResult.pass?.visitorName }}</div>
-          <div class="result-meta" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
-          <div class="result-host">
+          <div class="prc-visitor">{{ passResult.pass?.visitorName }}</div>
+          <div class="prc-meta" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
+          <div class="prc-host">
             🏠 Flat {{ passResult.pass?.createdBy?.block }}-{{ passResult.pass?.createdBy?.flatNumber }}
             · {{ passResult.pass?.createdBy?.firstName }} {{ passResult.pass?.createdBy?.lastName }}
           </div>
         </ng-container>
-
         <div class="override-section">
           <div class="override-label">Guard Override — Allow Entry Anyway?</div>
           <textarea class="override-input" [(ngModel)]="overrideReason" rows="2"
@@ -263,7 +267,7 @@
         </div>
       </div>
 
-      <!-- Post check-in success -->
+      <!-- Post check-in -->
       <div class="checkin-success" *ngIf="checkInDone">
         <div class="cs-icon">✅</div>
         <div class="cs-msg">Entry logged for {{ passResult.pass?.visitorName }}</div>

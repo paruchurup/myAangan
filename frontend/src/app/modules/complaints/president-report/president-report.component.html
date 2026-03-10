@@ -1,63 +1,67 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20">
-  <div class="header">
-    <div class="flex justify-between items-center mb-3">
+<div class="page">
+  <div class="page-header">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
-    <h1 class="text-[22px] font-bold m-0 mb-1">🏛️ Complaints Report</h1>
-    <p class="text-[13px] text-white/70 m-0 mb-4">All society complaints overview</p>
-    <div class="grid grid-cols-3 gap-2">
-      <div class="bg-white/[0.12] rounded-xl p-[10px] text-center" *ngFor="let s of statItems">
-        <span class="block text-[22px] font-bold text-white">{{ stats[s.key]||0 }}</span>
-        <span class="text-[10px] text-white/70">{{ s.label }}</span>
+    <h1>🏛️ Complaints Report</h1>
+    <p>All society complaints overview</p>
+    <div class="grid grid-cols-3 gap-2 mt-3">
+      <div class="stat-chip" *ngFor="let s of statItems">
+        <span class="stat-num">{{ stats[s.key] || 0 }}</span>
+        <span class="stat-lbl">{{ s.label }}</span>
       </div>
     </div>
   </div>
 
   <!-- PDF download panel -->
-  <div class="bg-white mx-4 rounded-2xl p-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
-    <h3 class="text-[16px] text-[#0f3460] m-0 mb-[6px]">📄 Generate BDA Submission PDF</h3>
-    <p class="text-[13px] text-[#888] m-0 mb-4">All complaint details, screenshots, and documents will be compiled into a single PDF with cover letter and index.</p>
+  <div class="form-section mx-4 mt-4">
+    <div class="form-section-title">📄 Generate BDA Submission PDF</div>
+    <p class="text-[13px] text-[#888] mt-0 mb-4">All complaint details, screenshots, and documents will be compiled into a single PDF with cover letter and index.</p>
 
-    <div class="flex flex-col gap-[6px] mb-3">
+    <div class="field">
       <label>Report Title</label>
       <input [(ngModel)]="pdfForm.reportTitle" placeholder="e.g. Complaint Report — March 2025"/>
     </div>
-    <div class="flex flex-col gap-[6px] mb-3">
+    <div class="field">
       <label>Society Name</label>
       <input [(ngModel)]="pdfForm.societyName" placeholder="e.g. MyAangan Residency, Bengaluru"/>
     </div>
-    <div class="flex flex-col gap-[6px] mb-3">
+    <div class="field">
       <label>Addressed To</label>
       <input [(ngModel)]="pdfForm.addressedTo" placeholder="e.g. The BDA Engineer, Bengaluru Development Authority"/>
     </div>
-    <div class="flex flex-col gap-[6px] mb-3">
-      <label>Covering Letter <span class="font-normal text-[#aaa] text-xs">(leave blank for auto-generated)</span></label>
+    <div class="field">
+      <label>Covering Letter <span class="opt">(leave blank for auto-generated)</span></label>
       <textarea [(ngModel)]="pdfForm.coveringLetter" rows="6"
         placeholder="Dear Sir/Madam,&#10;&#10;We are residents of [Society Name]...&#10;&#10;We hereby submit this report..."></textarea>
     </div>
 
     <div class="flex gap-4 mb-3">
-      <label class="flex items-center gap-[6px] text-[13px] text-[#555] cursor-pointer font-normal"><input type="checkbox" [(ngModel)]="pdfForm.includeResolved"/> Include resolved complaints</label>
-      <label class="flex items-center gap-[6px] text-[13px] text-[#555] cursor-pointer font-normal"><input type="checkbox" [(ngModel)]="pdfForm.includeClosed"/> Include closed complaints</label>
+      <label class="flex items-center gap-[6px] text-[13px] text-[#555] cursor-pointer font-normal">
+        <input type="checkbox" [(ngModel)]="pdfForm.includeResolved"/> Include resolved complaints
+      </label>
+      <label class="flex items-center gap-[6px] text-[13px] text-[#555] cursor-pointer font-normal">
+        <input type="checkbox" [(ngModel)]="pdfForm.includeClosed"/> Include closed complaints
+      </label>
     </div>
 
-    <div class="bg-[#f0f4ff] rounded-lg p-[10px_12px] text-xs text-[#3730a3] mb-4 leading-relaxed">📋 PDF will include: Cover letter → Complaint index with page references → Full complaint details → Embedded photos → Document list</div>
+    <div class="form-warn mb-4">📋 PDF will include: Cover letter → Complaint index with page references → Full complaint details → Embedded photos → Document list</div>
 
     <button class="btn-download" (click)="downloadPdf()" [disabled]="downloading">
       <span *ngIf="!downloading">📥 Download PDF Report</span>
       <span *ngIf="downloading">⏳ Generating PDF... please wait</span>
     </button>
-    <div class="text-[13px] text-[#dc2626] mt-2" *ngIf="dlError">{{ dlError }}</div>
+    <div class="err mt-2" *ngIf="dlError">{{ dlError }}</div>
   </div>
 
   <!-- Complaints list -->
-  <div class="p-[16px_16px_8px] text-[15px] font-bold text-[#1a1a2e]">All Complaints</div>
+  <div class="px-4 pt-4 pb-2 text-[15px] font-bold text-[#1a1a2e]">All Complaints</div>
   <div class="filter-row">
     <button class="filter-btn" *ngFor="let f of filters" [class.active]="activeFilter===f.value" (click)="setFilter(f.value)">{{ f.label }}</button>
   </div>
-  <div class="flex justify-center p-[40px]" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
   <div class="px-4 flex flex-col gap-[10px] pb-4" *ngIf="!loading">
-    <a class="complaint-card" *ngFor="let c of filtered" [routerLink]="['/complaints',c.id]" [class.breached]="c.slaBreached">
+    <a class="complaint-card" *ngFor="let c of filtered" [routerLink]="['/complaints', c.id]" [class.breached]="c.slaBreached">
       <div class="flex justify-between mb-[6px]">
         <span class="text-xs text-[#666]">{{ c.categoryLabel }}</span>
         <span class="badge" [style.background]="sb(c.status)" [style.color]="sc(c.status)">{{ c.statusLabel }}</span>
@@ -67,7 +71,7 @@
         <span>{{ c.raisedByName }}</span>
         <span *ngIf="c.raisedByFlat">· {{ c.raisedByFlat }}</span>
         <span>· {{ c.createdAt | date:'MMM d' }}</span>
-        <span class="esc-tag" *ngIf="c.escalationLevel!=='FACILITY_MANAGER'">🚨 {{ c.escalationLabel }}</span>
+        <span class="esc-tag" *ngIf="c.escalationLevel !== 'FACILITY_MANAGER'">🚨 {{ c.escalationLabel }}</span>
         <span class="sla-tag" *ngIf="c.slaBreached">⏰ Overdue</span>
       </div>
     </a>

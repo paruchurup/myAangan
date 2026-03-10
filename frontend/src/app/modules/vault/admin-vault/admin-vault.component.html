@@ -1,54 +1,60 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20 font-sans text-[#212121] relative">
-  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
-    <div class="flex justify-between items-center mb-3">
-      <a class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/vault">← Back</a>
+<div class="page">
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/vault">← Back</a>
     </div>
-    <h1 class="text-[22px] m-0 mb-1 font-bold">🔐 Manage Vault</h1>
-    <p class="text-[13px] text-white/70 m-0">Upload and manage society documents</p>
+    <h1>🔐 Manage Vault</h1>
+    <p>Upload and manage society documents</p>
   </div>
 
-  <div class="flex justify-center p-10" *ngIf="loading"><div class="w-[26px] h-[26px] border-[3px] border-[#333] border-t-[#f59e0b] rounded-full animate-spin"></div></div>
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
 
   <div *ngIf="!loading && vault">
     <!-- Tabs -->
-    <div class="flex bg-[#111] border-b border-[#2a2a2a] overflow-x-auto">
-      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[10px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[55px] relative" [class.text-[#f59e0b]]="tab==='UPLOAD'" [class.border-b-[#f59e0b]]="tab==='UPLOAD'" (click)="tab='UPLOAD'">⬆ Upload</button>
-      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[10px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[55px] relative" [class.text-[#f59e0b]]="tab==='SOCIETY'" [class.border-b-[#f59e0b]]="tab==='SOCIETY'" (click)="tab='SOCIETY'">🏛️ Society</button>
-      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[10px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[55px] relative" [class.text-[#f59e0b]]="tab==='NOC'" [class.border-b-[#f59e0b]]="tab==='NOC'" (click)="tab='NOC'">📜 NOCs</button>
-      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[10px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[55px] relative" [class.text-[#f59e0b]]="tab==='MAINT'" [class.border-b-[#f59e0b]]="tab==='MAINT'" (click)="tab='MAINT'">🔧 Maintenance</button>
-      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[10px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[55px] relative" [class.text-[#f59e0b]]="tab==='REQUESTS'" [class.border-b-[#f59e0b]]="tab==='REQUESTS'" (click)="tab='REQUESTS'">
-        📋 Requests <span class="bg-[#ef4444] text-white text-[9px] py-[1px] px-[5px] rounded-lg ml-[3px]" *ngIf="vault.pendingNocs > 0">{{ vault.pendingNocs }}</span>
+    <div class="tabs">
+      <button class="tab amber" [class.active]="tab==='UPLOAD'"   (click)="tab='UPLOAD'">⬆ Upload</button>
+      <button class="tab amber" [class.active]="tab==='SOCIETY'"  (click)="tab='SOCIETY'">🏛️ Society</button>
+      <button class="tab amber" [class.active]="tab==='NOC'"      (click)="tab='NOC'">📜 NOCs</button>
+      <button class="tab amber" [class.active]="tab==='MAINT'"    (click)="tab='MAINT'">🔧 Maintenance</button>
+      <button class="tab amber" [class.active]="tab==='REQUESTS'" (click)="tab='REQUESTS'">
+        📋 Requests
+        <span class="count-badge-orange" *ngIf="vault.pendingNocs > 0">{{ vault.pendingNocs }}</span>
       </button>
     </div>
 
-    <!-- ── UPLOAD ──────────────────────────────────────────────────────── -->
-    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='UPLOAD'">
-      <div class="bg-[#1a1a2e] border border-[#f59e0b]/20 rounded-xl p-[14px] flex flex-col gap-[10px]">
-        <div class="text-[13px] text-[#f59e0b] font-bold">📤 Upload New Document</div>
+    <!-- ── UPLOAD ─────────────────────────────────────────────────────── -->
+    <div class="form-wrap" *ngIf="tab==='UPLOAD'">
+      <div class="form-section">
+        <div class="form-section-title">📤 Upload New Document</div>
 
         <!-- Doc type selector -->
-        <div class="flex gap-2 flex-wrap">
-          <button class="bg-[#252525] border-2 border-[#333] rounded-lg py-2 px-3 text-[11px] font-bold text-[#9ca3af] cursor-pointer transition-all" *ngFor="let t of docTypes"
-            [class.text-white]="upload.type === t.key"
-            [style.border-color]="upload.type === t.key ? t.color : '#333'"
+        <div class="flex gap-2 flex-wrap mb-3">
+          <button class="type-btn"
+            *ngFor="let t of docTypes"
+            [class.active]="upload.type === t.key"
+            [style.border-color]="upload.type === t.key ? t.color : ''"
+            [style.color]="upload.type === t.key ? t.color : ''"
             (click)="upload.type = t.key">
             {{ t.icon }} {{ t.label }}
           </button>
         </div>
 
-        <div class="flex flex-col gap-1"><label class="text-[10px] text-[#6b7280] tracking-[1px]">Title *</label>
-          <input class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border focus:border-[#f59e0b]" [(ngModel)]="upload.title" placeholder="Document title" /></div>
-        <div class="flex flex-col gap-1"><label class="text-[10px] text-[#6b7280] tracking-[1px]">Description</label>
-          <textarea class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border resize-y focus:border-[#f59e0b]" [(ngModel)]="upload.description" rows="2" placeholder="Brief description (optional)"></textarea></div>
-
-        <!-- NOC: link to resident -->
-        <div class="flex flex-col gap-1" *ngIf="upload.type === 'NOC'">
-          <label class="text-[10px] text-[#6b7280] tracking-[1px]">Resident Email * (NOC is linked to this resident)</label>
-          <input class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border focus:border-[#f59e0b]" [(ngModel)]="upload.residentEmail" placeholder="resident@email.com" />
+        <div class="field">
+          <label>Title *</label>
+          <input [(ngModel)]="upload.title" placeholder="Document title" />
         </div>
-        <div class="flex flex-col gap-1" *ngIf="upload.type === 'NOC' && pendingNocRequests.length">
-          <label class="text-[10px] text-[#6b7280] tracking-[1px]">Fulfil pending NOC request (optional)</label>
-          <select class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border focus:border-[#f59e0b]" [(ngModel)]="upload.nocRequestId">
+        <div class="field">
+          <label>Description</label>
+          <textarea [(ngModel)]="upload.description" rows="2" placeholder="Brief description (optional)"></textarea>
+        </div>
+
+        <div class="field" *ngIf="upload.type === 'NOC'">
+          <label>Resident Email * <span class="opt">(NOC is linked to this resident)</span></label>
+          <input [(ngModel)]="upload.residentEmail" placeholder="resident@email.com" />
+        </div>
+        <div class="field" *ngIf="upload.type === 'NOC' && pendingNocRequests.length">
+          <label>Fulfil pending NOC request <span class="opt">(optional)</span></label>
+          <select [(ngModel)]="upload.nocRequestId">
             <option [value]="null">— Not linked to a request —</option>
             <option *ngFor="let r of pendingNocRequests" [value]="r.id">
               #{{ r.id }} · {{ r.resident?.firstName }} {{ r.resident?.lastName }} · {{ r.purpose }}
@@ -56,78 +62,88 @@
           </select>
         </div>
 
-        <div class="flex flex-col gap-1"><label class="text-[10px] text-[#6b7280] tracking-[1px]">Expiry Date (optional)</label>
-          <input class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border focus:border-[#f59e0b]" type="date" [(ngModel)]="upload.expiryDate" /></div>
+        <div class="field">
+          <label>Expiry Date <span class="opt">(optional)</span></label>
+          <input type="date" [(ngModel)]="upload.expiryDate" />
+        </div>
 
-        <div class="flex">
-          <label class="flex-1 bg-[#1c1c1c] border-[1.5px] border-dashed border-[#333] rounded-md text-[#9ca3af] py-[10px] px-3 text-xs cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap" for="docFile">{{ uploadFile ? uploadFile.name : '📎 Choose File (PDF / JPG / PNG / DOCX)' }}</label>
-          <input type="file" id="docFile" (change)="onFile($event)"
+        <div class="file-drop" (click)="docFile.click()">
+          <div class="file-drop-icon">📎</div>
+          <div class="file-drop-label">{{ uploadFile ? uploadFile.name : 'Choose File' }}</div>
+          <div class="file-drop-hint">PDF / JPG / PNG / DOCX</div>
+          <input #docFile type="file" (change)="onFile($event)"
             accept=".pdf,.jpg,.jpeg,.png,.docx,application/pdf,image/jpeg,image/png,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             class="hidden" />
         </div>
 
-        <div class="bg-[#ef4444]/10 border border-[#ef4444] text-[#f87171] py-[7px] px-[10px] rounded-md text-xs" *ngIf="uploadError">{{ uploadError }}</div>
-        <button class="bg-[#f59e0b] border-0 text-[#111] p-[11px] rounded-md text-[13px] font-bold cursor-pointer disabled:opacity-40" (click)="doUpload()" [disabled]="uploading">
-          {{ uploading ? 'Uploading…' : '📤 Upload Document' }}</button>
+        <div class="form-err mt-3" *ngIf="uploadError">{{ uploadError }}</div>
+        <button class="btn-upload mt-3" (click)="doUpload()" [disabled]="uploading">
+          {{ uploading ? 'Uploading…' : '📤 Upload Document' }}
+        </button>
       </div>
     </div>
 
-    <!-- ── SOCIETY / NOC / MAINTENANCE lists (shared template) ────────── -->
-    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='SOCIETY' || tab==='NOC' || tab==='MAINT'">
-      <div class="text-center py-[30px] text-[#4b5563] text-[13px]" *ngIf="currentDocs.length === 0">No documents in this category.</div>
-      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-[11px] px-[13px] flex justify-between items-center gap-[10px]" *ngFor="let d of currentDocs">
-        <div class="flex gap-[10px] items-start flex-1 min-w-0">
-          <div class="text-[24px] shrink-0">{{ fmtIcon(d.fileFormat) }}</div>
+    <!-- ── SOCIETY / NOC / MAINTENANCE lists ──────────────────────────── -->
+    <div class="form-wrap" *ngIf="tab==='SOCIETY' || tab==='NOC' || tab==='MAINT'">
+      <div class="empty-state" *ngIf="currentDocs.length === 0">
+        <div class="empty-icon">📂</div>
+        <p>No documents in this category</p>
+      </div>
+      <div class="doc-card" *ngFor="let d of currentDocs">
+        <div class="flex gap-3 items-start flex-1 min-w-0">
+          <div class="doc-icon">{{ fmtIcon(d.fileFormat) }}</div>
           <div class="flex-1 min-w-0">
-            <div class="text-[14px] font-bold text-white">{{ d.title }}</div>
-            <div class="flex flex-wrap gap-[6px] text-[11px] text-[#6b7280] mt-[3px] items-center">
-              <span class="bg-[#1c1c1c] border border-[#333] text-[#9ca3af] py-[1px] px-[5px] rounded text-[10px]">{{ d.fileFormat }}</span>
-              <span *ngIf="d.resident" class="text-[#6366f1] text-[11px]">👤 {{ d.resident.firstName }} {{ d.resident.lastName }} · Flat {{ d.resident.flatNumber }}</span>
-              <span *ngIf="d.expiryDate" [class.text-[#ef4444]]="isExpired(d.expiryDate)">
+            <div class="doc-title">{{ d.title }}</div>
+            <div class="doc-meta">
+              <span class="fmt-badge">{{ d.fileFormat }}</span>
+              <span *ngIf="d.resident" class="text-[#6366f1]">👤 {{ d.resident.firstName }} {{ d.resident.lastName }} · Flat {{ d.resident.flatNumber }}</span>
+              <span *ngIf="d.expiryDate" [class.text-red-500]="isExpired(d.expiryDate)">
                 {{ isExpired(d.expiryDate) ? '⚠️ Expired' : 'Exp:' }} {{ d.expiryDate | date:'d MMM yy' }}
               </span>
-              <span class="text-[#4b5563]">{{ d.createdAt | date:'d MMM yyyy' }}</span>
+              <span>{{ d.createdAt | date:'d MMM yyyy' }}</span>
             </div>
           </div>
         </div>
-        <div class="flex gap-[6px] shrink-0">
-          <a class="text-[18px] no-underline p-[5px] border border-[#333] rounded-md bg-[#1c1c1c]" [href]="svc.downloadUrl(d.id)" target="_blank">⬇</a>
-          <button class="text-base bg-none border border-[#333] rounded-md p-[5px] cursor-pointer text-[#6b7280] hover:border-[#ef4444] hover:text-[#ef4444]" (click)="deleteDoc(d.id)">🗑</button>
+        <div class="flex gap-2 shrink-0">
+          <a class="btn-icon btn-edit" [href]="svc.downloadUrl(d.id)" target="_blank">⬇</a>
+          <button class="btn-icon btn-del" (click)="deleteDoc(d.id)">🗑</button>
         </div>
       </div>
     </div>
 
     <!-- ── NOC REQUESTS ───────────────────────────────────────────────── -->
-    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='REQUESTS'">
-      <div class="text-center py-[30px] text-[#4b5563] text-[13px]" *ngIf="!vault.nocRequests?.length">No NOC requests.</div>
-      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-[9px]" *ngFor="let r of vault.nocRequests">
-        <div class="flex justify-between gap-[10px]">
+    <div class="form-wrap" *ngIf="tab==='REQUESTS'">
+      <div class="empty-state" *ngIf="!vault.nocRequests?.length">
+        <div class="empty-icon">📋</div>
+        <p>No NOC requests</p>
+      </div>
+      <div class="noc-card" *ngFor="let r of vault.nocRequests">
+        <div class="flex justify-between gap-3">
           <div class="flex-1">
-            <div class="text-[13px] text-[#9ca3af] mb-[2px]">{{ r.resident?.firstName }} {{ r.resident?.lastName }} · Flat {{ r.resident?.flatNumber }}</div>
-            <div class="text-[15px] text-white font-bold">{{ r.purpose }}</div>
-            <div class="text-xs text-[#9ca3af] mt-[3px]" *ngIf="r.details">{{ r.details }}</div>
-            <div class="text-[11px] text-[#4b5563] mt-[3px]">{{ r.createdAt | date:'d MMM yyyy' }}</div>
+            <div class="noc-resident">{{ r.resident?.firstName }} {{ r.resident?.lastName }} · Flat {{ r.resident?.flatNumber }}</div>
+            <div class="noc-purpose">{{ r.purpose }}</div>
+            <div class="noc-details" *ngIf="r.details">{{ r.details }}</div>
+            <div class="noc-date">{{ r.createdAt | date:'d MMM yyyy' }}</div>
           </div>
-          <div class="text-[10px] py-1 px-[9px] rounded-lg font-bold whitespace-nowrap h-fit" [class]="r.status.toLowerCase()">
+          <div class="status-pill" [class]="r.status.toLowerCase()">
             {{ r.status === 'PENDING' ? '⏳ Pending' : r.status === 'FULFILLED' ? '✅ Fulfilled' : '❌ Rejected' }}
           </div>
         </div>
 
-        <!-- Pending actions -->
-        <div class="flex flex-col gap-2" *ngIf="r.status === 'PENDING'">
-          <button class="bg-[#6366f1] border-0 text-white p-[9px] rounded-md text-xs font-bold cursor-pointer" (click)="fulfilNoc(r)">📜 Upload NOC to Fulfil</button>
-          <div class="flex gap-[7px]">
-            <input class="flex-1 bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-[7px] px-[9px] text-xs outline-none" [(ngModel)]="rejectReasons[r.id]" placeholder="Rejection reason" />
-            <button class="bg-none border border-[#ef4444] text-[#ef4444] py-[7px] px-3 rounded-md text-[11px] cursor-pointer whitespace-nowrap" (click)="rejectNoc(r.id)" [disabled]="rejecting[r.id]">Reject</button>
+        <div class="flex flex-col gap-2 mt-2" *ngIf="r.status === 'PENDING'">
+          <button class="btn-fulfil" (click)="fulfilNoc(r)">📜 Upload NOC to Fulfil</button>
+          <div class="flex gap-2">
+            <input class="reject-input flex-1" [(ngModel)]="rejectReasons[r.id]" placeholder="Rejection reason" />
+            <button class="btn-reject" (click)="rejectNoc(r.id)" [disabled]="rejecting[r.id]">Reject</button>
           </div>
         </div>
-        <div class="text-xs text-[#ef4444] italic" *ngIf="r.status === 'REJECTED' && r.rejectionReason">
+        <div class="noc-reject-reason" *ngIf="r.status === 'REJECTED' && r.rejectionReason">
           Reason: {{ r.rejectionReason }}
         </div>
       </div>
     </div>
   </div>
 
-  <div class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[calc(100%-28px)] max-w-[480px] bg-[#10b981]/90 text-white py-[10px] px-[14px] rounded-lg text-xs text-center z-50" *ngIf="okMsg">{{ okMsg }}</div>
-  <div class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[calc(100%-28px)] max-w-[480px] bg-[#ef4444]/90 text-white py-[10px] px-[14px] rounded-lg text-xs text-center z-50" *ngIf="errMsg">{{ errMsg }}</div>
+  <div class="toast ok" *ngIf="okMsg">{{ okMsg }}</div>
+  <div class="toast err" *ngIf="errMsg">{{ errMsg }}</div>
 </div>

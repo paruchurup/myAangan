@@ -1,222 +1,237 @@
-
-<div class="min-h-screen pb-20 text-[#212121]">
+<div class="page">
 
   <!-- Header with stats -->
-  <div class="min-h-screen pb-20 text-[#212121] -header">
-    <div class="flex justify-between items-center mb-3">
-      <a class="inline-flex items-center cursor-pointer no-underline text-[13px] text-white rounded-[20px]" routerLink="/dashboard">← Back</a>
+  <div class="page-header">
+    <div class="header-row">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
     <h1>🅿️ Parking Management</h1>
     <p>Manage society vehicle registrations</p>
-    <div class="grid gap-2" *ngIf="stats">
-      <div class="text-center p-[10px] rounded-lg" [class.amber]="stats.pendingApproval > 0">
-        <span class="block font-bold text-2xl text-white">{{ stats.pendingApproval }}</span>
-        <span class="uppercase text-[9px] text-[#6b7280]">PENDING</span>
+    <div class="stats-grid mt-3" *ngIf="stats">
+      <div class="stat-chip" [class.amber]="stats.pendingApproval > 0">
+        <span class="sn" [class.text-amber]="stats.pendingApproval > 0">{{ stats.pendingApproval }}</span>
+        <span class="sl">Pending</span>
       </div>
-      <div class="text-center p-[10px] rounded-lg">
-        <span class="block font-bold text-2xl text-white">{{ stats.registeredVehicles }}</span>
-        <span class="uppercase text-[9px] text-[#6b7280]">REGISTERED</span>
+      <div class="stat-chip">
+        <span class="sn">{{ stats.registeredVehicles }}</span>
+        <span class="sl">Registered</span>
       </div>
-      <div class="text-center p-[10px] rounded-lg green">
-        <span class="block font-bold text-2xl text-white">{{ stats.available }}</span>
-        <span class="uppercase text-[9px] text-[#6b7280]">FREE SLOTS</span>
+      <div class="stat-chip green">
+        <span class="sn text-emerald">{{ stats.available }}</span>
+        <span class="sl">Free Slots</span>
       </div>
-      <div class="text-center p-[10px] rounded-lg red">
-        <span class="block font-bold text-2xl text-white">{{ stats.occupied }}</span>
-        <span class="uppercase text-[9px] text-[#6b7280]">OCCUPIED</span>
+      <div class="stat-chip red">
+        <span class="sn text-danger">{{ stats.occupied }}</span>
+        <span class="sl">Occupied</span>
       </div>
-      <div class="text-center p-[10px] rounded-lg">
-        <span class="block font-bold text-2xl text-white">{{ stats.visitorsNow }}</span>
-        <span class="uppercase text-[9px] text-[#6b7280]">VISITORS IN</span>
+      <div class="stat-chip">
+        <span class="sn">{{ stats.visitorsNow }}</span>
+        <span class="sl">Visitors In</span>
       </div>
-      <div class="text-center p-[10px] rounded-lg" [class.red]="stats.openViolations > 0">
-        <span class="block font-bold text-2xl text-white">{{ stats.openViolations }}</span>
-        <span class="uppercase text-[9px] text-[#6b7280]">VIOLATIONS</span>
+      <div class="stat-chip" [class.red]="stats.openViolations > 0">
+        <span class="sn" [class.text-danger]="stats.openViolations > 0">{{ stats.openViolations }}</span>
+        <span class="sl">Violations</span>
       </div>
     </div>
   </div>
 
   <!-- Tab navigation -->
-  <div class="flex overflow-x-auto">
-    <button *ngFor="let t of tabs" class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280]" [class.active]="activeTab===t.v"
+  <div class="tabs">
+    <button class="tab amber" *ngFor="let t of tabs"
+      [class.active]="activeTab===t.v"
       (click)="activeTab=t.v; loadTab(t.v)">
       {{ t.label }}
-      <span class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280] -count" *ngIf="tabCount(t.v)">{{ tabCount(t.v) }}</span>
+      <span class="tab-count" *ngIf="tabCount(t.v)">{{ tabCount(t.v) }}</span>
     </button>
   </div>
 
-  <div class="flex justify-center" *ngIf="loading"><div class="rounded-full"></div></div>
+  <div class="loading" *ngIf="loading"><div class="spinner amber"></div></div>
 
-  <!-- ── PENDING APPROVALS ─────────────────────────────────────────────── -->
-  <div class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280] -body" *ngIf="activeTab==='PENDING' && !loading">
-    <div class="text-center text-sm p-10 text-[#4b5563]" *ngIf="!pending.length">✅ No pending registrations</div>
-    <div class="flex items-center flex-wrap p-3 gap-[10px] rounded-lg" *ngFor="let v of pending">
-      <div class="text-center font-semibold text-[15px] text-white rounded">{{ v.plateNumber }}</div>
-      <div class="flex flex-col flex-1 gap-[2px]">
+  <!-- ── PENDING APPROVALS ──────────────────────────────────────────── -->
+  <div class="tab-body" *ngIf="activeTab==='PENDING' && !loading">
+    <div class="empty-state" *ngIf="!pending.length">
+      <div class="empty-icon">✅</div>
+      <p>No pending registrations</p>
+    </div>
+    <div class="vehicle-row" *ngFor="let v of pending">
+      <div class="vr-plate">{{ v.plateNumber }}</div>
+      <div class="vr-info">
         <strong>{{ v.make }} {{ v.model }}</strong>
         <span>{{ v.colour }} · {{ v.year }}</span>
-        <span class="text-[#9ca3af]">{{ v.ownerName }} · Flat {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
+        <span class="vr-owner">{{ v.ownerName }} · Flat {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
       </div>
-      <div class="text-xl">{{ typeIcon(v.type) }}</div>
-      <div class="flex flex-wrap gap-[6px]">
-        <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#d1fae5]" (click)="approve(v)">✓ Approve</button>
-        <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#fee2e2]"  (click)="promptReject(v)">✕ Reject</button>
-      </div>
-    </div>
-    <div class="text-[#fee2e2] -modal" *ngIf="rejectTarget">
-      <div class="flex flex-col w-full p-5 gap-3 rounded-xl">
-        <h3>Reject — {{ rejectTarget.plateNumber }}</h3>
-        <textarea [(ngModel)]="rejectReason" placeholder="Reason for rejection…" rows="3"></textarea>
-        <div class="flex gap-2">
-          <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#fee2e2]" (click)="confirmReject()">Reject</button>
-          <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#9ca3af]" (click)="rejectTarget=null">Cancel</button>
-        </div>
+      <div class="vr-type">{{ typeIcon(v.type) }}</div>
+      <div class="vr-actions">
+        <button class="act approve" (click)="approve(v)">✓ Approve</button>
+        <button class="act reject"  (click)="promptReject(v)">✕ Reject</button>
       </div>
     </div>
   </div>
 
-  <!-- ── ALL VEHICLES ──────────────────────────────────────────────────── -->
-  <div class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280] -body" *ngIf="activeTab==='ALL' && !loading">
-    <input class="box-border w-full text-[13px] p-[10px] mb-1 text-[#e8e8e8] rounded-md" [(ngModel)]="vehicleSearch" placeholder="🔍  Search plate, owner, flat…" />
-    <div class="flex items-center flex-wrap p-3 gap-[10px] rounded-lg" *ngFor="let v of filteredVehicles">
-      <div class="text-center font-semibold text-[15px] text-white rounded">{{ v.plateNumber }}</div>
-      <div class="flex flex-col flex-1 gap-[2px]">
+  <!-- ── ALL VEHICLES ───────────────────────────────────────────────── -->
+  <div class="tab-body" *ngIf="activeTab==='ALL' && !loading">
+    <input class="search" [(ngModel)]="vehicleSearch" placeholder="🔍  Search plate, owner, flat…" />
+    <div class="vehicle-row" *ngFor="let v of filteredVehicles">
+      <div class="vr-plate">{{ v.plateNumber }}</div>
+      <div class="vr-info">
         <strong>{{ v.make }} {{ v.model }}</strong>
         <span>{{ v.colour }} {{ v.year }}</span>
-        <span class="text-[#9ca3af]">{{ v.ownerName }} · {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
+        <span class="vr-owner">{{ v.ownerName }} · {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
       </div>
-      <div class="flex items-center gap-[6px]">
-        <span class="flex-shrink-0 rounded-full" [style.background]="statusColor(v)"></span>
-        <span class="font-medium text-[11px]" [style.color]="statusColor(v)">{{ statusLabel(v) }}</span>
+      <div class="vr-status">
+        <span class="status-dot" [style.background]="statusColor(v)"></span>
+        <span class="status-lbl" [style.color]="statusColor(v)">{{ statusLabel(v) }}</span>
       </div>
-      <div class="text-xs text-[#f59e0b]" *ngIf="v.assignedSlotLabel">🅿️ {{ v.assignedSlotLabel }}</div>
-      <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#ede9fe]" *ngIf="v.status==='APPROVED'" (click)="promptSuspend(v)">Suspend</button>
-    </div>
-    <div class="text-[#ede9fe] -modal" *ngIf="suspendTarget">
-      <div class="flex flex-col w-full p-5 gap-3 rounded-xl">
-        <h3>Suspend — {{ suspendTarget.plateNumber }}</h3>
-        <textarea [(ngModel)]="suspendReason" placeholder="Reason for suspension…" rows="3"></textarea>
-        <div class="flex gap-2">
-          <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#fee2e2]" (click)="confirmSuspend()">Suspend</button>
-          <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#9ca3af]" (click)="suspendTarget=null">Cancel</button>
-        </div>
+      <div class="vr-slot" *ngIf="v.assignedSlotLabel">🅿️ {{ v.assignedSlotLabel }}</div>
+      <div class="vr-actions">
+        <button class="act suspend" *ngIf="v.status==='APPROVED'" (click)="promptSuspend(v)">Suspend</button>
       </div>
     </div>
   </div>
 
-  <!-- ── PARKING SLOTS ─────────────────────────────────────────────────── -->
-  <div class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280] -body" *ngIf="activeTab==='SLOTS' && !loading">
-    <button class="cursor-pointer font-bold text-[13px] text-[#111] rounded-md" (click)="showSlotForm=!showSlotForm">
+  <!-- ── PARKING SLOTS ──────────────────────────────────────────────── -->
+  <div class="tab-body" *ngIf="activeTab==='SLOTS' && !loading">
+    <button class="add-slot-btn" (click)="showSlotForm=!showSlotForm">
       {{ showSlotForm ? '✕ Cancel' : '+ Add Slot' }}
     </button>
 
-    <!-- Add slot form -->
-    <div class="flex flex-col p-[14px] gap-[10px] rounded-lg" *ngIf="showSlotForm">
-      <div class="grid gap-2">
-        <div class="flex flex-col gap-1"><label>Block</label><input [(ngModel)]="slotForm.block" placeholder="A" /></div>
-        <div class="flex flex-col gap-1"><label>Slot #</label><input [(ngModel)]="slotForm.slotNumber" placeholder="01" /></div>
-        <div class="flex flex-col gap-1"><label>Level</label><input [(ngModel)]="slotForm.level" placeholder="Ground" /></div>
+    <div class="slot-form" *ngIf="showSlotForm">
+      <div class="sf-row">
+        <div class="field"><label>Block</label><input [(ngModel)]="slotForm.block" placeholder="A" /></div>
+        <div class="field"><label>Slot #</label><input [(ngModel)]="slotForm.slotNumber" placeholder="01" /></div>
+        <div class="field"><label>Level</label><input [(ngModel)]="slotForm.level" placeholder="Ground" /></div>
       </div>
-      <div class="grid gap-2">
-        <div class="flex flex-col gap-1">
-          <label>Type</label>
-          <select [(ngModel)]="slotForm.type">
-            <option value="CAR">Car</option><option value="BIKE">Bike</option>
-            <option value="VISITOR">Visitor</option><option value="RESERVED">Reserved</option>
-          </select>
-        </div>
+      <div class="field">
+        <label>Type</label>
+        <select [(ngModel)]="slotForm.type">
+          <option value="CAR">Car</option>
+          <option value="BIKE">Bike</option>
+          <option value="VISITOR">Visitor</option>
+          <option value="RESERVED">Reserved</option>
+        </select>
       </div>
-      <button class="cursor-pointer font-bold text-sm p-[11px] text-[#111] rounded-md" (click)="createSlot()">Create Slot</button>
+      <button class="act approve" (click)="createSlot()">Create Slot</button>
     </div>
 
-    <!-- Slot grid grouped by block -->
     <div *ngFor="let group of slotGroups">
-      <div class="text-xs mt-2 text-[#f59e0b]">BLOCK {{ group.block }}</div>
-      <div class="grid mb-1 gap-2">
-        <div class="flex flex-col items-center gap-1 rounded-lg" *ngFor="let s of group.slots"
-             [class.occupied]="s.status==='OCCUPIED'"
-             [class.available]="s.status==='AVAILABLE'"
-             [class.reserved]="s.status==='RESERVED'"
-             [class.maintenance]="s.status==='MAINTENANCE'">
-          <div class="font-bold text-lg text-white">{{ s.slotNumber }}</div>
-          <div class="text-base">{{ slotTypeIcon(s.type) }}</div>
-          <div class="uppercase text-[9px] text-[#6b7280]">{{ slotStatusLabel(s.status) }}</div>
-          <div class="flex items-center w-full gap-1" *ngFor="let v of s.vehicles">
-            <span class="flex-1 text-[10px] text-[#e8e8e8]">{{ v.plate }}</span>
-            <span class="text-[11px]">{{ v.type === 'CAR' ? '🚗' : v.type === 'BIKE' ? '🏍️' : '🛵' }}</span>
-            <span class="text-[9px] text-[#6b7280]">{{ v.ownerFlat }}</span>
-            <button class="cursor-pointer font-bold text-[9px] rounded text-[#f59e0b] -v" (click)="unassignVehicle(s, v.id)" title="Remove">×</button>
+      <div class="block-label">BLOCK {{ group.block }}</div>
+      <div class="slot-grid">
+        <div class="slot-card"
+          *ngFor="let s of group.slots"
+          [class.available]="s.status==='AVAILABLE'"
+          [class.occupied]="s.status==='OCCUPIED'"
+          [class.reserved]="s.status==='RESERVED'"
+          [class.maintenance]="s.status==='MAINTENANCE'">
+          <div class="sc-number">{{ s.slotNumber }}</div>
+          <div class="sc-type">{{ slotTypeIcon(s.type) }}</div>
+          <div class="sc-status">{{ slotStatusLabel(s.status) }}</div>
+          <div class="sc-vehicle" *ngFor="let v of s.vehicles">
+            <span class="sc-plate">{{ v.plate }}</span>
+            <span class="sc-vtype">{{ v.type === 'CAR' ? '🚗' : v.type === 'BIKE' ? '🏍️' : '🛵' }}</span>
+            <span class="sc-owner">{{ v.ownerFlat }}</span>
+            <button class="sa unassign-v" (click)="unassignVehicle(s, v.id)" title="Remove">×</button>
           </div>
-          <div class="flex justify-center flex-wrap mt-1 gap-1">
-            <button class="cursor-pointer font-bold text-[9px] rounded text-[#f87171]"   *ngIf="!s.vehicles?.length" (click)="deleteSlot(s)">🗑</button>
-            <button class="cursor-pointer font-bold text-[9px] rounded text-[#f59e0b]"   *ngIf="s.status==='AVAILABLE'" (click)="startAssign(s)">+ Assign</button>
+          <div class="sc-actions">
+            <button class="sa delete"  *ngIf="!s.vehicles?.length"        (click)="deleteSlot(s)">🗑</button>
+            <button class="sa assign"  *ngIf="s.status==='AVAILABLE'"     (click)="startAssign(s)">+ Assign</button>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Assign vehicle modal -->
-    <div class="text-[#f59e0b] -modal" *ngIf="assignSlot">
-      <div class="flex flex-col w-full p-5 gap-3 rounded-xl">
-        <h3>Assign to Slot {{ assignSlot.block }}-{{ assignSlot.slotNumber }}</h3>
-        <input [(ngModel)]="assignSearch" placeholder="Search vehicle plate…" />
-        <div class="text-[#f59e0b] -list">
-          <div *ngFor="let v of assignableVehicles" class="text-[#f59e0b] -row" (click)="doAssign(v)">
-            <span class="text-[#f59e0b] -plate">{{ v.plateNumber }}</span>
-            <span>{{ v.ownerName }} · {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
-            <span class="text-[#f59e0b] -go">→</span>
-          </div>
-          <div *ngIf="!assignableVehicles.length" class="text-[#f59e0b] - text-center text-sm p-10 text-[#4b5563]">No approved vehicles without slots</div>
-        </div>
-        <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#9ca3af]" (click)="assignSlot=null">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- ── VIOLATIONS ────────────────────────────────────────────────────── -->
-  <div class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280] -body" *ngIf="activeTab==='VIOLATIONS' && !loading">
-    <div class="text-center text-sm p-10 text-[#4b5563]" *ngIf="!violations.length">✅ No violations on record</div>
-    <div class="flex flex-col p-3 gap-[6px] rounded-lg" *ngFor="let v of violations" [class.resolved]="v.resolved">
-      <div class="flex items-center flex-wrap gap-2">
-        <span class="font-semibold text-sm text-white rounded">{{ v.plateNumber }}</span>
-        <span class="text-xs text-[#f59e0b]">{{ violationIcon(v.violationType) }} {{ violationLabel(v.violationType) }}</span>
-        <span class="viol- opacity-50" *ngIf="v.resolved">✅ Resolved</span>
-        <span class="text-[11px] text-[#f59e0b]"     *ngIf="!v.resolved">⚠️ Open</span>
+  <!-- ── VIOLATIONS ─────────────────────────────────────────────────── -->
+  <div class="tab-body" *ngIf="activeTab==='VIOLATIONS' && !loading">
+    <div class="empty-state" *ngIf="!violations.length">
+      <div class="empty-icon">✅</div>
+      <p>No violations on record</p>
+    </div>
+    <div class="violation-row" *ngFor="let v of violations" [class.resolved]="v.resolved">
+      <div class="viol-top">
+        <span class="vr-plate">{{ v.plateNumber }}</span>
+        <span class="viol-type">{{ violationIcon(v.violationType) }} {{ violationLabel(v.violationType) }}</span>
+        <span class="viol-resolved" *ngIf="v.resolved">✅ Resolved</span>
+        <span class="viol-open"     *ngIf="!v.resolved">⚠️ Open</span>
       </div>
-      <p class="text-[13px] text-[#9ca3af]">{{ v.description }}</p>
-      <div class="flex flex-wrap text-[11px] gap-[10px] text-[#4b5563]">
+      <p class="viol-desc">{{ v.description }}</p>
+      <div class="viol-meta">
         <span>Reported by {{ v.reportedBy?.firstName }} · {{ v.reportedAt | date:'MMM d, h:mm a' }}</span>
         <span *ngIf="v.slot">Slot: {{ v.slot.block }}-{{ v.slot.slotNumber }}</span>
       </div>
-      <div class="viol- text-[#d1fae5]" *ngIf="!v.resolved">
-        <input [(ngModel)]="resolveNotes[v.id]" placeholder="Resolution note…" class="text-[#d1fae5] -input" />
-        <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#d1fae5]" (click)="resolveViolation(v)">Mark Resolved</button>
+      <div class="viol-resolve" *ngIf="!v.resolved">
+        <input class="resolve-input" [(ngModel)]="resolveNotes[v.id]" placeholder="Resolution note…" />
+        <button class="act resolve" (click)="resolveViolation(v)">Mark Resolved</button>
       </div>
     </div>
   </div>
 
-  <!-- ── VISITOR LOG ────────────────────────────────────────────────────── -->
-  <div class="flex justify-center items-center flex-1 cursor-pointer uppercase whitespace-nowrap text-[11px] gap-[6px] bg-none text-[#6b7280] -body" *ngIf="activeTab==='VISITORS' && !loading">
-    <div class="visitor- flex overflow-x-auto">
-      <button class="cursor-pointer text-[11px] text-[#6b7280] rounded-[20px]" [class.active]="visitorFilter==='INSIDE'" (click)="visitorFilter='INSIDE'">
+  <!-- ── VISITOR LOG ─────────────────────────────────────────────────── -->
+  <div class="tab-body" *ngIf="activeTab==='VISITORS' && !loading">
+    <div class="visitor-tabs">
+      <button class="vtab" [class.active]="visitorFilter==='INSIDE'" (click)="visitorFilter='INSIDE'">
         Inside Now <span *ngIf="currentVisitors.length">({{ currentVisitors.length }})</span>
       </button>
-      <button class="cursor-pointer text-[11px] text-[#6b7280] rounded-[20px]" [class.active]="visitorFilter==='ALL'" (click)="visitorFilter='ALL'">All Logs</button>
+      <button class="vtab" [class.active]="visitorFilter==='ALL'" (click)="visitorFilter='ALL'">All Logs</button>
     </div>
-    <div class="flex items-center flex-wrap p-3 gap-[10px] rounded-lg" *ngFor="let vv of displayedVisitors">
-      <div class="flex-shrink-0 font-semibold text-[13px] text-white rounded">{{ vv.plateNumber }}</div>
-      <div class="flex flex-col flex-1 text-xs gap-[2px] text-[#9ca3af]">
+    <div class="empty-state" *ngIf="!displayedVisitors.length">
+      <div class="empty-icon">🚗</div>
+      <p>No visitor vehicles {{ visitorFilter==='INSIDE' ? 'currently inside' : 'on record' }}</p>
+    </div>
+    <div class="visitor-row" *ngFor="let vv of displayedVisitors">
+      <div class="vi-plate">{{ vv.plateNumber }}</div>
+      <div class="vi-info">
         <strong>{{ vv.visitorName }}</strong> · {{ vv.visitorPhone }}
         <span>Visiting Flat: <strong>{{ vv.hostFlat }}</strong></span>
         <span *ngIf="vv.vehicleDescription">{{ vv.vehicleDescription }}</span>
       </div>
-      <div class="flex flex-col text-right text-[11px] gap-[2px] text-[#6b7280]">
+      <div class="vi-times">
         <span>In: {{ vv.enteredAt | date:'h:mm a' }}</span>
         <span *ngIf="vv.exitedAt">Out: {{ vv.exitedAt | date:'h:mm a' }}</span>
-        <span class="font-semibold text-[#10b981]" *ngIf="!vv.exitedAt">🟢 Inside</span>
+        <span class="vi-inside" *ngIf="!vv.exitedAt">🟢 Inside</span>
       </div>
-      <button class="cursor-pointer uppercase font-bold text-[11px] rounded-[5px] text-[#d1fae5]" *ngIf="!vv.exitedAt" (click)="logExit(vv)">Log Exit</button>
+      <button class="act resolve" *ngIf="!vv.exitedAt" (click)="logExit(vv)">Log Exit</button>
     </div>
-    <div class="text-center text-sm p-10 text-[#4b5563]" *ngIf="!displayedVisitors.length">No visitor vehicles {{ visitorFilter==='INSIDE' ? 'currently inside' : 'on record' }}</div>
   </div>
+
+  <!-- Reject modal -->
+  <div class="modal-backdrop" *ngIf="rejectTarget" (click)="rejectTarget=null">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Reject — {{ rejectTarget.plateNumber }}</h3>
+      <textarea class="modal-textarea" [(ngModel)]="rejectReason" placeholder="Reason for rejection…" rows="3"></textarea>
+      <div class="rm-actions">
+        <button class="act cancel flex-1" (click)="rejectTarget=null">Cancel</button>
+        <button class="act reject" style="flex:2" (click)="confirmReject()">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suspend modal -->
+  <div class="modal-backdrop" *ngIf="suspendTarget" (click)="suspendTarget=null">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Suspend — {{ suspendTarget.plateNumber }}</h3>
+      <textarea class="modal-textarea" [(ngModel)]="suspendReason" placeholder="Reason for suspension…" rows="3"></textarea>
+      <div class="rm-actions">
+        <button class="act cancel flex-1" (click)="suspendTarget=null">Cancel</button>
+        <button class="act suspend" style="flex:2" (click)="confirmSuspend()">Suspend</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign vehicle modal -->
+  <div class="modal-backdrop" *ngIf="assignSlot" (click)="assignSlot=null">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Assign to Slot {{ assignSlot.block }}-{{ assignSlot.slotNumber }}</h3>
+      <input class="modal-search" [(ngModel)]="assignSearch" placeholder="Search vehicle plate…" />
+      <div class="assign-list">
+        <div class="assign-row" *ngFor="let v of assignableVehicles" (click)="doAssign(v)">
+          <span class="assign-plate">{{ v.plateNumber }}</span>
+          <span>{{ v.ownerName }} · {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
+          <span class="assign-go">→</span>
+        </div>
+        <div class="assign-empty" *ngIf="!assignableVehicles.length">No approved vehicles without slots</div>
+      </div>
+      <button class="act cancel" (click)="assignSlot=null">Cancel</button>
+    </div>
+  </div>
+
 </div>

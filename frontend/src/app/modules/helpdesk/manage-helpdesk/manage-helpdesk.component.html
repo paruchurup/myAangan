@@ -1,31 +1,33 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
-  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
-    <div class="flex justify-between items-center mb-3">
+<div class="page">
+  <div class="page-header">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
-    <h1 class="text-[22px] font-bold mb-1 mt-0">⚙️ Manage Helpdesk</h1>
-    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Manage and assign service requests</p>
+    <h1>⚙️ Manage Helpdesk</h1>
+    <p>Manage and assign service requests</p>
   </div>
 
   <!-- Status count cards -->
   <div class="flex gap-[6px] py-[10px] px-[14px] overflow-x-auto">
-    <div class="count-card" *ngFor="let s of statusKeys"
+    <div class="count-card"
+      *ngFor="let s of statusKeys"
       [class.active]="statusFilter === s"
       [style.border-color]="statusFilter === s ? stCfg[s]?.color : ''"
       (click)="setStatusFilter(s)">
       <div class="cc-num" [style.color]="stCfg[s]?.color">{{ counts[s] || 0 }}</div>
       <div class="cc-label">{{ stCfg[s]?.icon }} {{ stCfg[s]?.label }}</div>
     </div>
-    <div class="count-card all" [class.active]="!statusFilter" (click)="setStatusFilter('')">
-      <div class="cc-num" style="color:#e8e8e8">{{ totalCount }}</div>
+    <div class="count-card" [class.active]="!statusFilter" (click)="setStatusFilter('')">
+      <div class="cc-num">{{ totalCount }}</div>
       <div class="cc-label">📋 All</div>
     </div>
   </div>
 
   <!-- Category filter -->
-  <div class="flex gap-[6px] px-[14px] pb-[10px] overflow-x-auto">
-    <button class="cf-btn" [class.active]="!catFilter" (click)="setCatFilter('')">All</button>
-    <button class="cf-btn" *ngFor="let c of catKeys"
+  <div class="filter-row">
+    <button class="filter-btn" [class.active]="!catFilter" (click)="setCatFilter('')">All</button>
+    <button class="filter-btn"
+      *ngFor="let c of catKeys"
       [class.active]="catFilter === c"
       [style.color]="catFilter === c ? catCfg[c]?.color : ''"
       (click)="setCatFilter(c)">
@@ -33,27 +35,36 @@
     </button>
   </div>
 
-  <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
-  <div class="text-center py-10 px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && !requests.length">
-    <div class="text-[36px]">✅</div><p class="text-base" style="font-family:'Poppins',sans-serif">No requests</p><small class="text-xs">Nothing matching the current filter</small>
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="empty-state" *ngIf="!loading && !requests.length">
+    <div class="empty-icon">✅</div>
+    <p>No requests</p>
+    <small>Nothing matching the current filter</small>
   </div>
 
   <div class="px-[14px] pb-3 flex flex-col gap-2">
-    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests">
-      <div class="rc-stripe" [style.background]="catCfg[r.category]?.color"></div>
-      <div class="flex-1 py-[10px] px-3 flex flex-col gap-1">
-        <div class="flex items-center gap-[6px]">
-          <div class="rc-flat">{{ r.raisedBy?.flatNumber || '—' }}</div>
-          <div class="rc-cat flex-1" [style.color]="catCfg[r.category]?.color">{{ catCfg[r.category]?.icon }} {{ catCfg[r.category]?.label }}</div>
-          <div class="rc-status" [style.background]="stCfg[r.status]?.bg" [style.color]="stCfg[r.status]?.color">
+    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests; let i = index"
+       [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
+      <div class="req-stripe" [style.background]="catCfg[r.category]?.color"></div>
+      <div class="flex-1 py-3 px-[14px] flex flex-col gap-[7px]">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-[6px]">
+            <span class="text-base">{{ catCfg[r.category]?.icon }}</span>
+            <span class="cat-name" [style.color]="catCfg[r.category]?.color">{{ catCfg[r.category]?.label }}</span>
+            <span class="flat-badge">Flat {{ r.raisedBy?.flatNumber || '—' }}</span>
+          </div>
+          <div class="status-pill"
+            [style.background]="stCfg[r.status]?.bg"
+            [style.color]="stCfg[r.status]?.color">
             {{ stCfg[r.status]?.icon }} {{ stCfg[r.status]?.label }}
           </div>
         </div>
-        <div class="rc-title">{{ r.title }}</div>
-        <div class="text-[11px] text-[#9ca3af]">{{ r.raisedBy?.firstName }} {{ r.raisedBy?.lastName }}</div>
-        <div class="flex gap-[6px] flex-wrap text-[11px] text-[#4b5563]">
-          <span>{{ r.createdAt | date:'d MMM, h:mm a' }}</span>
-          <span *ngIf="r.assignedStaff">· 👤 {{ r.assignedStaff }}</span>
+        <div class="req-title">{{ r.title }}</div>
+        <div class="flex flex-wrap gap-2 text-[11px] text-[#6b7280]">
+          <span>👤 {{ r.raisedBy?.firstName }} {{ r.raisedBy?.lastName }}</span>
+          <span>📅 {{ r.createdAt | date:'d MMM yyyy' }}</span>
+          <span *ngIf="r.assignedStaff">👷 {{ r.assignedStaff }}</span>
           <span *ngIf="!r.assignedStaff && r.status === 'PENDING'" class="text-[#f59e0b]">· Needs assignment</span>
         </div>
       </div>

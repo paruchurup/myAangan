@@ -1,46 +1,51 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20">
-  <div class="header">
-    <div class="flex justify-between items-center mb-3">
+<div class="page">
+
+  <div class="page-header">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
-    <h1 class="text-[22px] font-bold m-0 mb-[2px]">🏢 FM Dashboard</h1>
-    <p class="text-[13px] text-white/70 m-0 mb-4">Manage all society complaints</p>
-    <div class="grid grid-cols-3 gap-2">
-      <div class="rounded-xl p-[10px_8px] text-center" *ngFor="let s of statCards" [style.background]="s.bg">
-        <span class="block text-[22px] font-bold" [style.color]="s.color">{{ stats[s.key]||0 }}</span>
-        <span class="text-[10px] opacity-80">{{ s.label }}</span>
+    <h1>🏢 FM Dashboard</h1>
+    <p>Manage all society complaints</p>
+    <div class="stats-grid" *ngIf="!loading">
+      <div class="stat-chip" *ngFor="let s of statCards" [style.background]="s.bg">
+        <span class="sn" [style.color]="s.color">{{ stats[s.key] || 0 }}</span>
+        <span class="sl">{{ s.label }}</span>
       </div>
     </div>
   </div>
 
   <div class="filter-row">
-    <button class="filter-btn" *ngFor="let f of filters" [class.active]="activeFilter===f.value"
+    <button class="filter-btn" *ngFor="let f of filters"
+      [class.active]="activeFilter===f.value"
       (click)="setFilter(f.value)">{{ f.label }}</button>
   </div>
 
-  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
-  <div class="text-center p-[60px_20px]" *ngIf="!loading&&filtered.length===0">
-    <div class="text-[48px] mb-2">✅</div>
-    <p class="text-[16px] text-[#555]">No complaints in this category</p>
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="empty-state" *ngIf="!loading && filtered.length === 0">
+    <div class="empty-icon">✅</div>
+    <p>No complaints in this category</p>
   </div>
 
-  <div class="p-[12px_16px] flex flex-col gap-[10px]" *ngIf="!loading">
-    <a class="complaint-card" *ngFor="let c of filtered" [routerLink]="['/complaints', c.id]"
+  <div class="card-list" *ngIf="!loading && filtered.length > 0">
+    <a class="complaint-card" *ngFor="let c of filtered"
+      [routerLink]="['/complaints', c.id]"
       [class.breached]="c.slaBreached">
-      <div class="flex justify-between items-center mb-[6px]">
-        <span class="text-xs text-[#666]">{{ c.categoryLabel }}</span>
+      <div class="cc-top">
+        <span class="cc-category">{{ c.categoryLabel }}</span>
         <span class="badge" [style.background]="sb(c.status)" [style.color]="sc(c.status)">{{ c.statusLabel }}</span>
       </div>
-      <div class="text-[15px] font-bold text-[#1a1a2e] mb-1">{{ c.title }}</div>
-      <div class="text-xs text-[#888] mb-[6px]">{{ c.raisedByName }} · {{ c.raisedByFlat || 'No flat' }}</div>
-      <div class="flex gap-[10px] text-[11px] text-[#aaa] flex-wrap items-center">
+      <div class="cc-title">{{ c.title }}</div>
+      <div class="cc-by">{{ c.raisedByName }} · {{ c.raisedByFlat || 'No flat' }}</div>
+      <div class="cc-meta">
         <span>{{ c.createdAt | date:'MMM d' }}</span>
         <span *ngIf="c.attachmentCount">📎 {{ c.attachmentCount }}</span>
-        <span class="text-[#dc2626] font-semibold" *ngIf="!c.assignedToName">⚠️ Unassigned</span>
-        <span class="text-[#166534] font-semibold" *ngIf="c.assignedToName">👤 {{ c.assignedToName }}</span>
+        <span class="unassigned-tag" *ngIf="!c.assignedToName">⚠️ Unassigned</span>
+        <span class="assigned-tag"   *ngIf="c.assignedToName">👤 {{ c.assignedToName }}</span>
         <span class="esc-tag" *ngIf="c.escalationLevel!=='FACILITY_MANAGER'">🚨 {{ c.escalationLabel }}</span>
         <span class="sla-tag" *ngIf="c.slaBreached">⏰ Overdue</span>
       </div>
     </a>
   </div>
+
 </div>

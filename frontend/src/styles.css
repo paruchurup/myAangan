@@ -1,6 +1,231 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS  (CSS Custom Properties)
+   ═══════════════════════════════════════════════════ */
+:root {
+  /* Brand colours */
+  --color-primary:       #0f3460;
+  --color-primary-dark:  #1a1a2e;
+  --color-accent:        #e94560;
+  --color-amber:         #f59e0b;
+  --color-indigo:        #6366f1;
+  --color-violet:        #7c3aed;
+  --color-emerald:       #10b981;
+  --color-danger:        #ef4444;
+  --color-danger-dark:   #dc2626;
+
+  /* Surfaces */
+  --color-bg:            #f5f6fa;
+  --color-surface:       #ffffff;
+  --color-border:        #e5e7eb;
+
+  /* Text */
+  --color-text:          #1a1a2e;
+  --color-text-muted:    #6b7280;
+
+  /* Typography */
+  --font-heading:        'Poppins', -apple-system, sans-serif;
+  --font-body:           -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:           'IBM Plex Mono', 'Courier New', monospace;
+  --font-serif:          'Playfair Display', Georgia, serif;
+  --font-serif-body:     'Source Serif 4', Georgia, serif;
+  --font-sans-alt:       'IBM Plex Sans', -apple-system, sans-serif;
+
+  /* Shadows */
+  --shadow-card:         0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-card-md:      0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+
+  /* Border radii */
+  --radius-sm:           6px;
+  --radius-md:           10px;
+  --radius-lg:           14px;
+  --radius-xl:           20px;
+  --radius-pill:         999px;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SPINNER COLOUR MODIFIERS
+   ═══════════════════════════════════════════════════ */
+.spinner.amber   { border-top-color: var(--color-amber); }
+.spinner.emerald { border-top-color: var(--color-emerald); }
+.spinner.indigo  { border-top-color: var(--color-indigo); }
+.spinner.violet  { border-top-color: var(--color-violet); }
+.spinner.gold    { border-top-color: #c9a84c; }
+.spinner.sm      { width: 20px; height: 20px; border-width: 2px; }
+.spinner.lg      { width: 44px; height: 44px; border-width: 4px; }
+
+/* ═══════════════════════════════════════════════════
+   TAB STRIP  (.tabs > .tab)
+   ═══════════════════════════════════════════════════ */
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  background: white;
+  border-bottom: 2px solid var(--color-border);
+  gap: 0;
+}
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color: var(--color-text-muted);
+  padding: 11px 6px;
+  font-size: 12px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: color 0.15s, border-color 0.15s;
+}
+/* Default active = primary blue */
+.tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+/* Colour variants */
+.tab.amber.active   { color: var(--color-amber);   border-bottom-color: var(--color-amber); }
+.tab.violet.active  { color: var(--color-violet);  border-bottom-color: var(--color-violet); }
+.tab.emerald.active { color: var(--color-emerald); border-bottom-color: var(--color-emerald); }
+.tab.indigo.active  { color: var(--color-indigo);  border-bottom-color: var(--color-indigo); }
+
+/* ═══════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 50px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.empty-icon { font-size: 44px; line-height: 1; }
+.empty-state p {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-weight: 600;
+}
+.empty-state small {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ═══════════════════════════════════════════════════
+   FILE DROP ZONE
+   ═══════════════════════════════════════════════════ */
+.file-drop {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px 14px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  background: #fafafa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.file-drop:hover { border-color: var(--color-primary); background: #f0f5ff; }
+
+/* ═══════════════════════════════════════════════════
+   STATUS PILL  (.status-pill.{variant})
+   ═══════════════════════════════════════════════════ */
+.status-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  letter-spacing: 0.3px;
+}
+.status-pill.open      { background: #dbeafe; color: #1e40af; }
+.status-pill.closed    { background: #f3f4f6; color: #374151; }
+.status-pill.pending   { background: #fef3c7; color: #92400e; }
+.status-pill.active    { background: #dcfce7; color: #166534; }
+.status-pill.resolved  { background: #dcfce7; color: #166534; }
+.status-pill.rejected  { background: #fee2e2; color: #991b1b; }
+.status-pill.suspended { background: #fee2e2; color: #991b1b; }
+.status-pill.approved  { background: #dcfce7; color: #166534; }
+.status-pill.draft     { background: #fef3c7; color: #92400e; }
+.status-pill.archived  { background: #f3f4f6; color: #6b7280; }
+
+/* ═══════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e;
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  z-index: 999;
+  box-shadow: var(--shadow-card-md);
+  animation: toastIn 0.25s ease-out;
+}
+.toast.ok  { background: var(--color-emerald); }
+.toast.err { background: var(--color-danger); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+/* ═══════════════════════════════════════════════════
+   FILTER ROW  (pill-style filter buttons used on several pages)
+   ═══════════════════════════════════════════════════ */
+.filter-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 14px 14px 0;
+  padding-bottom: 2px;
+}
+.filter-btn {
+  background: white;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.filter-btn.active {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: white;
+}
+.filter-count {
+  background: var(--color-amber);
+  color: #111;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+.filter-btn.active .filter-count {
+  background: rgba(255,255,255,0.3);
+  color: white;
+}
+
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 

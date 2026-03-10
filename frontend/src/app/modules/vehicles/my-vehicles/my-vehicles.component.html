@@ -1,146 +1,161 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+<div class="page">
+
   <div class="page-header">
-    <div class="flex justify-between items-center mb-3">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
       <button class="add-btn" (click)="showForm=!showForm">{{ showForm ? '✕ Cancel' : '+ Register' }}</button>
     </div>
-    <h1 class="text-[22px] font-bold m-0 mb-1">🚗 My Vehicles</h1>
-    <p class="text-[13px] text-white/70 m-0">Manage your registered vehicles</p>
+    <h1>🚗 My Vehicles</h1>
+    <p>Manage your registered vehicles</p>
   </div>
 
-  <!-- Register form -->
-  <div class="form-panel" *ngIf="showForm">
-    <h2>Register Vehicle</h2>
+  <!-- ── REGISTER FORM ──────────────────────────────────────────────── -->
+  <div class="form-wrap" *ngIf="showForm">
 
-    <div class="flex gap-2 flex-wrap">
-      <button *ngFor="let t of vehicleTypes" class="type-pill"
-        [class.active]="form.type===t.value" (click)="form.type=t.value">
-        {{ t.icon }} {{ t.label }}
-      </button>
-    </div>
-
-    <div class="grid grid-cols-2 gap-[10px]">
-      <div class="flex flex-col gap-1">
-        <label>Plate Number *</label>
-        <input class="plate-input" [(ngModel)]="form.plateNumber" placeholder="KA01AB1234"
-          style="text-transform:uppercase" maxlength="20" />
-      </div>
-      <div class="flex flex-col gap-1">
-        <label>Make *</label>
-        <input [(ngModel)]="form.make" placeholder="e.g. Maruti" />
-      </div>
-      <div class="flex flex-col gap-1">
-        <label>Model *</label>
-        <input [(ngModel)]="form.model" placeholder="e.g. Swift" />
-      </div>
-      <div class="flex flex-col gap-1">
-        <label>Colour</label>
-        <input [(ngModel)]="form.colour" placeholder="e.g. Red" />
-      </div>
-      <div class="flex flex-col gap-1">
-        <label>Year</label>
-        <input [(ngModel)]="form.year" placeholder="2022" maxlength="4" />
+    <div class="form-section">
+      <div class="form-section-title">Vehicle Type</div>
+      <div class="type-pills">
+        <button *ngFor="let t of vehicleTypes" class="type-pill"
+          [class.active]="form.type===t.value" (click)="form.type=t.value">
+          {{ t.icon }} {{ t.label }}
+        </button>
       </div>
     </div>
 
-    <div class="flex flex-col gap-[6px]">
-      <label>Vehicle Photo (optional)</label>
-      <div class="photo-drop" (click)="photoInput.click()">
-        <span *ngIf="!photoFile">📷 Tap to add photo</span>
-        <span *ngIf="photoFile">✅ {{ photoFile.name }}</span>
+    <div class="form-section">
+      <div class="form-section-title">Vehicle Details</div>
+      <div class="grid grid-cols-2 gap-[10px]">
+        <div class="field">
+          <label>Plate Number *</label>
+          <input class="plate-input" [(ngModel)]="form.plateNumber" placeholder="KA01AB1234"
+            style="text-transform:uppercase" maxlength="20" />
+        </div>
+        <div class="field">
+          <label>Make *</label>
+          <input [(ngModel)]="form.make" placeholder="e.g. Maruti" />
+        </div>
+        <div class="field">
+          <label>Model *</label>
+          <input [(ngModel)]="form.model" placeholder="e.g. Swift" />
+        </div>
+        <div class="field">
+          <label>Colour</label>
+          <input [(ngModel)]="form.colour" placeholder="e.g. Red" />
+        </div>
+        <div class="field">
+          <label>Year</label>
+          <input [(ngModel)]="form.year" placeholder="2022" maxlength="4" />
+        </div>
       </div>
-      <input #photoInput type="file" accept="image/*" style="display:none" (change)="onPhoto($event)" />
     </div>
 
-    <div class="err" *ngIf="formError">{{ formError }}</div>
-    <button class="submit-btn" (click)="register()" [disabled]="submitting">
+    <div class="form-section">
+      <div class="form-section-title">Vehicle Photo <span class="opt">(optional)</span></div>
+      <div class="field">
+        <div class="file-drop" (click)="photoInput.click()">
+          <span *ngIf="!photoFile">📷 Tap to add photo</span>
+          <span *ngIf="photoFile">✅ {{ photoFile.name }}</span>
+        </div>
+        <input #photoInput type="file" accept="image/*" style="display:none" (change)="onPhoto($event)" />
+      </div>
+    </div>
+
+    <div class="form-err" *ngIf="formError">{{ formError }}</div>
+    <button class="btn-submit" (click)="register()" [disabled]="submitting">
       {{ submitting ? 'Registering…' : '📋 Submit for Approval' }}
     </button>
+
   </div>
 
-  <!-- Claim slot panel -->
-  <div class="form-panel claim-panel" *ngIf="claimVehicle">
-    <h2>🅿️ Claim Parking Slot for {{ claimVehicle.plateNumber }}</h2>
-    <p class="text-[12px] text-[#9ca3af] m-0 mb-1">
-      Cars: enter your fixed slot (max 1 car per slot).<br>
-      Bikes/scooters: enter a slot number to share it with other vehicles.
-    </p>
-    <div class="grid grid-cols-2 gap-[10px]">
-      <div class="flex flex-col gap-1">
-        <label>Block *</label>
-        <input [(ngModel)]="claimForm.block" placeholder="e.g. A" maxlength="5" style="text-transform:uppercase" />
+  <!-- ── CLAIM SLOT FORM ────────────────────────────────────────────── -->
+  <div class="form-wrap claim-panel" *ngIf="claimVehicle">
+
+    <div class="form-section">
+      <div class="form-section-title">🅿️ Claim Parking Slot for {{ claimVehicle.plateNumber }}</div>
+      <div class="form-warn">
+        Cars: enter your fixed slot (max 1 car per slot).<br>
+        Bikes/scooters: enter a slot number to share it with other vehicles.
       </div>
-      <div class="flex flex-col gap-1">
-        <label>Slot Number *</label>
-        <input [(ngModel)]="claimForm.slotNumber" placeholder="e.g. 12" maxlength="10" />
-      </div>
-      <div class="flex flex-col gap-1">
-        <label>Level / Floor</label>
-        <input [(ngModel)]="claimForm.level" placeholder="e.g. Ground, B1" maxlength="20" />
-      </div>
-      <div class="flex flex-col gap-1">
-        <label>Slot Type *</label>
-        <select [(ngModel)]="claimForm.type" class="sel">
-          <option value="CAR">🚗 Car</option>
-          <option value="BIKE">🏍️ Bike / Scooter</option>
-          <option value="EV">⚡ EV</option>
-          <option value="COMPACT">📦 Compact</option>
-        </select>
+      <div class="grid grid-cols-2 gap-[10px]">
+        <div class="field">
+          <label>Block *</label>
+          <input [(ngModel)]="claimForm.block" placeholder="e.g. A" maxlength="5" style="text-transform:uppercase" />
+        </div>
+        <div class="field">
+          <label>Slot Number *</label>
+          <input [(ngModel)]="claimForm.slotNumber" placeholder="e.g. 12" maxlength="10" />
+        </div>
+        <div class="field">
+          <label>Level / Floor</label>
+          <input [(ngModel)]="claimForm.level" placeholder="e.g. Ground, B1" maxlength="20" />
+        </div>
+        <div class="field">
+          <label>Slot Type *</label>
+          <select [(ngModel)]="claimForm.type">
+            <option value="CAR">🚗 Car</option>
+            <option value="BIKE">🏍️ Bike / Scooter</option>
+            <option value="EV">⚡ EV</option>
+            <option value="COMPACT">📦 Compact</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="err" *ngIf="claimError">{{ claimError }}</div>
-    <div class="flex gap-[10px]">
-      <button class="cancel-btn" (click)="closeClaimForm()">Cancel</button>
-      <button class="submit-btn" (click)="submitClaim()" [disabled]="claimSubmitting">
+
+    <div class="form-err" *ngIf="claimError">{{ claimError }}</div>
+    <div class="form-actions">
+      <button class="btn-cancel" (click)="closeClaimForm()">Cancel</button>
+      <button class="btn-submit" (click)="submitClaim()" [disabled]="claimSubmitting">
         {{ claimSubmitting ? 'Claiming…' : '✅ Confirm Slot' }}
       </button>
     </div>
+
   </div>
 
-  <!-- Vehicle list -->
-  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
+  <!-- Loading -->
+  <div class="loading" *ngIf="loading"><div class="spinner amber"></div></div>
 
-  <div class="p-[14px] flex flex-col gap-3 list-rows" *ngIf="!loading">
-    <div class="text-center p-[50px_20px]" *ngIf="!vehicles.length">
-      <div class="text-[48px] mb-3">🅿️</div>
-      <p class="text-[20px] text-[#9ca3af] m-0 mb-[6px]" style="font-family:'Poppins',sans-serif">No vehicles registered yet</p>
-      <small class="text-[13px] text-[#4b5563] block mb-5">Register your vehicle to get a parking slot assigned</small>
+  <!-- Vehicle list -->
+  <div class="vehicle-list" *ngIf="!loading">
+
+    <div class="empty-state" *ngIf="!vehicles.length">
+      <div class="empty-icon">🅿️</div>
+      <p>No vehicles registered yet</p>
+      <small>Register your vehicle to get a parking slot assigned</small>
       <button class="es-btn" (click)="showForm=true">+ Register Now</button>
     </div>
 
     <div class="vehicle-card" *ngFor="let v of vehicles; let i = index"
          [style.background]="i % 2 === 0 ? '#ffffff' : '#f0f5ff'">
-      <div class="w-[5px] flex-shrink-0" [style.background]="statusColor(v)"></div>
-      <div class="p-[14px] flex-1">
-        <div class="flex items-center gap-[10px] mb-2">
+      <div class="v-stripe" [style.background]="statusColor(v)"></div>
+      <div class="v-body">
+        <div class="v-top">
           <span class="plate">{{ v.plateNumber }}</span>
-          <span class="status-badge"
-            [style.background]="statusBg(v)" [style.color]="statusColor(v)">
+          <span class="status-badge" [style.background]="statusBg(v)" [style.color]="statusColor(v)">
             {{ statusLabel(v) }}
           </span>
         </div>
-        <div class="text-[13px] text-[#9ca3af] mb-[6px] flex items-center gap-[6px]">
-          <span class="text-[16px]">{{ typeIcon(v.type) }}</span>
+        <div class="v-meta">
+          <span class="v-type-icon">{{ typeIcon(v.type) }}</span>
           {{ v.colour }} {{ v.make }} {{ v.model }}
-          <span class="text-[#4b5563]" *ngIf="v.year">· {{ v.year }}</span>
+          <span *ngIf="v.year"> · {{ v.year }}</span>
         </div>
-        <div class="text-[13px] text-[#f59e0b] mb-1" *ngIf="v.assignedSlotLabel">
+        <div class="v-slot" *ngIf="v.assignedSlotLabel">
           🅿️ <strong>{{ v.assignedSlotLabel }}</strong>
         </div>
-        <div class="text-[13px] text-[#6b7280] mb-1" *ngIf="!v.assignedSlotLabel && v.status==='APPROVED'">
+        <div class="v-no-slot" *ngIf="!v.assignedSlotLabel && v.status==='APPROVED'">
           🅿️ No slot assigned yet —
           <button class="claim-btn" (click)="openClaimForm(v)">Claim your slot</button>
         </div>
-        <div class="text-[12px] text-[#92400e] bg-[#fef3c7] rounded p-[6px_10px] mb-1" *ngIf="v.adminNote">
-          📝 {{ v.adminNote }}
-        </div>
-        <div class="flex justify-between text-[11px] text-[#4b5563] mt-[6px]">
+        <div class="v-admin-note" *ngIf="v.adminNote">📝 {{ v.adminNote }}</div>
+        <div class="v-footer">
           <span>Registered {{ v.createdAt | date:'MMM d, y' }}</span>
-          <span class="text-[#f87171] font-semibold" *ngIf="v.violationCount > 0">
+          <span class="v-violations" *ngIf="v.violationCount > 0">
             ⚠️ {{ v.violationCount }} violation{{ v.violationCount > 1 ? 's' : '' }}
           </span>
         </div>
       </div>
     </div>
+
   </div>
+
 </div>

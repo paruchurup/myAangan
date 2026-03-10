@@ -1,32 +1,38 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20">
-  <div class="header">
-    <div class="flex justify-between items-center mb-3">
+<div class="page">
+
+  <div class="page-header">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
-    <h1 class="text-[22px] font-bold m-0 mb-1">🏛️ BM Dashboard</h1>
-    <p class="text-[13px] text-white/70 m-0 mb-2">Complaints escalated to Building Manager</p>
-    <div class="text-[13px] text-[#fcd34d] font-semibold">{{ complaints.length }} complaints · {{ breachedCount }} overdue</div>
+    <h1>🏛️ BM Dashboard</h1>
+    <p>Complaints escalated to Building Manager</p>
+    <div class="header-summary">{{ complaints.length }} complaints · {{ breachedCount }} overdue</div>
   </div>
-  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
-  <div class="text-center p-[60px_20px]" *ngIf="!loading&&complaints.length===0">
-    <div class="text-[48px] mb-2">✅</div>
-    <p class="text-[16px] text-[#555]">No complaints escalated to your level yet</p>
+
+  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="empty-state" *ngIf="!loading && complaints.length === 0">
+    <div class="empty-icon">✅</div>
+    <p>No complaints escalated to your level yet</p>
   </div>
-  <div class="p-[12px_16px] flex flex-col gap-[10px]" *ngIf="!loading">
-    <a class="complaint-card" *ngFor="let c of complaints" [routerLink]="['/complaints',c.id]"
+
+  <div class="card-list" *ngIf="!loading && complaints.length > 0">
+    <a class="complaint-card" *ngFor="let c of complaints"
+      [routerLink]="['/complaints', c.id]"
       [class.breached]="c.slaBreached">
-      <div class="flex justify-between items-center mb-[6px]">
-        <span class="text-xs text-[#666]">{{ c.categoryLabel }}</span>
+      <div class="cc-top">
+        <span class="cc-category">{{ c.categoryLabel }}</span>
         <span class="badge" [style.background]="sb(c.status)" [style.color]="sc(c.status)">{{ c.statusLabel }}</span>
       </div>
-      <div class="text-[15px] font-bold text-[#1a1a2e] mb-1">{{ c.title }}</div>
-      <div class="text-xs text-[#888] mb-[6px]">{{ c.raisedByName }} · {{ c.raisedByFlat||'—' }}</div>
-      <div class="flex gap-[10px] text-[11px] text-[#aaa] flex-wrap">
+      <div class="cc-title">{{ c.title }}</div>
+      <div class="cc-by">{{ c.raisedByName }} · {{ c.raisedByFlat || '—' }}</div>
+      <div class="cc-meta">
         <span>{{ c.createdAt | date:'MMM d, y' }}</span>
-        <span class="esc-lbl">🚨 {{ c.escalationLabel }}</span>
-        <span class="sla-lbl" *ngIf="c.slaBreached">⏰ SLA Breached</span>
-        <span *ngIf="c.slaDueAt&&!c.slaBreached">Due {{ c.slaDueAt | date:'MMM d' }}</span>
+        <span class="esc-tag">🚨 {{ c.escalationLabel }}</span>
+        <span class="sla-tag" *ngIf="c.slaBreached">⏰ SLA Breached</span>
+        <span *ngIf="c.slaDueAt && !c.slaBreached">Due {{ c.slaDueAt | date:'MMM d' }}</span>
       </div>
     </a>
   </div>
+
 </div>

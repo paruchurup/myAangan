@@ -1,4 +1,3 @@
-
 <div class="page">
 
   <div class="page-header">
@@ -11,151 +10,181 @@
 
   <!-- Toggle form button -->
   <div class="flex justify-end px-4 py-3">
-    <button (click)="toggleForm()"
-      class="flex items-center gap-2 bg-[#a78bfa] text-[#111] font-bold text-sm px-4 py-2 rounded-lg cursor-pointer border-none">
+    <button (click)="toggleForm()" class="new-pass-btn">
       {{ showForm ? '✕ Cancel' : '＋ New Pass' }}
     </button>
   </div>
 
   <!-- ── CREATE FORM ──────────────────────────────────────────────────── -->
-  <div class="form-card" *ngIf="showForm">
-    <div class="form-title">New Visitor Pass</div>
+  <div class="form-wrap" *ngIf="showForm">
 
-    <!-- Pass type toggle -->
-    <div class="type-toggle">
-      <button [class.active]="form.passType==='ONE_TIME'"  (click)="form.passType='ONE_TIME'">📅 One-Time Visit</button>
-      <button [class.active]="form.passType==='STANDING'"  (click)="form.passType='STANDING'">🔄 Standing Pass</button>
-    </div>
-
-    <div class="fg2">
-      <div class="field"><label>Visitor Name *</label>
-        <input [(ngModel)]="form.visitorName" placeholder="Ravi Kumar" /></div>
-      <div class="field"><label>Phone</label>
-        <input [(ngModel)]="form.visitorPhone" placeholder="+91 99999 00000" type="tel" /></div>
-    </div>
-
-    <div class="field"><label>Purpose</label>
-      <div class="purpose-chips">
-        <button *ngFor="let p of purposes" class="chip"
-          [class.active]="form.purpose===p" (click)="form.purpose=p">{{ p }}</button>
+    <!-- Pass type -->
+    <div class="form-section">
+      <div class="form-section-title">Pass Type</div>
+      <div class="type-toggle">
+        <button [class.active]="form.passType==='ONE_TIME'" (click)="form.passType='ONE_TIME'">📅 One-Time Visit</button>
+        <button [class.active]="form.passType==='STANDING'" (click)="form.passType='STANDING'">🔄 Standing Pass</button>
       </div>
-      <input [(ngModel)]="form.purpose" placeholder="Or type custom purpose…" style="margin-top:6px" />
+    </div>
+
+    <!-- Visitor details -->
+    <div class="form-section">
+      <div class="form-section-title">Visitor Details</div>
+      <div class="grid grid-cols-2 gap-[10px]">
+        <div class="field">
+          <label>Visitor Name *</label>
+          <input [(ngModel)]="form.visitorName" placeholder="Ravi Kumar" />
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input [(ngModel)]="form.visitorPhone" placeholder="+91 99999 00000" type="tel" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Purpose</label>
+        <div class="purpose-chips">
+          <button *ngFor="let p of purposes" class="chip"
+            [class.active]="form.purpose===p" (click)="form.purpose=p">{{ p }}</button>
+        </div>
+        <input [(ngModel)]="form.purpose" placeholder="Or type custom purpose…" style="margin-top:8px" />
+      </div>
     </div>
 
     <!-- ONE_TIME fields -->
-    <ng-container *ngIf="form.passType==='ONE_TIME'">
-      <div class="field"><label>Visit Date *</label>
-        <input type="date" [(ngModel)]="form.validDate" [min]="today" /></div>
-      <div class="fg2">
-        <div class="field"><label>Entry Window — From</label>
-          <input type="time" [(ngModel)]="form.windowStart" /></div>
-        <div class="field"><label>Entry Window — To</label>
-          <input type="time" [(ngModel)]="form.windowEnd" /></div>
+    <div class="form-section" *ngIf="form.passType==='ONE_TIME'">
+      <div class="form-section-title">Visit Schedule</div>
+      <div class="field">
+        <label>Visit Date *</label>
+        <input type="date" [(ngModel)]="form.validDate" [min]="today" />
       </div>
-    </ng-container>
+      <div class="grid grid-cols-2 gap-[10px]">
+        <div class="field">
+          <label>Entry Window — From</label>
+          <input type="time" [(ngModel)]="form.windowStart" />
+        </div>
+        <div class="field">
+          <label>Entry Window — To</label>
+          <input type="time" [(ngModel)]="form.windowEnd" />
+        </div>
+      </div>
+    </div>
 
     <!-- STANDING fields -->
-    <ng-container *ngIf="form.passType==='STANDING'">
-      <div class="field"><label>Allowed Days *</label>
+    <div class="form-section" *ngIf="form.passType==='STANDING'">
+      <div class="form-section-title">Recurring Schedule</div>
+      <div class="field">
+        <label>Allowed Days *</label>
         <div class="day-grid">
           <button *ngFor="let d of dayOptions" class="day-btn"
             [class.active]="isDaySelected(d.num)"
             (click)="toggleDay(d.num)">{{ d.label }}</button>
         </div>
       </div>
-      <div class="fg2">
-        <div class="field"><label>Valid From *</label>
-          <input type="date" [(ngModel)]="form.standingFrom" [min]="today" /></div>
-        <div class="field"><label>Valid Until (leave blank = indefinite)</label>
-          <input type="date" [(ngModel)]="form.standingUntil" [min]="form.standingFrom || today" /></div>
+      <div class="grid grid-cols-2 gap-[10px]">
+        <div class="field">
+          <label>Valid From *</label>
+          <input type="date" [(ngModel)]="form.standingFrom" [min]="today" />
+        </div>
+        <div class="field">
+          <label>Valid Until</label>
+          <input type="date" [(ngModel)]="form.standingUntil" [min]="form.standingFrom || today" />
+          <small>Leave blank for no expiry</small>
+        </div>
       </div>
-      <div class="fg2">
-        <div class="field"><label>Daily Entry From</label>
-          <input type="time" [(ngModel)]="form.windowStart" /></div>
-        <div class="field"><label>Daily Entry Until</label>
-          <input type="time" [(ngModel)]="form.windowEnd" /></div>
+      <div class="grid grid-cols-2 gap-[10px]">
+        <div class="field">
+          <label>Daily Entry From</label>
+          <input type="time" [(ngModel)]="form.windowStart" />
+        </div>
+        <div class="field">
+          <label>Daily Entry Until</label>
+          <input type="time" [(ngModel)]="form.windowEnd" />
+        </div>
       </div>
-    </ng-container>
-
-    <div class="field"><label>Notes for Guard</label>
-      <textarea [(ngModel)]="form.notes" rows="2" placeholder="e.g. Will arrive by car, wearing blue jacket…"></textarea>
     </div>
 
-    <div class="err" *ngIf="formError">{{ formError }}</div>
-    <button class="submit-btn" (click)="createPass()" [disabled]="creating">
+    <!-- Notes -->
+    <div class="form-section">
+      <div class="form-section-title">Notes <span class="opt">(optional)</span></div>
+      <div class="field">
+        <label>Notes for Guard</label>
+        <textarea [(ngModel)]="form.notes" rows="2"
+          placeholder="e.g. Will arrive by car, wearing blue jacket…"></textarea>
+      </div>
+    </div>
+
+    <div class="form-err" *ngIf="formError">{{ formError }}</div>
+    <button class="btn-submit" (click)="createPass()" [disabled]="creating">
       {{ creating ? 'Generating…' : '🎫 Generate Pass' }}
     </button>
+
   </div>
 
   <!-- Loading -->
-  <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="loading" *ngIf="loading"><div class="spinner violet"></div></div>
 
   <!-- Empty -->
-  <div class="empty" *ngIf="!loading && !passes.length && !showForm">
-    <div>🎫</div><p>No visitor passes yet</p>
+  <div class="empty-state" *ngIf="!loading && !passes.length && !showForm">
+    <div class="empty-icon">🎫</div>
+    <p>No visitor passes yet</p>
     <small>Create a pass to pre-approve visitors at the gate</small>
   </div>
 
   <!-- ── PASS CARDS ───────────────────────────────────────────────────── -->
-  <div *ngFor="let pass of passes" class="pass-card" [class]="'pass-card s-' + pass.status.toLowerCase()">
+  <div class="passes-list">
+    <div *ngFor="let pass of passes" class="pass-card" [class]="'pass-card s-' + pass.status.toLowerCase()">
 
-    <!-- Status stripe -->
-    <div class="stripe" [class]="'stripe-' + pass.status.toLowerCase()"></div>
+      <div class="stripe" [class]="'stripe-' + pass.status.toLowerCase()"></div>
 
-    <div class="pass-body">
-
-      <!-- Top row -->
-      <div class="pass-top">
-        <div class="visitor-name">{{ pass.visitorName }}</div>
-        <div class="status-pill" [style.background]="statusCfg[pass.status]?.bg"
-             [style.color]="statusCfg[pass.status]?.color">
-          {{ statusCfg[pass.status]?.icon }} {{ statusCfg[pass.status]?.label }}
+      <div class="pass-body">
+        <div class="pass-top">
+          <div class="visitor-name">{{ pass.visitorName }}</div>
+          <div class="status-pill"
+            [style.background]="statusCfg[pass.status]?.bg"
+            [style.color]="statusCfg[pass.status]?.color">
+            {{ statusCfg[pass.status]?.icon }} {{ statusCfg[pass.status]?.label }}
+          </div>
         </div>
-      </div>
 
-      <div class="pass-purpose" *ngIf="pass.purpose">{{ pass.purpose }}</div>
-      <div class="pass-phone" *ngIf="pass.visitorPhone">📱 {{ pass.visitorPhone }}</div>
+        <div class="pass-purpose" *ngIf="pass.purpose">{{ pass.purpose }}</div>
+        <div class="pass-phone"   *ngIf="pass.visitorPhone">📱 {{ pass.visitorPhone }}</div>
 
-      <!-- Validity badge -->
-      <div class="validity">
-        <span *ngIf="pass.passType==='ONE_TIME'">
-          📅 {{ pass.validDate | date:'EEE, d MMM yyyy' }}
-          <span *ngIf="pass.windowStart"> · {{ pass.windowStart }} – {{ pass.windowEnd }}</span>
-        </span>
-        <span *ngIf="pass.passType==='STANDING'">
-          🔄 {{ formatDays(pass.allowedDays) }}
-          <span *ngIf="pass.windowStart"> · {{ pass.windowStart }} – {{ pass.windowEnd }}</span>
-          <span *ngIf="pass.standingUntil"> · Until {{ pass.standingUntil | date:'d MMM' }}</span>
-          <span *ngIf="!pass.standingUntil"> · No expiry</span>
-        </span>
-      </div>
-
-      <div class="pass-notes" *ngIf="pass.notes">💬 {{ pass.notes }}</div>
-
-      <!-- QR + code (active passes only) -->
-      <div class="pass-qr-section" *ngIf="pass.status==='ACTIVE'">
-        <div class="qr-wrap">
-          <div [id]="'qr-' + pass.id" class="qr-canvas"></div>
+        <div class="validity">
+          <span *ngIf="pass.passType==='ONE_TIME'">
+            📅 {{ pass.validDate | date:'EEE, d MMM yyyy' }}
+            <span *ngIf="pass.windowStart"> · {{ pass.windowStart }} – {{ pass.windowEnd }}</span>
+          </span>
+          <span *ngIf="pass.passType==='STANDING'">
+            🔄 {{ formatDays(pass.allowedDays) }}
+            <span *ngIf="pass.windowStart"> · {{ pass.windowStart }} – {{ pass.windowEnd }}</span>
+            <span *ngIf="pass.standingUntil"> · Until {{ pass.standingUntil | date:'d MMM' }}</span>
+            <span *ngIf="!pass.standingUntil"> · No expiry</span>
+          </span>
         </div>
-        <div class="pass-code-block">
-          <div class="code-label">Pass Code</div>
-          <div class="pass-code">{{ formatCode(pass.token) }}</div>
-          <div class="code-hint">Show this to the guard</div>
+
+        <div class="pass-notes" *ngIf="pass.notes">💬 {{ pass.notes }}</div>
+
+        <div class="pass-qr-section" *ngIf="pass.status==='ACTIVE'">
+          <div class="qr-wrap">
+            <div [id]="'qr-' + pass.id" class="qr-canvas"></div>
+          </div>
+          <div class="pass-code-block">
+            <div class="code-label">Pass Code</div>
+            <div class="pass-code">{{ formatCode(pass.token) }}</div>
+            <div class="code-hint">Show this to the guard</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Log: last check-in -->
-      <div class="last-checkin" *ngIf="pass.logs?.length">
-        ✅ Last entry: {{ pass.logs[0].checkedInAt | date:'d MMM, h:mm a' }}
-        <span *ngIf="pass.logs[0].checkInStatus==='OVERRIDE'" class="override-tag">OVERRIDE</span>
-      </div>
+        <div class="last-checkin" *ngIf="pass.logs?.length">
+          ✅ Last entry: {{ pass.logs[0].checkedInAt | date:'d MMM, h:mm a' }}
+          <span *ngIf="pass.logs[0].checkInStatus==='OVERRIDE'" class="override-tag">OVERRIDE</span>
+        </div>
 
-      <!-- Actions -->
-      <div class="pass-actions" *ngIf="pass.status==='ACTIVE'">
-        <button class="action-cancel" (click)="cancelPass(pass)"
-          [disabled]="cancellingId===pass.id">
-          {{ cancellingId===pass.id ? 'Cancelling…' : '✕ Cancel Pass' }}
-        </button>
+        <div class="pass-actions" *ngIf="pass.status==='ACTIVE'">
+          <button class="action-cancel" (click)="cancelPass(pass)" [disabled]="cancellingId===pass.id">
+            {{ cancellingId===pass.id ? 'Cancelling…' : '✕ Cancel Pass' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -3,7 +3,7 @@
   <div style="background: linear-gradient(135deg, #1a1a2e, #0f3460)" class="px-4 pt-4 pb-6 text-white">
     <div class="flex justify-between items-center mb-3">
       <a class="bg-white/15 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/dashboard">← Back</a>
-      <a routerLink="/services/add" class="bg-[#e94560] text-white py-2 px-[14px] rounded-full no-underline text-[13px] font-semibold" *ngIf="canAddProvider">+ Add</a>
+      <a routerLink="/services/add" class="new-btn" *ngIf="canAddProvider">+ Add</a>
     </div>
     <h1 class="text-[22px] m-0 mb-1 font-bold">🔧 Service Directory</h1>
     <p class="text-[13px] text-white/70 m-0">Trusted workers recommended by your community</p>

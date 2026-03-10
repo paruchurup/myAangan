@@ -1,25 +1,27 @@
-<div class="min-h-screen bg-[#f5f6fa] pb-20 relative" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
-  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
-    <div class="flex justify-between items-center mb-3">
+<div class="page">
+  <div class="page-header">
+    <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
     </div>
-    <h1 class="text-[22px] font-bold mb-1 mt-0">⚙️ Manage Maintenance</h1>
-    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Manage maintenance fee collection</p>
+    <h1>⚙️ Manage Maintenance</h1>
+    <p>Manage maintenance fee collection</p>
   </div>
 
   <!-- Tab strip -->
-  <div class="flex bg-[#111] border-b border-[#2a2a2a] overflow-x-auto">
-    <button class="tab" [class.active]="tab==='BILLS'"     (click)="tab='BILLS'; loadBills()">📋 Monthly Bills</button>
-    <button class="tab" [class.active]="tab==='DEFAULTERS'" (click)="tab='DEFAULTERS'; loadDefaulters()">🚨 Defaulters</button>
-    <button class="tab" [class.active]="tab==='SUMMARY'"   (click)="tab='SUMMARY'; loadSummary()">📊 Summary</button>
-    <button class="tab" [class.active]="tab==='CONFIG'"    (click)="tab='CONFIG'; loadConfig()">⚙️ Config</button>
+  <div class="tabs">
+    <button class="tab emerald" [class.active]="tab==='BILLS'"      (click)="tab='BILLS'; loadBills()">📋 Monthly Bills</button>
+    <button class="tab emerald" [class.active]="tab==='DEFAULTERS'" (click)="tab='DEFAULTERS'; loadDefaulters()">🚨 Defaulters</button>
+    <button class="tab emerald" [class.active]="tab==='SUMMARY'"    (click)="tab='SUMMARY'; loadSummary()">📊 Summary</button>
+    <button class="tab emerald" [class.active]="tab==='CONFIG'"     (click)="tab='CONFIG'; loadConfig()">⚙️ Config</button>
   </div>
 
   <!-- ── MONTHLY BILLS ──────────────────────────────────────────────── -->
   <div class="p-[14px] flex flex-col gap-[10px]" *ngIf="tab==='BILLS'">
-    <div class="flex items-center gap-2 bg-[#252525] border border-[#333] rounded-lg py-[10px] px-3">
+
+    <!-- Month navigator -->
+    <div class="month-nav">
       <button class="nav-btn" (click)="prevMonth()">‹</button>
-      <span class="month-label flex-1 text-center">{{ monthNames[viewMonth] }} {{ viewYear }}</span>
+      <span class="month-label">{{ monthNames[viewMonth] }} {{ viewYear }}</span>
       <button class="nav-btn" (click)="nextMonth()">›</button>
       <button class="gen-btn" (click)="generateBills()" [disabled]="generating">
         {{ generating ? 'Generating…' : '+ Generate Bills' }}
@@ -28,30 +30,35 @@
 
     <!-- Summary strip -->
     <div class="grid grid-cols-4 gap-2" *ngIf="bills.length">
-      <div class="bg-[#252525] border border-[#333] rounded-lg p-[10px] text-center">
-        <div class="sv">{{ bills.length }}</div><div class="sk">Total Flats</div>
+      <div class="stat-chip">
+        <div class="stat-num">{{ bills.length }}</div>
+        <div class="stat-key">Total Flats</div>
       </div>
-      <div class="bg-[rgba(16,185,129,0.07)] border border-[rgba(16,185,129,0.3)] rounded-lg p-[10px] text-center">
-        <div class="sv">{{ paidCount }}</div><div class="sk">Paid</div>
+      <div class="stat-chip green">
+        <div class="stat-num text-[#10b981]">{{ paidCount }}</div>
+        <div class="stat-key">Paid</div>
       </div>
-      <div class="bg-[rgba(239,68,68,0.07)] border border-[rgba(239,68,68,0.3)] rounded-lg p-[10px] text-center">
-        <div class="sv">{{ unpaidCount }}</div><div class="sk">Unpaid</div>
+      <div class="stat-chip red">
+        <div class="stat-num text-[#ef4444]">{{ unpaidCount }}</div>
+        <div class="stat-key">Unpaid</div>
       </div>
-      <div class="bg-[rgba(245,158,11,0.07)] border border-[rgba(245,158,11,0.3)] rounded-lg p-[10px] text-center">
-        <div class="sv">₹{{ totalCollected | number:'1.0-0' }}</div><div class="sk">Collected</div>
+      <div class="stat-chip amber">
+        <div class="stat-num text-[#f59e0b]">₹{{ totalCollected | number:'1.0-0' }}</div>
+        <div class="stat-key">Collected</div>
       </div>
     </div>
 
-    <div class="flex justify-center py-[30px]" *ngIf="billsLoading"><div class="spinner"></div></div>
-    <div class="text-center py-10 px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!billsLoading && !bills.length">
-      <div class="text-[36px]">📋</div><p class="text-base" style="font-family:'Poppins',sans-serif">No bills for this month</p>
-      <small class="text-xs">Tap "Generate Bills" to create bills for all active flats</small>
+    <div class="loading" *ngIf="billsLoading"><div class="spinner emerald"></div></div>
+    <div class="empty-state" *ngIf="!billsLoading && !bills.length">
+      <div class="empty-icon">📋</div>
+      <p>No bills for this month</p>
+      <small>Tap "Generate Bills" to create bills for all active flats</small>
     </div>
 
     <!-- Bill rows -->
-    <div class="flex items-center gap-2 flex-wrap bg-[#252525] border border-[#333] rounded-lg py-[10px] px-3" *ngFor="let bill of bills">
+    <div class="bill-row" *ngFor="let bill of bills">
       <div class="flat-key">{{ bill.flatKey }}</div>
-      <div class="text-xs text-[#9ca3af] flex-1 min-w-[80px]" *ngIf="bill.resident">
+      <div class="text-xs text-[#6b7280] flex-1 min-w-[80px]" *ngIf="bill.resident">
         {{ bill.resident.firstName }} {{ bill.resident.lastName }}
       </div>
       <div class="bill-amount">₹{{ bill.totalAmount | number:'1.0-0' }}</div>
@@ -62,8 +69,7 @@
       </div>
       <div class="flex gap-[6px] items-center ml-auto">
         <span class="text-[11px] text-[#10b981]" *ngIf="bill.status==='PAID'">{{ bill.paidAt | date:'d MMM' }}</span>
-        <button class="waive-btn" *ngIf="bill.status==='UNPAID'"
-          (click)="startWaive(bill)">Waive</button>
+        <button class="waive-btn" *ngIf="bill.status==='UNPAID'" (click)="startWaive(bill)">Waive</button>
         <a class="text-base no-underline cursor-pointer" *ngIf="bill.status==='PAID' && bill.receiptPath"
           [href]="svc.getReceiptUrl(bill.receiptPath)" target="_blank">📄</a>
       </div>
@@ -72,96 +78,100 @@
 
   <!-- ── DEFAULTERS ─────────────────────────────────────────────────── -->
   <div class="p-[14px] flex flex-col gap-[10px]" *ngIf="tab==='DEFAULTERS'">
-    <div class="text-xs text-[#6b7280] bg-[#252525] border border-[#333] rounded-md py-2 px-3">Flats with 2 or more unpaid bills</div>
-    <div class="flex justify-center py-[30px]" *ngIf="defLoading"><div class="spinner"></div></div>
-    <div class="text-center py-10 px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!defLoading && !defaulters.length">
-      <div class="text-[36px]">🎉</div><p class="text-base" style="font-family:'Poppins',sans-serif">No defaulters</p><small class="text-xs">All flats are up to date</small>
+    <div class="form-warn">Flats with 2 or more unpaid bills</div>
+    <div class="loading" *ngIf="defLoading"><div class="spinner emerald"></div></div>
+    <div class="empty-state" *ngIf="!defLoading && !defaulters.length">
+      <div class="empty-icon">🎉</div>
+      <p>No defaulters</p>
+      <small>All flats are up to date</small>
     </div>
-    <div class="flex items-center gap-3 bg-[#252525] border border-[rgba(239,68,68,0.2)] border-l-4 border-l-[#ef4444] rounded-lg py-[10px] px-[14px]" *ngFor="let d of defaulters; let i = index">
+    <div class="defaulter-row" *ngFor="let d of defaulters; let i = index">
       <div class="def-rank">{{ i + 1 }}</div>
-      <div class="def-flat flex-1">{{ d.flatKey }}</div>
-      <div>
-        <span class="count-badge">{{ d.unpaidCount }} month{{ d.unpaidCount > 1 ? 's' : '' }} unpaid</span>
-      </div>
+      <div class="flat-key flex-1">{{ d.flatKey }}</div>
+      <span class="def-badge">{{ d.unpaidCount }} month{{ d.unpaidCount > 1 ? 's' : '' }} unpaid</span>
     </div>
   </div>
 
   <!-- ── SUMMARY ────────────────────────────────────────────────────── -->
   <div class="p-[14px] flex flex-col gap-[10px]" *ngIf="tab==='SUMMARY'">
-    <div class="flex justify-center py-[30px]" *ngIf="sumLoading"><div class="spinner"></div></div>
-    <div class="summary-row header-row">
-      <span>Month</span><span>Bills</span><span>Collected</span><span>Pending</span>
-    </div>
-    <div class="summary-row" *ngFor="let s of summary; let i = index" [class.alt]="i%2===0">
-      <span class="font-semibold text-[#e8e8e8]">{{ s.monthName }}</span>
-      <span>{{ s.totalBills }}</span>
-      <span class="text-[#10b981]" style="font-family:'IBM Plex Mono',monospace">₹{{ s.collected | number:'1.0-0' }}</span>
-      <span class="text-[#f87171]" style="font-family:'IBM Plex Mono',monospace">₹{{ s.pending | number:'1.0-0' }}</span>
+    <div class="loading" *ngIf="sumLoading"><div class="spinner emerald"></div></div>
+    <div class="summary-table" *ngIf="!sumLoading">
+      <div class="summary-row header-row">
+        <span>Month</span><span>Bills</span><span>Collected</span><span>Pending</span>
+      </div>
+      <div class="summary-row" *ngFor="let s of summary; let i = index" [class.alt]="i%2===0">
+        <span class="font-semibold text-[#1a1a2e]">{{ s.monthName }}</span>
+        <span>{{ s.totalBills }}</span>
+        <span class="text-[#10b981] font-mono">₹{{ s.collected | number:'1.0-0' }}</span>
+        <span class="text-[#ef4444] font-mono">₹{{ s.pending | number:'1.0-0' }}</span>
+      </div>
     </div>
   </div>
 
   <!-- ── CONFIG ─────────────────────────────────────────────────────── -->
-  <div class="p-[14px] flex flex-col gap-[10px]" *ngIf="tab==='CONFIG'">
-    <div class="flex justify-center py-[30px]" *ngIf="cfgLoading"><div class="spinner"></div></div>
-    <div class="flex flex-col gap-3" *ngIf="config && !cfgLoading">
-      <div class="cfg-section">BILLING SETTINGS</div>
-      <div class="flex flex-col gap-1">
+  <div class="form-wrap" *ngIf="tab==='CONFIG'">
+    <div class="loading" *ngIf="cfgLoading"><div class="spinner emerald"></div></div>
+    <div class="form-section" *ngIf="config && !cfgLoading">
+      <div class="cfg-section">Billing Settings</div>
+      <div class="field">
         <label>Society Name</label>
         <input [(ngModel)]="config.societyName" placeholder="MyAangan Society" />
       </div>
       <div class="grid grid-cols-2 gap-[10px]">
-        <div class="flex flex-col gap-1">
+        <div class="field">
           <label>Monthly Amount (₹)</label>
           <input type="number" [(ngModel)]="config.monthlyAmount" />
         </div>
-        <div class="flex flex-col gap-1">
+        <div class="field">
           <label>Due Day of Month</label>
           <input type="number" [(ngModel)]="config.dueDayOfMonth" min="1" max="28" />
         </div>
       </div>
 
-      <div class="cfg-section">PENALTY SETTINGS</div>
+      <div class="cfg-section">Penalty Settings</div>
       <div class="grid grid-cols-2 gap-[10px]">
-        <div class="flex flex-col gap-1">
+        <div class="field">
           <label>Flat Penalty After Due Date (₹)</label>
           <input type="number" [(ngModel)]="config.latePenaltyFlat" />
         </div>
-        <div class="flex flex-col gap-1">
+        <div class="field">
           <label>Monthly Interest (%)</label>
           <input type="number" [(ngModel)]="config.lateInterestPct" step="0.5" />
         </div>
       </div>
 
-      <div class="cfg-section">RAZORPAY INTEGRATION</div>
-      <div class="text-[11px] text-[#6b7280] bg-[#252525] border border-[#333] rounded-md py-2 px-[10px]">Enter your Razorpay API credentials. Get them from the Razorpay Dashboard → Settings → API Keys.</div>
-      <div class="flex flex-col gap-1">
+      <div class="cfg-section">Razorpay Integration</div>
+      <div class="form-warn mb-3">Enter your Razorpay API credentials. Get them from the Razorpay Dashboard → Settings → API Keys.</div>
+      <div class="field">
         <label>Key ID (public)</label>
         <input [(ngModel)]="config.razorpayKeyId" placeholder="rzp_live_XXXXXXXXXXXXXXXX" />
       </div>
-      <div class="flex flex-col gap-1">
+      <div class="field">
         <label>Key Secret (write-only)</label>
         <input type="password" [(ngModel)]="razorpaySecret" placeholder="Enter to update secret…" />
-        <small>Leave blank to keep existing secret unchanged.</small>
+        <small class="text-xs text-[#888]">Leave blank to keep existing secret unchanged.</small>
       </div>
 
-      <div class="bg-[rgba(239,68,68,0.1)] border border-[#ef4444] text-[#f87171] p-2 rounded-md text-xs" *ngIf="cfgError">{{ cfgError }}</div>
-      <div class="bg-[rgba(16,185,129,0.1)] border border-[#10b981] text-[#10b981] p-2 rounded-md text-xs" *ngIf="cfgOk">{{ cfgOk }}</div>
-      <button class="save-btn" (click)="saveConfig()" [disabled]="cfgSaving">
+      <div class="form-err" *ngIf="cfgError">{{ cfgError }}</div>
+      <div class="form-success" *ngIf="cfgOk">{{ cfgOk }}</div>
+      <button class="btn-submit mt-2" (click)="saveConfig()" [disabled]="cfgSaving">
         {{ cfgSaving ? 'Saving…' : '💾 Save Configuration' }}
       </button>
     </div>
   </div>
 
   <!-- Waive modal -->
-  <div class="fixed inset-0 bg-[rgba(0,0,0,0.7)] flex items-center justify-center z-[100] p-5" *ngIf="waivingBill" (click)="cancelWaive()">
-    <div class="bg-[#252525] border border-[#444] rounded-xl p-5 w-full max-w-[360px] flex flex-col gap-3" (click)="$event.stopPropagation()">
+  <div class="modal-backdrop" *ngIf="waivingBill" (click)="cancelWaive()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-title">Waive Bill</div>
-      <div class="text-sm text-[#9ca3af]">{{ waivingBill.flatKey }} — {{ monthNames[waivingBill.billMonth] }} {{ waivingBill.billYear }}</div>
+      <div class="modal-sub">{{ waivingBill.flatKey }} — {{ monthNames[waivingBill.billMonth] }} {{ waivingBill.billYear }}</div>
       <div class="modal-amount">₹{{ waivingBill.totalAmount | number:'1.2-2' }}</div>
-      <textarea [(ngModel)]="waiveNote" rows="3" placeholder="Reason for waiver (e.g. Hardship case, duplicate bill)…" class="waive-input"></textarea>
+      <textarea class="modal-textarea" [(ngModel)]="waiveNote" rows="3"
+        placeholder="Reason for waiver (e.g. Hardship case, duplicate bill)…"></textarea>
       <div class="flex gap-2">
-        <button class="modal-cancel-btn flex-1" (click)="cancelWaive()">Cancel</button>
-        <button class="confirm-waive-btn" style="flex:2" (click)="confirmWaive()" [disabled]="!waiveNote.trim() || waiving">
+        <button class="btn-cancel flex-1" (click)="cancelWaive()">Cancel</button>
+        <button class="btn-waive-confirm" style="flex:2" (click)="confirmWaive()"
+          [disabled]="!waiveNote.trim() || waiving">
           {{ waiving ? 'Waiving…' : '✓ Confirm Waive' }}
         </button>
       </div>

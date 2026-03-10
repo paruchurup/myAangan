@@ -1,9 +1,133 @@
-/* styles */
-/* NOC status badge colors - kept because they use dynamic [class]="r.status.toLowerCase()" */
-.pending { background: rgba(245,158,11,0.1); color: #f59e0b; }
-.fulfilled { background: rgba(16,185,129,0.1); color: #10b981; }
-.rejected { background: rgba(239,68,68,0.1); color: #ef4444; }
+/* Header actions */
+.header-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
 
-/* Spinner animation */
-@keyframes spin { to { transform: rotate(360deg); } }
-.animate-spin { animation: spin 0.8s linear infinite; }
+.admin-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.8);
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s;
+  &:hover { background: rgba(255,255,255,0.1); }
+}
+
+.noc-btn {
+  background: var(--color-indigo);
+  border: none;
+  color: white;
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  &:hover { opacity: 0.88; }
+}
+
+/* Tab body */
+.tab-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Doc cards */
+.doc-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+.doc-info     { display: flex; gap: 12px; align-items: flex-start; flex: 1; min-width: 0; }
+.doc-fmt-icon { font-size: 26px; flex-shrink: 0; }
+.doc-text     { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.doc-title    { font-size: 14px; font-weight: 700; color: var(--color-primary-dark); letter-spacing: 0.3px; }
+
+.doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+.doc-date   { color: #9ca3af; }
+.expiry-expired { color: var(--color-danger); font-weight: 600; }
+.expiry-soon    { color: var(--color-amber); font-weight: 500; }
+
+.doc-desc {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-download {
+  font-size: 18px;
+  text-decoration: none;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #f8faff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: border-color 0.15s, background 0.15s;
+  &:hover { border-color: var(--color-indigo); background: #eef2ff; }
+}
+
+/* NOC request form uses global .form-wrap / .form-section / .field / .btn-submit */
+.opt { font-size: 11px; color: var(--color-text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+/* Past requests section */
+.requests-label {
+  font-family: var(--font-heading);
+  font-size: 10px;
+  color: var(--color-indigo);
+  letter-spacing: 2px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+  margin-top: 4px;
+}
+
+.noc-req-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-indigo);
+  border-radius: var(--radius-md);
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: var(--shadow-card);
+}
+
+.noc-req-top      { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.noc-req-purpose  { font-size: 14px; font-weight: 700; color: var(--color-primary-dark); }
+.noc-req-details  { font-size: 12px; color: var(--color-text-muted); }
+.noc-req-rejection { font-size: 12px; color: var(--color-danger); font-style: italic; }
+.noc-req-date     { font-size: 11px; color: #9ca3af; }
+
+/* NOC status pills — dynamic [class]="r.status.toLowerCase()" binding */
+.noc-status-pill {
+  font-size: 10px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.pending   { background: rgba(245,158,11,0.12);  color: var(--color-amber); }
+.fulfilled { background: rgba(16,185,129,0.12);  color: var(--color-emerald); }
+.rejected  { background: rgba(239,68,68,0.12);   color: var(--color-danger); }
