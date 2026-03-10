@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-[12px]">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <button class="create-btn" *ngIf="canCreate" routerLink="/events/create">+ New Event</button>
+    </div>
+    <h1>🎉 Events</h1>
+    <p>Society events and gatherings</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex bg-[#111] border-b border-[#2a2a2a]">
+    <button class="tab" [class.active]="tab==='ACTIVE'" (click)="tab='ACTIVE'">Active</button>
+    <button class="tab" [class.active]="tab==='ALL'"    (click)="tab='ALL'; loadAll()">All Events</button>
+  </div>
+
+  <div class="flex justify-center p-[40px]" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="text-center p-[50px_20px] flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && displayEvents.length === 0">
+    <div>🎊</div><p>No events yet</p>
+    <small *ngIf="canCreate">Tap "+ New Event" to create the first one</small>
+  </div>
+
+  <div class="flex flex-col gap-[10px] p-[12px_14px]">
+    <a class="event-card" [routerLink]="['/events', e.id]" *ngFor="let e of displayEvents">
+      <div class="w-[5px] flex-shrink-0" [style.background]="statusCfg[e.status]?.color"></div>
+      <div class="flex-1 p-[12px_14px] flex flex-col gap-[7px]">
+        <div class="flex justify-between items-start gap-2">
+          <div class="event-name">{{ e.name }}</div>
+          <div class="status-pill"
+            [style.background]="statusCfg[e.status]?.bg"
+            [style.color]="statusCfg[e.status]?.color">
+            {{ statusCfg[e.status]?.icon }} {{ statusCfg[e.status]?.label }}
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-[10px] text-[11px] text-[#6b7280]">
+          <span>📅 {{ e.eventDate | date:'d MMM yyyy, h:mm a' }}</span>
+          <span *ngIf="e.venue">📍 {{ e.venue }}</span>
+        </div>
+        <div class="text-xs text-[#9ca3af] leading-[1.5]" *ngIf="e.description">{{ e.description | slice:0:100 }}{{ e.description.length > 100 ? '…' : '' }}</div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-[#f59e0b] font-semibold">Est. Budget: ₹{{ e.estimatedBudget | number:'1.0-0' }}</span>
+          <span class="text-[11px] text-[#4b5563]">by {{ e.createdBy?.firstName }} {{ e.createdBy?.lastName }}</span>
+        </div>
+        <div class="vote-badge" *ngIf="e.status === 'VOTING'">
+          🗳️ Voting closes {{ e.voteDeadline | date:'d MMM, h:mm a' }}
+        </div>
+      </div>
+    </a>
+  </div>
+</div>

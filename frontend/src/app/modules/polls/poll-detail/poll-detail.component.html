@@ -1,0 +1,193 @@
+<div class="page" *ngIf="poll">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-[12px]">
+      <a class="back-btn" routerLink="/polls">← Back</a>
+    </div>
+    <h1>{{ poll?.question || '🗳️ Poll' }}</h1>
+    <p>{{ poll?.status }} · {{ poll?.totalVoters }} voter{{ poll?.totalVoters!==1?'s':'' }}</p>
+  </div>
+  <div class="header">
+    <div class="flex items-center gap-2 mb-[12px] flex-wrap">
+      <span class="st" [style.background]="stBg()" [style.color]="stColor()">{{ stLabel() }}</span>
+      <span class="type">{{ typeIcon() }} {{ typeLabel() }}</span>
+      <span class="anon" *ngIf="poll.anonymous">🔒 Anonymous</span>
+    </div>
+    <p class="desc" *ngIf="poll.description">{{ poll.description }}</p>
+    <div class="flex gap-3 text-xs text-[rgba(255,255,255,0.4)] flex-wrap mb-[6px]">
+      <span>By {{ poll.createdByName }}</span>
+      <span *ngIf="poll.endsAt && poll.status==='ACTIVE'" [class.urgent]="isUrgent()">⏱ {{ timeLeft() }}</span>
+      <span *ngIf="poll.status==='CLOSED'">Closed {{ poll.closedAt|date:'MMM d, y' }}</span>
+    </div>
+    <div class="text-xs text-[rgba(255,255,255,0.35)]">{{ poll.totalVoters }} voter{{ poll.totalVoters!==1?'s':'' }} participated</div>
+  </div>
+
+  <!-- ── VOTING AREA ──────────────────────────────────────────────────────── -->
+  <div class="flex flex-col gap-[14px] p-[14px]">
+
+    <!-- Already voted + no change allowed -->
+    <div class="voted-notice" *ngIf="poll.hasVoted && !poll.allowVoteChange && poll.status==='ACTIVE'">
+      ✓ You have voted. Vote changes are not allowed for this poll.
+    </div>
+
+    <!-- Voting form -->
+    <div class="vote-card" *ngIf="poll.status==='ACTIVE' && (!poll.hasVoted || poll.allowVoteChange)">
+      <h2 *ngIf="!poll.hasVoted">Cast Your Vote</h2>
+      <h2 *ngIf="poll.hasVoted">Change Your Vote</h2>
+
+      <!-- SINGLE CHOICE -->
+      <div *ngIf="poll.type==='SINGLE_CHOICE'" class="flex flex-col gap-2 mb-[14px]">
+        <label class="opt" *ngFor="let o of poll.options"
+          [class.sel]="selectedOptions.includes(o.id)"
+          (click)="selectSingle(o.id)">
+          <span class="opt-em">{{ o.emoji || '◦' }}</span>
+          <span class="opt-text">{{ o.text }}</span>
+          <span class="opt-check" *ngIf="selectedOptions.includes(o.id)">✓</span>
+        </label>
+      </div>
+
+      <!-- MULTIPLE CHOICE -->
+      <div *ngIf="poll.type==='MULTIPLE_CHOICE'" class="flex flex-col gap-2 mb-[14px]">
+        <div class="text-xs text-[#6b7280] mb-2" *ngIf="poll.maxChoices>0">Select up to {{ poll.maxChoices }} options</div>
+        <label class="opt" *ngFor="let o of poll.options"
+          [class.sel]="selectedOptions.includes(o.id)"
+          [class.disabled]="poll.maxChoices>0 && selectedOptions.length>=poll.maxChoices && !selectedOptions.includes(o.id)"
+          (click)="toggleOption(o.id)">
+          <span class="opt-em">{{ o.emoji || '☐' }}</span>
+          <span class="opt-text">{{ o.text }}</span>
+          <span class="opt-check" *ngIf="selectedOptions.includes(o.id)">✓</span>
+        </label>
+      </div>
+
+      <!-- YES / NO -->
+      <div *ngIf="poll.type==='YES_NO'" class="flex gap-[10px] mb-[14px] flex-wrap">
+        <button class="yn-btn yes" [class.sel]="yesNoVal==='YES'" (click)="yesNoVal='YES'">👍 Yes</button>
+        <button class="yn-btn no"  [class.sel]="yesNoVal==='NO'"  (click)="yesNoVal='NO'">👎 No</button>
+        <button class="yn-btn abs" [class.sel]="yesNoVal==='ABSTAIN'" (click)="yesNoVal='ABSTAIN'">🤷 Abstain</button>
+      </div>
+
+      <!-- RATING -->
+      <div *ngIf="poll.type==='RATING'" class="flex items-center gap-2 mb-[14px]">
+        <button class="star" *ngFor="let s of [1,2,3,4,5]"
+          [class.lit]="ratingVal >= s" (click)="ratingVal=s">★</button>
+        <span class="star-label" *ngIf="ratingVal">{{ ratingLabel() }}</span>
+      </div>
+
+      <button class="submit-btn" (click)="submitVote()" [disabled]="!canSubmit() || voting">
+        {{ voting ? 'Submitting…' : (poll.hasVoted ? 'Update Vote' : 'Submit Vote') }}
+      </button>
+      <div class="text-[#f87171] text-sm mt-2" *ngIf="voteErr">{{ voteErr }}</div>
+    </div>
+
+    <!-- ── RESULTS ──────────────────────────────────────────────────────── -->
+    <div *ngIf="poll.resultsVisible && poll.results" class="results-card">
+      <h2>Results <span class="live" *ngIf="poll.status==='ACTIVE'">live</span></h2>
+
+      <!-- Choice results -->
+      <div *ngIf="poll.type==='SINGLE_CHOICE'||poll.type==='MULTIPLE_CHOICE'" class="flex flex-col gap-3">
+        <div *ngFor="let o of poll.options" class="flex flex-col gap-1">
+          <div class="flex justify-between items-end">
+            <span class="rb-lbl" [class.my]="poll.myOptionIds?.includes(o.id)">
+              {{ o.emoji }} {{ o.text }}
+              <span class="my-tag" *ngIf="poll.myOptionIds?.includes(o.id)">← your vote</span>
+            </span>
+            <span class="text-xs text-[#6b7280]">{{ o.voteCount }}</span>
+          </div>
+          <div class="rb-track">
+            <div class="rb-fill" [style.width.%]="o.percentage" [class.winner]="isWinner(o)"></div>
+          </div>
+          <span class="text-xs text-[#6b7280]">{{ o.percentage|number:'1.0-0' }}%</span>
+        </div>
+      </div>
+
+      <!-- Yes/No results -->
+      <div *ngIf="poll.type==='YES_NO'" class="yn-results">
+        <div class="yn-bar">
+          <div class="yb yes" [style.flex]="poll.results.yesCount||1">
+            👍 Yes <strong>{{ poll.results.yesCount }}</strong>
+            <span>{{ ynPct('yes') }}%</span>
+          </div>
+          <div class="yb no" [style.flex]="poll.results.noCount||1">
+            👎 No <strong>{{ poll.results.noCount }}</strong>
+            <span>{{ ynPct('no') }}%</span>
+          </div>
+          <div class="yb abs" [style.flex]="poll.results.abstainCount||0.2">
+            🤷 Abstain <strong>{{ poll.results.abstainCount }}</strong>
+          </div>
+        </div>
+        <div class="text-xs text-[#6b7280] mt-2" *ngIf="poll.myYesNoValue">Your vote: <strong class="text-[#a78bfa]">{{ poll.myYesNoValue }}</strong></div>
+      </div>
+
+      <!-- Rating results -->
+      <div *ngIf="poll.type==='RATING'" class="flex flex-col gap-[14px]">
+        <div class="flex items-center gap-[10px]">
+          <span class="text-[36px]">⭐</span>
+          <span class="text-[36px] font-bold text-[#fbbf24]">{{ poll.results.averageRating|number:'1.1-1' }}</span>
+          <span class="text-xs text-[#6b7280]">average · {{ poll.totalVoters }} ratings</span>
+        </div>
+        <div class="flex flex-col gap-[6px]">
+          <div *ngFor="let s of [5,4,3,2,1]" class="flex items-center gap-2">
+            <span class="text-[#fbbf24] text-xs w-5 text-right flex-shrink-0">{{ s }}★</span>
+            <div class="sd-track">
+              <div class="sd-fill" [style.width.%]="starPct(s)"></div>
+            </div>
+            <span class="text-xs text-[#6b7280] w-5">{{ poll.results.ratingDistribution[s]||0 }}</span>
+          </div>
+        </div>
+        <div class="text-xs text-[#6b7280] mt-2" *ngIf="poll.myRatingValue">Your rating: <strong class="text-[#a78bfa]">{{ poll.myRatingValue }}★</strong></div>
+      </div>
+    </div>
+
+    <!-- Results hidden notice -->
+    <div class="hidden-results" *ngIf="!poll.resultsVisible && poll.hasVoted">
+      🔒 Results will be visible {{ poll.resultVisibility==='AFTER_CLOSE' ? 'after the poll closes' : 'to organisers only' }}
+    </div>
+
+    <!-- ── VOTER LIST (admin) ───────────────────────────────────────────── -->
+    <div class="voters-card" *ngIf="poll.results?.voters?.length">
+      <h2>Voter Details <span class="vc">{{ poll.results!.voters!.length }}</span></h2>
+      <div class="vt">
+        <div class="vrow" *ngFor="let v of poll.results!.voters">
+          <div class="vname">{{ v.name }}</div>
+          <div class="vrole">{{ v.role }}</div>
+          <div class="vflat">{{ v.flat||'—' }}</div>
+          <div class="vfor">{{ v.votedFor }}</div>
+          <div class="vdate">{{ v.votedAt|date:'MMM d, h:mm a' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMMENTS ─────────────────────────────────────────────────────── -->
+    <div class="comments-card" *ngIf="poll.allowComments">
+      <h2>Discussion <span class="cc">{{ poll.comments.length }}</span></h2>
+      <div class="clist">
+        <div class="cm" *ngFor="let c of poll.comments">
+          <div class="flex items-center gap-2 mb-[6px] flex-wrap">
+            <strong class="text-[#e2e8f0] text-sm">{{ c.authorName }}</strong>
+            <span class="cm-role">{{ c.authorRole }}</span>
+            <span class="text-[11px] text-[#4b5563] ml-auto">{{ c.createdAt|date:'MMM d, h:mm a' }}</span>
+            <button class="cm-del" *ngIf="c.canDelete || canManage" (click)="delComment(c.id)">×</button>
+          </div>
+          <p class="text-sm text-[#9ca3af] m-0 leading-[1.5]">{{ c.text }}</p>
+        </div>
+        <div class="text-[#4b5563] text-sm text-center p-5" *ngIf="!poll.comments.length">No comments yet — start the discussion!</div>
+      </div>
+      <div class="flex flex-col gap-2" *ngIf="poll.status!=='ARCHIVED'">
+        <textarea [(ngModel)]="newComment" placeholder="Share your thoughts…" rows="2" class="add-cm-textarea"></textarea>
+        <button (click)="submitComment()" [disabled]="!newComment.trim()" class="add-cm-btn">Post</button>
+      </div>
+    </div>
+
+    <!-- ── ADMIN ACTIONS ─────────────────────────────────────────────────── -->
+    <div class="mgmt" *ngIf="canManage">
+      <h2>Manage</h2>
+      <div class="flex gap-2 flex-wrap">
+        <a [routerLink]="['/polls/manage']" class="mb edit">✏️ All Polls</a>
+        <button class="mb pub" *ngIf="poll.status==='DRAFT'" (click)="doPublish()">▶ Publish</button>
+        <button class="mb close" *ngIf="poll.status==='ACTIVE'" (click)="doClose()">⏹ Close</button>
+        <button class="mb arch" *ngIf="poll.status==='CLOSED'" (click)="doArchive()">📦 Archive</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex justify-center p-[60px]" *ngIf="!poll && loading"><div class="sp"></div></div>

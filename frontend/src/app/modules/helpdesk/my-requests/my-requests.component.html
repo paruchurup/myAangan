@@ -1,0 +1,36 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <button class="raise-btn" routerLink="/helpdesk/raise">+ New</button>
+    </div>
+    <h1 class="text-[22px] font-bold mb-1 mt-0">🛠️ My Service Requests</h1>
+    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Track your helpdesk service requests</p>
+  </div>
+
+  <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="text-center py-[50px] px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && !requests.length">
+    <div class="text-[42px]">🛠️</div><p class="text-lg" style="font-family:'Oswald',sans-serif">No requests yet</p>
+    <small class="text-xs">Tap "+ New" to raise a service request</small>
+  </div>
+
+  <div class="py-3 px-[14px] flex flex-col gap-[10px]">
+    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests">
+      <div class="rc-stripe" [style.background]="catCfg[r.category]?.color"></div>
+      <div class="flex-1 py-[11px] px-[13px] flex flex-col gap-[5px]">
+        <div class="flex justify-between items-center">
+          <div class="rc-cat" [style.color]="catCfg[r.category]?.color">{{ catCfg[r.category]?.icon }} {{ catCfg[r.category]?.label }}</div>
+          <div class="rc-status" [style.background]="stCfg[r.status]?.bg" [style.color]="stCfg[r.status]?.color">
+            {{ stCfg[r.status]?.icon }} {{ stCfg[r.status]?.label }}
+          </div>
+        </div>
+        <div class="rc-title">{{ r.title }}</div>
+        <div class="flex gap-[6px] flex-wrap text-[11px] text-[#4b5563]">
+          <span>{{ r.createdAt | date:'d MMM yyyy' }}</span>
+          <span *ngIf="r.assignedStaff">· 👤 {{ r.assignedStaff }}</span>
+          <span *ngIf="r.confirmedAt">· ✅ {{ r.confirmedAt | date:'d MMM, h:mm a' }}</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>

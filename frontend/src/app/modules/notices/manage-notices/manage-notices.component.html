@@ -1,0 +1,98 @@
+<div class="min-h-screen bg-[#faf8f4] pb-20" style="font-family:'Source Serif 4',Georgia,serif">
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/notices">← Back</a>
+      <a routerLink="/notices/create" class="bg-white/15 text-white py-[6px] px-3 rounded-full text-[13px] font-bold no-underline whitespace-nowrap">+ New Notice</a>
+    </div>
+    <h1 class="text-[22px] m-0 mb-1 font-bold">⚙️ Manage Notices</h1>
+    <p class="text-[13px] text-white/70 m-0">Edit and remove notices</p>
+
+    <!-- Stats row -->
+    <div class="flex items-center gap-3 pt-3" *ngIf="!loading">
+      <div class="flex flex-col items-center">
+        <span class="text-[20px] font-[800] text-white leading-none">{{ count('PUBLISHED') }}</span>
+        <span class="text-[10px] text-white/60 uppercase tracking-[0.5px] mt-[2px]">Live</span>
+      </div>
+      <div class="w-px h-7 bg-white/20"></div>
+      <div class="flex flex-col items-center">
+        <span class="text-[20px] font-[800] text-white leading-none">{{ count('DRAFT') }}</span>
+        <span class="text-[10px] text-white/60 uppercase tracking-[0.5px] mt-[2px]">Drafts</span>
+      </div>
+      <div class="w-px h-7 bg-white/20"></div>
+      <div class="flex flex-col items-center">
+        <span class="text-[20px] font-[800] text-white leading-none">{{ totalReads }}</span>
+        <span class="text-[10px] text-white/60 uppercase tracking-[0.5px] mt-[2px]">Total Reads</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="sp"></div></div>
+
+  <div class="p-[14px]" *ngIf="!loading">
+    <!-- Tabs -->
+    <div class="flex gap-[6px] mb-[14px] overflow-x-auto pb-1">
+      <button *ngFor="let t of tabs" class="tab bg-white border-[1.5px] border-[#e5e0d8] rounded-full text-[#6b7280] py-[7px] px-[14px] text-xs font-semibold cursor-pointer whitespace-nowrap flex items-center gap-[6px] transition-all duration-150" [class.active]="activeTab===t.v" (click)="activeTab=t.v">
+        {{ t.label }} <span class="bg-[#c9a84c] text-[#1a1a1a] text-[10px] py-[1px] px-[6px] rounded-[10px]" *ngIf="count(t.v)">{{ count(t.v) }}</span>
+      </button>
+    </div>
+
+    <!-- Notice list -->
+    <div class="flex flex-col gap-[10px]">
+      <div class="bg-white border border-[#e5e0d8] rounded-[10px] p-[14px]" *ngFor="let n of filtered()">
+        <div class="flex items-center gap-[6px] mb-[10px] flex-wrap">
+          <span class="text-[11px] font-semibold py-[3px] px-[10px] rounded-full" [style.color]="typeAccent(n.type)" [style.background]="typeAccent(n.type)+'15'">
+            {{ typeIcon(n.type) }} {{ typeLabel(n.type) }}
+          </span>
+          <span class="text-[10px] font-[700] py-[3px] px-2 rounded-[10px] tracking-[0.5px]"
+            [style.background]="priorityBg(n)" [style.color]="priorityColor(n)"
+            *ngIf="n.priority!=='NORMAL'">{{ n.priority }}</span>
+          <span class="text-[13px]" *ngIf="n.pinned">📌</span>
+          <span class="status-tag text-[10px] font-[700] py-[3px] px-2 rounded-lg tracking-[0.5px]" [class.pub]="n.status==='PUBLISHED'" [class.draft]="n.status==='DRAFT'" [class.arch]="n.status==='ARCHIVED'">
+            {{ n.status }}
+          </span>
+          <div class="flex gap-[6px] ml-auto">
+            <button class="border-0 rounded-lg text-xs font-semibold py-[5px] px-[10px] cursor-pointer bg-[#dcfce7] text-[#166534]" *ngIf="n.status==='DRAFT'" (click)="publish(n)">▶ Publish</button>
+            <button class="border-0 rounded-lg text-xs font-semibold py-[5px] px-[10px] cursor-pointer bg-[#f3f4f6] text-[#374151]" *ngIf="n.status==='PUBLISHED'" (click)="archive(n)">📦 Archive</button>
+            <button class="border-0 rounded-lg text-xs font-semibold py-[5px] px-[10px] cursor-pointer bg-[#fef3c7] text-[#92400e]" (click)="pin(n)">{{ n.pinned ? 'Unpin' : '📌' }}</button>
+            <button class="border-0 rounded-lg text-xs font-semibold py-[5px] px-[10px] cursor-pointer bg-[#fee2e2] text-[#dc2626]" *ngIf="n.status!=='PUBLISHED'" (click)="del(n)">🗑</button>
+          </div>
+        </div>
+
+        <a class="mn-title block text-[15px] font-bold text-[#1a1a1a] no-underline mb-[6px] leading-[1.3]" [routerLink]="['/notices', n.id]">{{ n.title }}</a>
+
+        <p class="text-[13px] text-[#6b7280] m-0 mb-2 leading-[1.4]">{{ n.content | slice:0:80 }}{{ n.content.length > 80 ? '…' : '' }}</p>
+
+        <div class="flex gap-2 text-[11px] text-[#9ca3af] flex-wrap mb-2">
+          <span>{{ n.createdByName }}</span>
+          <span *ngIf="n.publishedAt">· Published {{ n.publishedAt | date:'MMM d' }}</span>
+          <span *ngIf="n.expiresAt">· Expires {{ n.expiresAt | date:'MMM d' }}</span>
+          <span *ngIf="n.targetBlocks">· Block {{ n.targetBlocks }}</span>
+          <span *ngIf="n.requiresAcknowledgement">· ⚠ Ack required</span>
+        </div>
+
+        <!-- Read analytics for published notices -->
+        <div class="flex items-center gap-3 pt-2 border-t border-[#f3f0ea]" *ngIf="n.status==='PUBLISHED'">
+          <div class="flex flex-col items-center">
+            <span class="text-base font-bold text-[#374151] leading-none" style="font-family:'Playfair Display',serif">{{ n.readCount }}</span>
+            <span class="text-[10px] text-[#9ca3af] uppercase tracking-[0.5px]">reads</span>
+          </div>
+          <div class="flex flex-col items-center" *ngIf="n.requiresAcknowledgement">
+            <span class="text-base font-bold text-[#c9a84c] leading-none" style="font-family:'Playfair Display',serif">{{ n.acknowledgedCount }}</span>
+            <span class="text-[10px] text-[#9ca3af] uppercase tracking-[0.5px]">acknowledged</span>
+          </div>
+          <div class="an-bar flex-1 h-[6px] bg-[#f3f0ea] rounded-[3px] overflow-hidden" *ngIf="n.readCount > 0">
+            <div class="an-fill h-full rounded-[3px]" [style.width.%]="readPct(n)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center py-[50px] px-5" *ngIf="!filtered().length">
+        <div class="text-[40px] mb-2">{{ activeTab==='ARCHIVED' ? '📦' : '📋' }}</div>
+        <p class="text-[17px] text-[#6b7280] m-0 mb-4" style="font-family:'Playfair Display',serif">No {{ activeTab.toLowerCase() }} notices</p>
+        <a routerLink="/notices/create" class="bg-[#1a1a1a] text-[#c9a84c] py-[10px] px-[22px] rounded-lg text-[13px] font-semibold no-underline inline-block" *ngIf="activeTab==='DRAFT'||activeTab==='ALL'">
+          Create your first notice →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

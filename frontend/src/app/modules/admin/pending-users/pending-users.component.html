@@ -1,0 +1,43 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <span class="count" *ngIf="users.length > 0">{{ users.length }} pending</span>
+    </div>
+    <h1 class="text-[22px] font-bold m-0 mb-1">⏳ Pending Approvals</h1>
+    <p class="text-[13px] text-white/70 m-0">New registrations awaiting approval</p>
+  </div>
+
+  <div class="text-center p-[60px] bg-white rounded-xl shadow-md m-4" *ngIf="!loading && users.length === 0">
+    <span class="text-[48px]">✅</span>
+    <p class="text-[#666] mt-4">No pending approvals! All users are reviewed.</p>
+  </div>
+
+  <div class="flex flex-col gap-4 p-4" *ngIf="!loading">
+    <div class="user-card" *ngFor="let user of users">
+      <div class="flex gap-4 items-start">
+        <div class="avatar">{{ user.firstName[0] }}{{ user.lastName[0] }}</div>
+        <div>
+          <h3 class="m-0 mb-1 text-[16px]">{{ user.firstName }} {{ user.lastName }}</h3>
+          <p class="m-0 mb-1 text-[#666] text-[13px]">{{ user.email }}</p>
+          <p class="m-0 mb-1 text-[#666] text-[13px]" *ngIf="user.phone">📞 {{ user.phone }}</p>
+          <span class="badge">{{ user.role }}</span>
+          <div class="text-xs text-[#555] mt-[6px]" *ngIf="user.flatNumber">
+            🏠 Flat: {{ user.block ? user.block + '-' : '' }}{{ user.flatNumber }}
+            <span *ngIf="user.societyName">, {{ user.societyName }}</span>
+          </div>
+          <div class="text-xs text-[#555] mt-[6px]" *ngIf="user.hostFlatNumber">
+            🔑 Visiting: {{ user.hostFlatNumber }}
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button class="btn-approve" (click)="approve(user)">✓ Approve</button>
+        <button class="btn-reject" (click)="reject(user)">✗ Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center p-[40px] text-[#666]" *ngIf="loading">Loading pending users...</div>
+  <div class="bg-[#e8f5e9] text-[#2e7d32] p-3 rounded-lg mt-4" *ngIf="message">{{ message }}</div>
+</div>

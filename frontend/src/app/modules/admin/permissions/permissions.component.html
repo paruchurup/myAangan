@@ -1,0 +1,52 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+    </div>
+    <h1 class="text-[22px] font-bold m-0 mb-1">🔑 Permissions</h1>
+    <p class="text-[13px] text-white/70 m-0 mb-[10px]">Configure role-based permissions</p>
+    <div class="text-xs bg-white/[0.12] p-[6px_12px] rounded-lg inline-block">🔒 Admin always has all permissions and cannot be restricted.</div>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div *ngIf="!loading" class="p-4">
+    <div class="save-bar" *ngIf="pendingChanges">
+      <span>⚠️ {{ pendingCount }} unsaved change{{ pendingCount === 1 ? '' : 's' }}</span>
+      <div class="flex gap-[10px]">
+        <button class="btn-discard" (click)="discardChanges()">Discard</button>
+        <button class="btn-save" (click)="saveAll()" [disabled]="saving">
+          {{ saving ? 'Saving…' : 'Save All Changes' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-[#dcfce7] text-[#166534] p-[10px_14px] rounded-xl mb-3 text-[13px]" *ngIf="savedMsg">{{ savedMsg }}</div>
+    <div class="bg-[#fee2e2] text-[#991b1b] p-[10px_14px] rounded-xl mb-3 text-[13px]" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <div *ngFor="let group of groups" class="group-card">
+      <h2 class="group-title">{{ group.label }}</h2>
+      <div class="perm-row header-row">
+        <div class="perm-label"></div>
+        <div class="role-col" *ngFor="let role of roles">
+          <span class="role-tag">{{ roleLabel(role) }}</span>
+        </div>
+      </div>
+      <div class="perm-row" *ngFor="let perm of group.perms; let odd = odd" [class.odd]="odd">
+        <div class="perm-label">
+          <span class="perm-name">{{ permLabel(perm) }}</span>
+          <span class="perm-key">{{ perm }}</span>
+        </div>
+        <div class="role-col" *ngFor="let role of roles">
+          <label class="toggle" [title]="roleLabel(role) + ' → ' + perm">
+            <input type="checkbox"
+              [checked]="getVal(role, perm)"
+              (change)="toggle(role, perm, $event)"
+              [disabled]="role === 'VISITOR'" />
+            <span class="slider" [class.changed]="isChanged(role, perm)"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

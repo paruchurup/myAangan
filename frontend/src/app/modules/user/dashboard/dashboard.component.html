@@ -1,0 +1,143 @@
+<div class="max-w-[700px] mx-auto pb-20">
+
+  <!-- Welcome card -->
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] rounded-b-[20px] py-7 px-5 text-white flex items-center gap-5 mb-4">
+    <div class="text-[52px]">🏠</div>
+    <div>
+      <h2 class="m-0 mb-2 text-[22px]">Welcome, {{ user?.firstName }}!</h2>
+      <p class="role-badge inline-block py-[3px] px-3 rounded-full text-xs font-bold bg-white/20 m-0 mb-[6px] capitalize" [class]="'role-' + user?.role?.toLowerCase()">
+        {{ roleLabel(user?.role) }}
+      </p>
+      <p class="m-0 text-[13px] opacity-85" [class.active]="user?.status === 'ACTIVE'"
+        [class.pending]="user?.status === 'PENDING_APPROVAL'">
+        {{ user?.status === 'ACTIVE' ? '● Active' : '⏳ Pending Approval' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Pending approval notice -->
+  <div class="bg-[#fff8e1] border border-[#fcd34d] rounded-xl py-[14px] px-5 mx-4 mb-4 text-[#92400e] text-sm" *ngIf="user?.status === 'PENDING_APPROVAL'">
+    ⏳ Your account is pending admin approval. You'll get full access once approved.
+  </div>
+
+  <!-- Resident: Delivery pending alert -->
+  <a class="delivery-alert flex items-center gap-3 bg-[#fef3c7] border-[1.5px] border-[#f59e0b] rounded-[14px] py-[14px] px-4 mx-4 mb-4 no-underline" routerLink="/delivery/my"
+    *ngIf="isResident && pendingDeliveryCount > 0">
+    <div class="text-[28px]">📦</div>
+    <div class="flex-1">
+      <strong class="block text-sm text-[#92400e]">{{ pendingDeliveryCount }} delivery{{ pendingDeliveryCount > 1 ? 'ies' : '' }} waiting at the gate</strong>
+      <span class="text-xs text-[#b45309]">Tap to view and acknowledge</span>
+    </div>
+    <div class="bg-[#f59e0b] text-white text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center">{{ pendingDeliveryCount }}</div>
+  </a>
+
+  <!-- Quick Actions -->
+  <div class="mb-5" *ngIf="user?.status === 'ACTIVE'">
+    <h3 class="m-0 mb-[14px] text-[#333] text-base px-4">Quick Actions</h3>
+    <div class="grid grid-cols-3 gap-[10px] px-4">
+
+      <!-- Resident actions -->
+      <a routerLink="/delivery/my" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fde68a]" *ngIf="isResident">
+        <div class="card-icon-wrap relative inline-block">
+          <span class="text-[30px]">📦</span>
+          <span class="badge absolute -top-[6px] -right-[10px] bg-[#e94560] text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-[9px] flex items-center justify-center px-1" *ngIf="pendingDeliveryCount > 0">{{ pendingDeliveryCount }}</span>
+        </div>
+        <span>My Deliveries</span>
+      </a>
+
+      <!-- Guard actions -->
+      <a routerLink="/delivery/guard" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fde68a]" *ngIf="isGuard">
+        <span class="text-[30px]">🚪</span>
+        <span>Gate Log</span>
+      </a>
+      <a routerLink="/delivery/log" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fde68a]" *ngIf="isGuard">
+        <span class="text-[30px]">📦</span>
+        <span>Log Delivery</span>
+      </a>
+
+      <!-- Services (non-visitor) -->
+      <a routerLink="/services" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="!isVisitor">
+        <span class="text-[30px]">🔧</span>
+        <span>Services</span>
+      </a>
+
+      <!-- Profile always -->
+      <a routerLink="/profile" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150">
+        <span class="text-[30px]">👤</span>
+        <span>My Profile</span>
+      </a>
+
+      <!-- Admin actions -->
+      <ng-container *ngIf="isAdmin">
+        <a routerLink="/delivery/all"      class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#e8eaf6]"><span class="text-[30px]">📊</span><span>Deliveries</span></a>
+        <a routerLink="/admin/users"        class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#e8eaf6]"><span class="text-[30px]">👥</span><span>Users</span></a>
+        <a routerLink="/admin/categories"   class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#e8eaf6]"><span class="text-[30px]">⚙️</span><span>Categories</span></a>
+        <a routerLink="/admin/permissions" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#e8eaf6]"><span class="text-[30px]">🔐</span><span>Permissions</span></a>
+        <a routerLink="/admin/pending"      class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#e8eaf6]"><span class="text-[30px]">⏳</span><span>Approvals</span></a>
+        <a routerLink="/complaints/fm"      class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]"><span class="text-[30px]">📢</span><span>Complaints</span></a>
+        <a routerLink="/complaints/report"  class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]"><span class="text-[30px]">📄</span><span>PDF Report</span></a>
+      </ng-container>
+
+      <!-- Complaint: Raise for Resident & Guard -->
+      <a routerLink="/complaints/my"    class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]" *ngIf="isResident||isGuard"><span class="text-[30px]">📢</span><span>My Complaints</span></a>
+      <a routerLink="/complaints/raise" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]" *ngIf="isResident||isGuard"><span class="text-[30px]">✏️</span><span>Report Issue</span></a>
+      <a routerLink="/polls" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canPollView"><span class="text-[30px]">🗳️</span><span>Polls &amp; Voting</span></a>
+      <a [routerLink]="canVaultUpload ? '/vault/admin' : '/vault'" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canVault"><span class="text-[30px]">📂</span><span>Vault</span></a>
+      <a routerLink="/helpdesk" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canHelpdeskRaise"><span class="text-[30px]">🛠️</span><span>Helpdesk</span></a>
+      <a routerLink="/helpdesk/manage" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canHelpdeskManage"><span class="text-[30px]">📋</span><span>Service Board</span></a>
+      <a routerLink="/events" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canEventView"><span class="text-[30px]">🎉</span><span>Events</span></a>
+      <a routerLink="/analytics" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canAnalytics"><span class="text-[30px]">📊</span><span>Analytics</span></a>
+      <a routerLink="/maintenance" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canMaintPay">
+        <span class="text-[30px]">💰</span>
+        <span>My Bills</span>
+        <span class="badge-dot" *ngIf="hasOutstanding">{{ outstandingCount }}</span>
+      </a>
+      <a routerLink="/maintenance/manage" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canMaintManage"><span class="text-[30px]">🏦</span><span>Maintenance</span></a>
+      <a routerLink="/vehicles" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canVehicleReg"><span class="text-[30px]">🚗</span><span>My Vehicles</span></a>
+      <a routerLink="/vehicles/passes" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canVehicleReg"><span class="text-[30px]">🎫</span><span>Visitor Passes</span></a>
+      <a routerLink="/vehicles/manage" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canVehicleManage"><span class="text-[30px]">🅿️</span><span>Parking Control</span></a>
+      <a routerLink="/vehicles/gate" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canGuardGate"><span class="text-[30px]">🔍</span><span>Gate Control</span></a>
+      <a routerLink="/notices" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canNoticeView"><span class="text-[30px]">📢</span><span>Notices</span></a>
+      <a routerLink="/notices/manage" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canNoticeManage"><span class="text-[30px]">📋</span><span>Post Notice</span></a>
+      <a routerLink="/polls/manage" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150" *ngIf="canPollManage"><span class="text-[30px]">⚙️</span><span>Manage Polls</span></a>
+
+      <!-- FM cards -->
+      <ng-container *ngIf="isFm">
+        <a routerLink="/complaints/fm"    class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]"><span class="text-[30px]">📢</span><span>All Complaints</span></a>
+        <a routerLink="/complaints/raise" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]"><span class="text-[30px]">✏️</span><span>Raise Complaint</span></a>
+        <a routerLink="/services"         class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150"><span class="text-[30px]">🛠️</span><span>Services</span></a>
+      </ng-container>
+
+      <!-- BM / BDA cards -->
+      <ng-container *ngIf="isBm||isBda">
+        <a routerLink="/complaints/bm"  class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]"><span class="text-[30px]">🚨</span><span>{{ isBda ? 'BDA Complaints' : 'Escalated' }}</span></a>
+        <a routerLink="/complaints/my"  class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150"><span class="text-[30px]">📋</span><span>My Complaints</span></a>
+      </ng-container>
+
+      <!-- President / Secretary / Volunteer cards -->
+      <ng-container *ngIf="isPresident">
+        <a routerLink="/complaints/report" class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150 border-2 border-[#fca5a5]"><span class="text-[30px]">🏛️</span><span>Complaint Report</span></a>
+        <a routerLink="/complaints/my"     class="action-card flex flex-col items-center gap-2 py-[18px] px-[10px] bg-white rounded-[14px] no-underline text-[#333] shadow-sm font-semibold text-[13px] text-center transition-transform duration-150"><span class="text-[30px]">📋</span><span>My Complaints</span></a>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <!-- Account info -->
+  <div class="bg-white rounded-[14px] p-5 shadow-sm mx-4" *ngIf="user">
+    <h3 class="m-0 mb-3 text-[#333] text-base p-0">Account Details</h3>
+    <div class="flex justify-between py-[10px] border-b border-[#f0f0f0] text-sm"><span class="text-[#888]">Email</span><strong class="text-[#1a1a2e]">{{ user.email }}</strong></div>
+    <div class="flex justify-between py-[10px] border-b border-[#f0f0f0] text-sm"><span class="text-[#888]">Phone</span><strong class="text-[#1a1a2e]">{{ user.phone || '—' }}</strong></div>
+    <div class="flex justify-between py-[10px] border-b border-[#f0f0f0] text-sm" *ngIf="user.flatNumber">
+      <span class="text-[#888]">Flat</span>
+      <strong class="text-[#1a1a2e]">{{ user.block ? user.block + '-' : '' }}{{ user.flatNumber }}</strong>
+    </div>
+    <div class="flex justify-between py-[10px] border-b border-[#f0f0f0] text-sm" *ngIf="user.societyName">
+      <span class="text-[#888]">Society</span><strong class="text-[#1a1a2e]">{{ user.societyName }}</strong>
+    </div>
+    <div class="flex justify-between py-[10px] text-sm" *ngIf="user.hostFlatNumber">
+      <span class="text-[#888]">Visiting</span><strong class="text-[#1a1a2e]">{{ user.hostFlatNumber }}</strong>
+    </div>
+  </div>
+
+</div>

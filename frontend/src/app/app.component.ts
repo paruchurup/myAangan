@@ -7,19 +7,8 @@ import { NotificationPushService } from '@services/notification-push.service';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NavbarComponent],
-  template: `
-    <app-navbar></app-navbar>
-    <main class="main-content">
-      <router-outlet></router-outlet>
-    </main>
-  `,
-  styles: [`
-    .main-content {
-      padding: 16px;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-  `]
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   constructor(private notifSvc: NotificationPushService) {}

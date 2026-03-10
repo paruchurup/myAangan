@@ -1,0 +1,104 @@
+.page-header {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  padding: 16px 16px 24px;
+  color: white;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.icon-input {
+  width: 56px;
+  flex-shrink: 0;
+  padding: 10px 8px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 18px;
+  text-align: center;
+  outline: none;
+
+  &:focus { border-color: #0f3460; }
+}
+
+.name-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+
+  &:focus { border-color: #0f3460; }
+}
+
+.btn-add {
+  background: #0f3460;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:disabled { background: #ccc; cursor: not-allowed; }
+}
+
+.cat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+
+  &.inactive { opacity: 0.5; }
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit   { background: #e8f0fe; }
+.btn-del    { background: #fee2e2; }
+.btn-save   { background: #dcfce7; }
+.btn-cancel { background: #f3f4f6; }
+
+.edit-icon {
+  width: 48px;
+  padding: 6px;
+  border: 1.5px solid #0f3460;
+  border-radius: 8px;
+  font-size: 18px;
+  text-align: center;
+  outline: none;
+}
+
+.edit-name {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1.5px solid #0f3460;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}

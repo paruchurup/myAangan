@@ -1,0 +1,106 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20 font-sans text-[#212121] relative">
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/dashboard">← Back</a>
+      <div class="flex flex-col gap-[6px] items-end">
+        <button class="bg-none border border-white/30 text-white/80 py-[7px] px-3 rounded-md font-bold text-[11px] cursor-pointer" *ngIf="canUpload" routerLink="/vault/admin">⚙️ Admin</button>
+        <button class="bg-[#6366f1] border-0 text-white py-[9px] px-[14px] rounded-md text-xs font-bold cursor-pointer" (click)="tab='NOC_REQ'">+ Request NOC</button>
+      </div>
+    </div>
+    <h1 class="text-[22px] m-0 mb-1 font-bold">📂 Document Vault</h1>
+    <p class="text-[13px] text-white/70 m-0">Access your society documents</p>
+  </div>
+
+  <div class="flex justify-center p-10" *ngIf="loading"><div class="w-[26px] h-[26px] border-[3px] border-[#333] border-t-[#6366f1] rounded-full animate-spin"></div></div>
+
+  <div class="flex flex-col" *ngIf="!loading && vault">
+    <!-- Tabs -->
+    <div class="flex bg-[#111] border-b border-[#2a2a2a] overflow-x-auto">
+      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[11px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[60px]" [class.text-[#6366f1]]="tab==='SOCIETY'" [class.border-b-[#6366f1]]="tab==='SOCIETY'" (click)="tab='SOCIETY'">🏛️ Society</button>
+      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[11px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[60px]" [class.text-[#6366f1]]="tab==='NOC'" [class.border-b-[#6366f1]]="tab==='NOC'" (click)="tab='NOC'">📜 My NOCs</button>
+      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[11px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[60px]" [class.text-[#6366f1]]="tab==='MAINTENANCE'" [class.border-b-[#6366f1]]="tab==='MAINTENANCE'" (click)="tab='MAINTENANCE'">🔧 Maintenance</button>
+      <button class="flex-1 bg-none border-0 text-[#6b7280] py-[10px] px-1 text-[11px] cursor-pointer border-b-2 border-transparent transition-all whitespace-nowrap min-w-[60px]" [class.text-[#6366f1]]="tab==='NOC_REQ'" [class.border-b-[#6366f1]]="tab==='NOC_REQ'" (click)="tab='NOC_REQ'">📋 Requests</button>
+    </div>
+
+    <!-- Society docs -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='SOCIETY'">
+      <div class="text-center py-[30px] text-[#4b5563] text-[13px]" *ngIf="!vault.society?.length">No society documents yet.</div>
+      <div class="flex flex-col gap-2">
+        <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex justify-between items-center gap-[10px]" *ngFor="let d of vault.society">
+          <ng-container *ngTemplateOutlet="docCard; context: {d: d}"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- My NOCs -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='NOC'">
+      <div class="text-center py-[30px] text-[#4b5563] text-[13px]" *ngIf="!vault.nocs?.length">No NOCs issued to you yet. Request one below.</div>
+      <div class="flex flex-col gap-2">
+        <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex justify-between items-center gap-[10px]" *ngFor="let d of vault.nocs">
+          <ng-container *ngTemplateOutlet="docCard; context: {d: d}"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maintenance docs -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='MAINTENANCE'">
+      <div class="text-center py-[30px] text-[#4b5563] text-[13px]" *ngIf="!vault.maintenance?.length">No maintenance documents yet.</div>
+      <div class="flex flex-col gap-2">
+        <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex justify-between items-center gap-[10px]" *ngFor="let d of vault.maintenance">
+          <ng-container *ngTemplateOutlet="docCard; context: {d: d}"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOC requests -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='NOC_REQ'">
+      <!-- Request form -->
+      <div class="bg-[#1a1a2e] border border-[#6366f1]/30 rounded-xl p-[14px] flex flex-col gap-[9px]">
+        <div class="text-[13px] text-[#6366f1] font-bold">📋 Request a New NOC</div>
+        <div class="flex flex-col gap-1"><label class="text-[10px] text-[#6b7280] tracking-[1px]">Purpose *</label>
+          <input class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border focus:border-[#6366f1]" [(ngModel)]="noc.purpose" placeholder="e.g. Bank loan, Flat resale, Vehicle parking NOC" /></div>
+        <div class="flex flex-col gap-1"><label class="text-[10px] text-[#6b7280] tracking-[1px]">Details</label>
+          <textarea class="bg-[#1c1c1c] border-[1.5px] border-[#333] rounded-md text-[#e8e8e8] py-2 px-[10px] text-[13px] outline-none w-full box-border resize-y focus:border-[#6366f1]" [(ngModel)]="noc.details" rows="3" placeholder="Any additional details for the admin…"></textarea></div>
+        <div class="bg-[#ef4444]/10 border border-[#ef4444] text-[#f87171] py-[7px] px-[10px] rounded-md text-xs" *ngIf="nocError">{{ nocError }}</div>
+        <button class="bg-[#6366f1] border-0 text-white p-[10px] rounded-md text-[13px] font-bold cursor-pointer disabled:opacity-40" (click)="submitNoc()" [disabled]="submittingNoc">
+          {{ submittingNoc ? 'Submitting…' : '📤 Submit Request' }}</button>
+      </div>
+
+      <!-- Past requests -->
+      <div class="text-[10px] text-[#6366f1] tracking-[2px] border-b border-[#2a2a2a] pb-1">YOUR NOC REQUESTS</div>
+      <div class="text-center py-[30px] text-[#4b5563] text-[13px]" *ngIf="!vault.nocRequests?.length">No NOC requests yet.</div>
+      <div class="bg-[#252525] border border-[#333] rounded-[9px] py-[11px] px-[13px] flex flex-col gap-[5px]" *ngFor="let r of vault.nocRequests">
+        <div class="flex justify-between items-center gap-2">
+          <div class="text-[14px] text-white font-bold">{{ r.purpose }}</div>
+          <div class="text-[10px] py-[3px] px-2 rounded-lg font-bold" [class]="r.status.toLowerCase()">{{ nocStatusLabel(r.status) }}</div>
+        </div>
+        <div class="text-xs text-[#9ca3af]" *ngIf="r.details">{{ r.details }}</div>
+        <div class="text-xs text-[#ef4444] italic" *ngIf="r.status === 'REJECTED' && r.rejectionReason">
+          Reason: {{ r.rejectionReason }}
+        </div>
+        <div class="text-[11px] text-[#4b5563]">{{ r.createdAt | date:'d MMM yyyy' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doc card template -->
+  <ng-template #docCard let-d="d">
+    <div class="flex gap-3 items-start flex-1 min-w-0">
+      <div class="text-[26px] shrink-0">{{ fmtIcon(d.fileFormat) }}</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[14px] font-bold text-white tracking-[0.3px]">{{ d.title }}</div>
+        <div class="flex flex-wrap gap-2 text-[11px] text-[#6b7280] mt-[3px] items-center">
+          <span class="bg-[#1c1c1c] border border-[#333] text-[#9ca3af] py-[1px] px-[6px] rounded text-[10px]">{{ d.fileFormat }}</span>
+          <span *ngIf="d.expiryDate" [class.text-[#ef4444]]="isExpired(d.expiryDate)" [class.font-semibold]="isExpired(d.expiryDate)" [class.text-[#f59e0b]]="isExpiringSoon(d.expiryDate)">
+            {{ isExpired(d.expiryDate) ? '⚠️ Expired' : 'Valid until' }} {{ d.expiryDate | date:'d MMM yyyy' }}
+          </span>
+          <span class="text-[#4b5563]">{{ d.createdAt | date:'d MMM yyyy' }}</span>
+        </div>
+        <div class="text-[11px] text-[#6b7280] mt-1 overflow-hidden text-ellipsis whitespace-nowrap" *ngIf="d.description">{{ d.description }}</div>
+      </div>
+    </div>
+    <a class="text-[20px] no-underline p-[6px] border border-[#333] rounded-md bg-[#1c1c1c] shrink-0 flex items-center hover:border-[#6366f1]" [href]="svc.downloadUrl(d.id)" target="_blank">⬇</a>
+  </ng-template>
+
+  <div class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[calc(100%-28px)] max-w-[480px] bg-[#10b981]/90 text-white py-[10px] px-[14px] rounded-lg text-xs text-center z-50" *ngIf="okMsg">{{ okMsg }}</div>
+</div>

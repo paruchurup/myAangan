@@ -1,0 +1,48 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/helpdesk">← Back</a>
+    </div>
+    <h1 class="text-[22px] font-bold mb-1 mt-0">🛠️ Raise Service Request</h1>
+    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Submit a maintenance or service request</p>
+  </div>
+  <div class="p-[14px] flex flex-col gap-3">
+    <div class="section-label">CATEGORY</div>
+    <div class="grid grid-cols-2 gap-2">
+      <button class="cat-btn" *ngFor="let cat of categories"
+        [class.selected]="form.category === cat.key"
+        [style.border-color]="form.category === cat.key ? cat.color : '#333'"
+        (click)="form.category = cat.key">
+        <span class="text-[24px]">{{ cat.icon }}</span>
+        <span class="cat-label" [style.color]="form.category === cat.key ? cat.color : '#9ca3af'">{{ cat.label }}</span>
+      </button>
+    </div>
+
+    <div class="section-label">DETAILS</div>
+    <div class="flex flex-col gap-1"><label>Title *</label>
+      <input [(ngModel)]="form.title" placeholder="e.g. Kitchen tap leaking, Power socket not working" /></div>
+    <div class="flex flex-col gap-1"><label>Description *</label>
+      <textarea [(ngModel)]="form.description" rows="4"
+        placeholder="Location, how long the issue has been happening, any other relevant details…"></textarea></div>
+
+    <div class="section-label">PREFERRED TIME <span class="text-[#4b5563] text-[9px]">(optional)</span></div>
+    <div class="flex flex-col gap-1"><label>Suggest a date & time</label>
+      <input type="datetime-local" [(ngModel)]="form.preferredDatetime" />
+      <small>FM will confirm or suggest an alternative slot</small></div>
+
+    <div class="section-label">PHOTOS <span class="text-[#4b5563] text-[9px]">(up to 3)</span></div>
+    <div class="flex flex-wrap gap-2 items-start">
+      <div class="preview-item" *ngFor="let p of previews; let i = index">
+        <img [src]="p" /><button class="rm-btn" (click)="removePhoto(i)">✕</button>
+      </div>
+      <label class="add-photo" for="photos" *ngIf="photos.length < 3">
+        <span class="text-[22px]">📷</span><span>Add</span>
+      </label>
+      <input type="file" id="photos" (change)="onPhotos($event)" accept="image/*" multiple class="hidden" />
+    </div>
+
+    <div class="bg-[rgba(239,68,68,0.1)] border border-[#ef4444] text-[#f87171] p-2 px-3 rounded-md text-xs" *ngIf="error">{{ error }}</div>
+    <button class="submit-btn" (click)="submit()" [disabled]="saving">
+      {{ saving ? 'Submitting…' : '📤 Submit Request' }}</button>
+  </div>
+</div>

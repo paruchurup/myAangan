@@ -1,0 +1,113 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20">
+  <div class="page-header bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
+    <button class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer mb-3 inline-block" routerLink="/delivery/my">← Back</button>
+    <h1 class="text-[22px] font-bold my-0 mb-1">📋 Delivery Preferences</h1>
+    <p class="text-[13px] text-white/70 m-0">Instructions shown to the guard when your parcel arrives</p>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
+
+  <form [formGroup]="form" (ngSubmit)="save()" *ngIf="!loading" class="p-4 flex flex-col gap-3">
+
+    <!-- Delivery Note -->
+    <div class="bg-white rounded-[14px] p-4 shadow-md flex gap-[14px]">
+      <div class="text-2xl pt-[2px] flex-shrink-0">📝</div>
+      <div class="flex-1">
+        <label class="text-[15px] font-bold text-[#1a1a2e] block mb-1">Delivery Note</label>
+        <p class="text-xs text-[#999] m-0 mb-[10px]">Shown to guard whenever a delivery arrives for you</p>
+        <textarea formControlName="deliveryNote"
+          placeholder="e.g. Leave at door if no answer. Ring bell twice."
+          rows="3"
+          class="w-full py-[10px] px-3 border border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border text-[#1a1a2e] font-[inherit] resize-y focus:border-[#0f3460] focus:bg-white"></textarea>
+        <div class="text-[11px] text-[#ccc] text-right mt-1">{{ form.get('deliveryNote')?.value?.length || 0 }} / 500</div>
+      </div>
+    </div>
+
+    <!-- Preferred Collector -->
+    <div class="bg-white rounded-[14px] p-4 shadow-md flex gap-[14px]">
+      <div class="text-2xl pt-[2px] flex-shrink-0">👤</div>
+      <div class="flex-1">
+        <label class="text-[15px] font-bold text-[#1a1a2e] block mb-1">Preferred Collector</label>
+        <p class="text-xs text-[#999] m-0 mb-[10px]">Who the guard should look for / call</p>
+        <input type="text" formControlName="preferredCollector"
+          placeholder="e.g. Ask for wife - Meena (9876543210)"
+          class="w-full py-[10px] px-3 border border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white" />
+      </div>
+    </div>
+
+    <!-- Default Collector for Guard -->
+    <div class="bg-white rounded-[14px] p-4 shadow-md flex gap-[14px]">
+      <div class="text-2xl pt-[2px] flex-shrink-0">⚡</div>
+      <div class="flex-1">
+        <label class="text-[15px] font-bold text-[#1a1a2e] block mb-1">Default Collector Name</label>
+        <p class="text-xs text-[#999] m-0 mb-[10px]">Pre-fills the guard's "Collected by" field — saves time</p>
+        <input type="text" formControlName="defaultCollectorName"
+          placeholder="e.g. Meena (wife)"
+          class="w-full py-[10px] px-3 border border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white" />
+      </div>
+    </div>
+
+    <!-- DND Window -->
+    <div class="bg-white rounded-[14px] p-4 shadow-md flex gap-[14px]">
+      <div class="text-2xl pt-[2px] flex-shrink-0">🔕</div>
+      <div class="flex-1">
+        <label class="text-[15px] font-bold text-[#1a1a2e] block mb-1">Do-Not-Disturb Window</label>
+        <p class="text-xs text-[#999] m-0 mb-[10px]">Guard will see a DND warning if delivery arrives in this window</p>
+        <div class="flex items-center gap-[10px] flex-wrap">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] text-[#888]">From</span>
+            <input type="time" formControlName="dndStart"
+              class="py-2 px-[10px] border border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white" />
+          </div>
+          <div class="text-[#ccc] text-lg">→</div>
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] text-[#888]">To</span>
+            <input type="time" formControlName="dndEnd"
+              class="py-2 px-[10px] border border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white" />
+          </div>
+          <button type="button"
+            class="bg-[#fee2e2] border-0 text-[#991b1b] rounded-full py-[6px] px-3 text-xs cursor-pointer"
+            (click)="clearDnd()"
+            *ngIf="form.get('dndStart')?.value">✕ Clear</button>
+        </div>
+
+        <!-- Live DND status -->
+        <div class="mt-2 text-[13px] text-[#991b1b] bg-[#fee2e2] py-[6px] px-[10px] rounded-lg" *ngIf="dndActive">
+          🔕 DND is currently active
+        </div>
+        <div class="mt-2 text-[13px] text-[#166534] bg-[#dcfce7] py-[6px] px-[10px] rounded-lg" *ngIf="form.get('dndStart')?.value && !dndActive">
+          ✅ DND window set — currently inactive
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-[#dcfce7] rounded-[10px] py-3 px-4 text-sm text-[#166534] text-center" *ngIf="saved">✅ Preferences saved!</div>
+    <div class="bg-[#fee2e2] rounded-[10px] py-3 px-4 text-sm text-[#991b1b]" *ngIf="error">{{ error }}</div>
+
+    <button type="submit"
+      class="w-full bg-[#0f3460] text-white border-0 py-[14px] rounded-xl text-base font-semibold cursor-pointer disabled:bg-[#ccc] disabled:cursor-not-allowed"
+      [disabled]="saving">
+      {{ saving ? 'Saving...' : '💾 Save Preferences' }}
+    </button>
+
+  </form>
+
+  <!-- Preview card — what the guard will see -->
+  <div class="px-4 pb-6" *ngIf="hasAnyPreference()">
+    <h3 class="text-sm text-[#555] mb-[10px]">👮 Guard will see this on your deliveries:</h3>
+    <div class="bg-[#fffbeb] border border-[#fcd34d] rounded-xl p-[14px]">
+      <div class="flex gap-[10px] py-[6px] border-b border-[#fef3c7] text-[13px]" *ngIf="form.get('deliveryNote')?.value">
+        <span class="font-semibold text-[#92400e] min-w-[80px]">📝 Note</span>
+        <span>{{ form.get('deliveryNote')?.value }}</span>
+      </div>
+      <div class="flex gap-[10px] py-[6px] border-b border-[#fef3c7] text-[13px]" *ngIf="form.get('preferredCollector')?.value">
+        <span class="font-semibold text-[#92400e] min-w-[80px]">👤 Ask for</span>
+        <span>{{ form.get('preferredCollector')?.value }}</span>
+      </div>
+      <div class="flex gap-[10px] py-[6px] text-[13px]" *ngIf="form.get('dndStart')?.value && form.get('dndEnd')?.value">
+        <span class="font-semibold text-[#92400e] min-w-[80px]">🔕 DND</span>
+        <span>{{ form.get('dndStart')?.value }} – {{ form.get('dndEnd')?.value }}</span>
+      </div>
+    </div>
+  </div>
+</div>

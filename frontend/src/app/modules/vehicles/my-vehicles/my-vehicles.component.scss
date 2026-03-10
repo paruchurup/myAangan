@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+.page-header {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  padding: 16px 16px 24px;
+  color: white;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.add-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.form-panel {
+  background: #252525;
+  border-bottom: 1px solid #333;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+h2 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f59e0b;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.type-pill {
+  background: #333;
+  border: 1.5px solid #444;
+  color: #9ca3af;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.15s;
+
+  &.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #111;
+  }
+}
+
+label {
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Oswald', sans-serif;
+}
+
+input {
+  background: #333;
+  border: 1.5px solid #444;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: #f59e0b;
+  }
+}
+
+.plate-input {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.photo-drop {
+  background: #333;
+  border: 1.5px dashed #555;
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: #6b7280;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: #f59e0b;
+  }
+}
+
+.err {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid #ef4444;
+  color: #f87171;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.submit-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 13px;
+  border-radius: 8px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  width: 100%;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #333;
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg) } }
+
+.es-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+.vehicle-card {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+}
+
+.plate {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 2px;
+  background: #333;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #555;
+}
+
+.status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  font-family: 'Oswald', sans-serif;
+}
+
+.claim-btn {
+  background: transparent;
+  border: 1px solid #f59e0b;
+  color: #f59e0b;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  margin-left: 6px;
+
+  &:hover {
+    background: #f59e0b;
+    color: #111;
+  }
+}
+
+.claim-panel {
+  border-top: 2px solid #f59e0b;
+}
+
+.sel {
+  background: #333;
+  border: 1.5px solid #444;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: #f59e0b;
+  }
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #333;
+  border: 1px solid #444;
+  color: #9ca3af;
+  padding: 13px;
+  border-radius: 8px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}

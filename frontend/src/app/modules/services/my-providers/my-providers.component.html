@@ -1,0 +1,45 @@
+<div class="bg-[#f5f6fa] min-h-screen pb-20">
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/services">← Back</a>
+    </div>
+    <h1 class="text-[22px] m-0 mb-1 font-bold">📋 My Added Providers</h1>
+    <p class="text-[13px] text-white/70 m-0">Providers you have added</p>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="text-center py-[60px] px-5" *ngIf="!loading && providers.length === 0">
+    <div class="text-[48px] mb-3">📋</div>
+    <p class="text-base text-[#555] mb-5">You haven't added any providers yet</p>
+    <a routerLink="/services/add" class="bg-[#0f3460] text-white py-[10px] px-6 rounded-full no-underline text-sm font-semibold">+ Add First Provider</a>
+  </div>
+
+  <div class="py-4 px-4 flex flex-col gap-[10px]" *ngIf="!loading && providers.length > 0">
+    <a *ngFor="let p of providers" [routerLink]="['/services', p.id]" class="card bg-white rounded-[14px] p-[14px] flex items-center gap-3 no-underline text-inherit shadow-md">
+      <div class="relative flex-shrink-0">
+        <img *ngIf="p.photoUrl" [src]="p.photoUrl" class="w-[52px] h-[52px] rounded-full object-cover" [alt]="p.name"
+          (error)="onImgError($event)" />
+        <div *ngIf="!p.photoUrl" class="w-[52px] h-[52px] rounded-full bg-[#0f3460] text-white text-[20px] font-bold flex items-center justify-center">{{ p.name.charAt(0).toUpperCase() }}</div>
+        <span class="dot absolute bottom-[2px] right-[2px] w-3 h-3 rounded-full border-2 border-white" [class]="p.availability.toLowerCase()"></span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[15px] font-semibold text-[#1a1a2e]">{{ p.name }}</div>
+        <div class="text-xs text-[#0f3460] bg-[#e8f0fe] inline-block py-[2px] px-2 rounded-[10px] my-[3px]">{{ p.categoryIcon }} {{ p.categoryName }}</div>
+        <div class="text-xs text-[#888]" *ngIf="p.area">📍 {{ p.area }}</div>
+        <div class="flex items-center gap-[5px] mt-[3px]">
+          <span class="text-xs text-[#f59e0b]">{{ getStars(p.avgRating) }}</span>
+          <span *ngIf="p.reviewCount > 0" class="text-xs text-[#555] font-semibold">
+            {{ p.avgRating | number:'1.1-1' }} ({{ p.reviewCount }})
+          </span>
+          <span *ngIf="p.reviewCount === 0" class="text-xs text-[#aaa]">No reviews yet</span>
+        </div>
+      </div>
+      <span class="text-[22px] text-[#ccc] flex-shrink-0">›</span>
+    </a>
+  </div>
+
+  <div class="px-4 pb-4 text-center" *ngIf="!loading && providers.length > 0">
+    <a routerLink="/services/add" class="inline-block bg-[#0f3460] text-white py-3 px-7 rounded-full no-underline text-sm font-semibold">+ Add Another Provider</a>
+  </div>
+</div>

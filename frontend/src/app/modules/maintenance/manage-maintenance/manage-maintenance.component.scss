@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #6b7280;
+  padding: 11px 4px;
+  font-size: 11px;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.tab.active { color: #10b981; border-bottom-color: #10b981; }
+
+.nav-btn {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  color: #e8e8e8;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.month-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+.gen-btn {
+  background: #10b981;
+  border: none;
+  color: #fff;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.gen-btn:disabled { opacity: 0.4; }
+
+.sv {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+.sk { font-size: 10px; color: #6b7280; letter-spacing: 0.5px; }
+
+.flat-key {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  min-width: 60px;
+}
+.bill-amount {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #e8e8e8;
+  font-weight: 600;
+}
+.status-pill {
+  font-size: 10px;
+  font-family: 'Oswald', sans-serif;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.waive-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #6b7280;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: 'Oswald', sans-serif;
+}
+.waive-btn:hover { border-color: #a78bfa; color: #a78bfa; }
+
+.def-rank {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  color: #4b5563;
+  font-weight: 700;
+  min-width: 24px;
+}
+.def-flat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.count-badge {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #f87171;
+  font-size: 11px;
+  font-family: 'Oswald', sans-serif;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 2fr;
+  gap: 8px;
+  padding: 9px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+.summary-row.header-row {
+  font-family: 'Oswald', sans-serif;
+  font-size: 10px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  padding-bottom: 4px;
+}
+.summary-row.alt { background: #252525; }
+
+.cfg-section {
+  font-family: 'Oswald', sans-serif;
+  font-size: 10px;
+  color: #10b981;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+  margin-top: 8px;
+}
+
+label {
+  font-size: 10px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'Oswald', sans-serif;
+}
+input {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+input:focus { border-color: #10b981; }
+small { font-size: 10px; color: #4b5563; }
+
+.save-btn {
+  background: #10b981;
+  border: none;
+  color: #fff;
+  padding: 12px;
+  border-radius: 7px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+.save-btn:disabled { opacity: 0.4; }
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #333;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.modal-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 700;
+}
+.modal-amount {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #a78bfa;
+}
+.waive-input {
+  background: #1c1c1c;
+  border: 1.5px solid #444;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+.modal-cancel-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #6b7280;
+  padding: 10px;
+  border-radius: 7px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+.confirm-waive-btn {
+  background: #a78bfa;
+  border: none;
+  color: #111;
+  padding: 10px;
+  border-radius: 7px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.confirm-waive-btn:disabled { opacity: 0.4; }

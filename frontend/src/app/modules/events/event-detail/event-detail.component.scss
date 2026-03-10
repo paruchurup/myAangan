@@ -1,0 +1,409 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid #333;
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.org-btn {
+  border: none;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+.org-btn.yellow { background: #f59e0b; color: #111; }
+.org-btn.green  { background: #10b981; color: #111; }
+.org-btn.blue   { background: #6366f1; color: #fff; }
+.org-btn.red    { background: none; border: 1px solid #ef4444; color: #ef4444; }
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #6b7280;
+  padding: 10px 4px;
+  font-size: 10px;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  min-width: 50px;
+}
+.tab.active { color: #f59e0b; border-bottom-color: #f59e0b; }
+
+.info-item {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.il {
+  font-size: 10px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  font-family: 'Oswald', sans-serif;
+  margin-bottom: 2px;
+}
+.iv { font-size: 13px; color: #e8e8e8; }
+.iv.money {
+  color: #f59e0b;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+}
+
+.funds-val {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e8e8e8;
+}
+.funds-label { font-size: 10px; color: #6b7280; }
+.fill-green { background: #10b981; }
+.fill-red   { background: #ef4444; }
+
+/* Vote tab */
+.yes-btn {
+  background: #10b981;
+  border: none;
+  color: #111;
+  padding: 14px;
+  border-radius: 8px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.no-btn {
+  background: none;
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  padding: 14px;
+  border-radius: 8px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.yes-btn:disabled, .no-btn:disabled { opacity: 0.4; }
+
+/* Volunteer */
+.slot-role {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  color: #fff;
+  font-weight: 700;
+}
+.signup-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.withdraw-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #6b7280;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'Oswald', sans-serif;
+}
+
+/* Funds */
+.cc-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  color: #f59e0b;
+  font-weight: 700;
+}
+.contrib-input {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px;
+  font-size: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  outline: none;
+}
+.contrib-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ik-input {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px 10px;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ik-qty {
+  width: 60px;
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px;
+  font-size: 13px;
+  outline: none;
+  text-align: center;
+}
+.ik-val {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px;
+  font-size: 13px;
+  outline: none;
+}
+.ik-btn {
+  background: #10b981;
+  border: none;
+  color: #111;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Expenses */
+.ef-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  color: #6366f1;
+  font-weight: 700;
+}
+.exp-input {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px 10px;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.exp-amount {
+  width: 120px;
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px;
+  font-size: 13px;
+  outline: none;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.exp-cat {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px;
+  font-size: 13px;
+  outline: none;
+}
+.file-label {
+  font-size: 12px;
+  color: #6b7280;
+  background: #1c1c1c;
+  border: 1px dashed #333;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.exp-btn {
+  background: #6366f1;
+  border: none;
+  color: #fff;
+  padding: 9px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Gallery */
+.caption-input {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 8px;
+  font-size: 12px;
+  outline: none;
+}
+.upload-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Settlement */
+.ss-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  color: #f59e0b;
+  font-weight: 700;
+}
+.sv-btn {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  color: #e8e8e8;
+  padding: 9px 4px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-family: 'Oswald', sans-serif;
+  cursor: pointer;
+  text-align: center;
+}
+.sv-btn:hover { border-color: #f59e0b; color: #f59e0b; }
+.sv-btn:disabled { opacity: 0.4; }
+
+.rw-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  color: #f59e0b;
+  font-weight: 700;
+}
+.rec-card {
+  background: #1c1c1c;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid #f59e0b;
+}
+.rec-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  color: #fff;
+  font-weight: 700;
+}
+.rec-textarea {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  outline: none;
+}
+.rec-save-btn {
+  background: #f59e0b;
+  border: none;
+  color: #111;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rec-cancel-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #6b7280;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.edit-rec-btn {
+  background: none;
+  border: 1px dashed #333;
+  color: #6b7280;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.err {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  max-width: 480px;
+  background: rgba(239,68,68,0.9);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  text-align: center;
+  z-index: 50;
+}
+.ok {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  max-width: 480px;
+  background: rgba(16,185,129,0.9);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  text-align: center;
+  z-index: 50;
+}

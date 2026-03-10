@@ -1,0 +1,38 @@
+/* styles */
+
+/* Back button background uses rgba — kept here as Tailwind can't express rgba in bg- without arbitrary value issues */
+.navbar-back-btn {
+  background: rgba(255, 255, 255, 0.15);
+  &:hover { background: rgba(255, 255, 255, 0.3); }
+}
+
+/* Bell button background */
+.navbar-bell-btn {
+  background: rgba(255, 255, 255, 0.1);
+  &:hover { background: rgba(255, 255, 255, 0.25); }
+}
+
+/* Bell badge animation */
+.navbar-bell-btn span.badge-anim {
+  animation: pop 0.3s ease;
+}
+@keyframes pop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Logout button border/background */
+.navbar-logout-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  &:hover { background: rgba(255, 255, 255, 0.3); }
+}
+
+/* Active/hover state for nav menu links */
+.navbar-menu-link {
+  &.active, &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+}

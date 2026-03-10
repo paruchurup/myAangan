@@ -1,0 +1,89 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20">
+  <div style="background: linear-gradient(135deg, #1a1a2e, #0f3460)" class="px-4 pt-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="bg-white/15 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/services">← Back</a>
+    </div>
+    <h1 class="text-[22px] m-0 mb-1 font-bold">🔧 Add Service Provider</h1>
+    <p class="text-[13px] text-white/70 m-0">Recommend a trusted worker to the community</p>
+  </div>
+
+  <div class="px-4 py-5">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="mb-[18px]">
+        <label class="block text-sm font-semibold text-[#333] mb-[6px]">Full Name *</label>
+        <input type="text" formControlName="name" placeholder="e.g. Ramesh Kumar"
+          class="w-full py-3 px-[14px] border border-[1.5px] border-[#ddd] rounded-[10px] text-[15px] outline-none bg-white box-border text-[#1a1a2e] focus:border-[#0f3460]" />
+        <span class="text-[#dc2626] text-xs mt-1 block" *ngIf="f['name'].touched && f['name'].errors?.['required']">
+          Name is required
+        </span>
+      </div>
+
+      <div class="mb-[18px]">
+        <label class="block text-sm font-semibold text-[#333] mb-[6px]">Mobile Number *</label>
+        <input type="tel" formControlName="phone" placeholder="10-digit number" maxlength="10"
+          class="w-full py-3 px-[14px] border border-[1.5px] border-[#ddd] rounded-[10px] text-[15px] outline-none bg-white box-border text-[#1a1a2e] focus:border-[#0f3460]" />
+        <span class="text-[#dc2626] text-xs mt-1 block" *ngIf="f['phone'].touched && f['phone'].errors?.['required']">
+          Phone is required
+        </span>
+        <span class="text-[#dc2626] text-xs mt-1 block" *ngIf="f['phone'].touched && f['phone'].errors?.['pattern']">
+          Enter a valid 10-digit mobile number
+        </span>
+      </div>
+
+      <div class="mb-[18px]">
+        <label class="block text-sm font-semibold text-[#333] mb-[6px]">Category *</label>
+        <select formControlName="categoryId"
+          class="w-full py-3 px-[14px] border border-[1.5px] border-[#ddd] rounded-[10px] text-[15px] outline-none bg-white box-border text-[#1a1a2e] focus:border-[#0f3460]"
+          style="appearance: none; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;">
+          <option value="">-- Select Category --</option>
+          <option *ngFor="let c of categories" [value]="c.id">
+            {{ c.icon }} {{ c.name }}
+          </option>
+        </select>
+        <span class="text-[#dc2626] text-xs mt-1 block" *ngIf="f['categoryId'].touched && f['categoryId'].errors?.['required']">
+          Please select a category
+        </span>
+      </div>
+
+      <div class="mb-[18px]">
+        <label class="block text-sm font-semibold text-[#333] mb-[6px]">Area / Locality <span class="font-normal text-[#999] text-xs">(optional)</span></label>
+        <input type="text" formControlName="area"
+          placeholder="e.g. Near Main Gate, Sector 5"
+          class="w-full py-3 px-[14px] border border-[1.5px] border-[#ddd] rounded-[10px] text-[15px] outline-none bg-white box-border text-[#1a1a2e] focus:border-[#0f3460]" />
+      </div>
+
+      <!-- Photo upload (optional) -->
+      <div class="mb-[18px]">
+        <label class="block text-sm font-semibold text-[#333] mb-[6px]">Photo <span class="font-normal text-[#999] text-xs">(optional, max 5MB)</span></label>
+        <div class="border-2 border-dashed border-[#ddd] rounded-xl h-[120px] flex items-center justify-center cursor-pointer overflow-hidden bg-white hover:border-[#0f3460]"
+          (click)="photoInput.click()">
+          <img *ngIf="photoPreview" [src]="photoPreview" class="w-full h-full object-cover" />
+          <div *ngIf="!photoPreview" class="flex flex-col items-center gap-2 text-[#aaa]">
+            <span class="text-[32px]">📷</span>
+            <span class="text-[13px]">Tap to add photo</span>
+          </div>
+        </div>
+        <input #photoInput type="file" accept="image/*"
+          (change)="onPhotoSelected($event)" hidden />
+        <span class="text-[#dc2626] text-xs mt-1 block" *ngIf="photoError">{{ photoError }}</span>
+      </div>
+
+      <div class="bg-[#fef3c7] border border-[#f59e0b] rounded-[10px] py-[10px] px-[14px] text-[13px] text-[#92400e] mb-4"
+        *ngIf="duplicateWarning">
+        ⚠️ A provider with this phone number might already exist. Please check
+        the directory before adding.
+      </div>
+
+      <div class="bg-[#fee2e2] border border-[#ef4444] rounded-[10px] py-[10px] px-[14px] text-[13px] text-[#991b1b] mb-4"
+        *ngIf="submitError">{{ submitError }}</div>
+
+      <button type="submit"
+        class="w-full bg-[#0f3460] text-white border-0 py-[14px] rounded-xl text-base font-semibold cursor-pointer mt-2 disabled:bg-[#ccc] disabled:cursor-not-allowed"
+        [disabled]="form.invalid || submitting">
+        {{ submitting ? 'Adding...' : '✅ Add to Directory' }}
+      </button>
+
+    </form>
+  </div>
+</div>

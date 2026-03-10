@@ -1,0 +1,43 @@
+<div class="flex justify-center items-center min-h-[calc(100vh-64px)] p-5">
+  <div class="bg-white rounded-xl p-10 w-full max-w-[400px] shadow-xl">
+    <div class="text-center mb-8">
+      <span class="text-5xl">🏠</span>
+      <h1 class="mt-2 mb-1 text-[#1a237e] text-[28px]">MyAangan</h1>
+      <p class="text-gray-500 m-0">Society Management App</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-5">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-sm">Email</label>
+        <input type="email" formControlName="email" placeholder="admin@myaangan.com"
+          class="w-full p-3 border-[1.5px] border-[#ddd] rounded-lg text-[15px] box-border transition-colors focus:outline-none focus:border-[#1a237e]" />
+        <span class="text-[#d32f2f] text-xs mt-1 block" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          Valid email required
+        </span>
+      </div>
+
+      <div class="mb-5">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-sm">Password</label>
+        <input type="password" formControlName="password" placeholder="••••••••"
+          class="w-full p-3 border-[1.5px] border-[#ddd] rounded-lg text-[15px] box-border transition-colors focus:outline-none focus:border-[#1a237e]" />
+        <span class="text-[#d32f2f] text-xs mt-1 block" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+          Password required
+        </span>
+      </div>
+
+      <div class="bg-[#ffebee] text-[#d32f2f] p-3 rounded-lg mb-4 text-sm" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <button type="submit" [disabled]="loading"
+        class="w-full py-[14px] bg-[#1a237e] text-white border-0 rounded-lg text-base font-semibold cursor-pointer transition-colors hover:bg-[#283593] disabled:opacity-60 disabled:cursor-not-allowed">
+        {{ loading ? 'Logging in...' : 'Login' }}
+      </button>
+    </form>
+
+    <p class="text-center mt-5 text-gray-500 text-sm">
+      <a routerLink="/auth/forgot-password" class="text-[#1a237e] font-semibold no-underline">Forgot password?</a>
+    </p>
+    <p class="text-center mt-5 text-gray-500 text-sm">
+      Don't have an account? <a routerLink="/auth/register" class="text-[#1a237e] font-semibold no-underline">Register here</a>
+    </p>
+  </div>
+</div>

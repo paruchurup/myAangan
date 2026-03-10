@@ -1,0 +1,95 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+    </div>
+    <h1 class="text-[22px] font-bold mb-1 mt-0">💰 Maintenance Bills</h1>
+    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Track your monthly maintenance fees</p>
+  </div>
+
+  <!-- Outstanding alert bar -->
+  <div class="bg-[rgba(239,68,68,0.1)] border-l-4 border-l-[#ef4444] border-b border-b-[rgba(239,68,68,0.2)] py-3 px-4 flex items-center justify-between" *ngIf="outstanding && outstanding.unpaidCount > 0">
+    <div class="flex items-center gap-[10px]">
+      <span class="text-[22px]">⚠️</span>
+      <div>
+        <div class="alert-title">{{ outstanding.unpaidCount }} bill{{ outstanding.unpaidCount > 1 ? 's' : '' }} outstanding</div>
+        <div class="text-xs text-[#9ca3af]">Total due: ₹{{ outstanding.totalOutstanding | number:'1.2-2' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="text-center py-[50px] px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && !bills.length">
+    <div class="text-[42px]">💰</div><p class="text-lg" style="font-family:'Oswald',sans-serif">No bills yet</p>
+    <small class="text-xs">Bills are generated on the 1st of each month</small>
+  </div>
+
+  <!-- Bill cards -->
+  <div class="bill-card" *ngFor="let bill of bills" [class]="'s-' + bill.status.toLowerCase()">
+    <div class="stripe" [class]="'stripe-' + bill.status.toLowerCase()"></div>
+    <div class="flex-1 py-[13px] px-[14px] flex flex-col gap-2">
+
+      <div class="flex justify-between items-center">
+        <div class="bill-month">{{ monthName(bill.billMonth) }} {{ bill.billYear }}</div>
+        <div class="status-pill"
+          [style.background]="statusCfg[bill.status]?.bg"
+          [style.color]="statusCfg[bill.status]?.color">
+          {{ statusCfg[bill.status]?.icon }} {{ statusCfg[bill.status]?.label }}
+        </div>
+      </div>
+
+      <!-- Amount breakdown -->
+      <div class="bg-[#1c1c1c] rounded-lg py-[10px] px-3 flex flex-col gap-[5px]">
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-[#6b7280]">Base Amount</span>
+          <span class="amount-val">₹{{ bill.baseAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="flex justify-between items-center" *ngIf="bill.penaltyAmount > 0">
+          <span class="text-xs text-[#6b7280]">Late Penalty</span>
+          <span class="amount-val text-[#f87171]">₹{{ bill.penaltyAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="flex justify-between items-center" *ngIf="bill.interestAmount > 0">
+          <span class="text-xs text-[#6b7280]">Interest</span>
+          <span class="amount-val text-[#f87171]">₹{{ bill.interestAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="flex justify-between items-center border-t border-[#333] pt-[6px] mt-[3px]">
+          <span class="text-xs text-[#6b7280]">Total</span>
+          <span class="amount-val text-[15px] font-bold text-white">₹{{ bill.totalAmount | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Due date -->
+      <div class="text-xs text-[#9ca3af]" *ngIf="bill.status === 'UNPAID'">
+        <span [class.overdue]="isOverdue(bill.dueDate)">
+          {{ isOverdue(bill.dueDate) ? '🔴 Overdue since' : '📅 Due by' }}
+          {{ bill.dueDate | date:'d MMM yyyy' }}
+        </span>
+      </div>
+
+      <!-- Paid info -->
+      <div class="text-xs text-[#10b981]" *ngIf="bill.status === 'PAID'">
+        ✅ Paid on {{ bill.paidAt | date:'d MMM yyyy, h:mm a' }}
+        <span *ngIf="bill.razorpayPaymentId" class="text-[#6b7280] text-[11px]" style="font-family:'IBM Plex Mono',monospace">· Txn: {{ bill.razorpayPaymentId }}</span>
+      </div>
+
+      <!-- Waiver info -->
+      <div class="text-xs text-[#a78bfa]" *ngIf="bill.status === 'WAIVED'">
+        🎁 {{ bill.waiverNote || 'Waived by admin' }}
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2 mt-[2px]">
+        <button class="pay-btn flex-1" *ngIf="bill.status === 'UNPAID'"
+          (click)="pay(bill)" [disabled]="payingId === bill.id">
+          {{ payingId === bill.id ? 'Opening payment…' : '💳 Pay Now ₹' + (bill.totalAmount | number:'1.0-0') }}
+        </button>
+        <a class="receipt-btn" *ngIf="bill.status === 'PAID' && bill.receiptPath"
+          [href]="receiptUrl(bill.receiptPath)" target="_blank" download>
+          📄 Download Receipt
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-[#f87171] text-xs text-center p-3" *ngIf="error">{{ error }}</div>
+</div>

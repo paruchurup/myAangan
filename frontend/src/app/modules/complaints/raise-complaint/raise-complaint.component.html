@@ -1,0 +1,85 @@
+<div class="min-h-screen bg-gray-100 pb-20">
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] px-4 pt-4 pb-6 text-white">
+    <button class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer mb-3 inline-block" routerLink="/complaints/my">← Back</button>
+    <h1 class="text-[22px] m-0 mb-1">📝 Raise Complaint</h1>
+    <p class="text-[13px] text-white/70 m-0">Report an issue to the Facility Manager</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="p-4 flex flex-col gap-[14px]">
+    <div class="bg-white rounded-xl p-4 shadow-md">
+      <label class="text-sm font-bold text-[#1a1a2e] block mb-[10px]">Category *</label>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" *ngFor="let cat of categories"
+          class="py-[10px] px-2 border-[1.5px] border-[#e5e7eb] rounded-[10px] bg-white text-xs cursor-pointer text-left text-[#555] transition-all"
+          [class.bg-\[#0f3460\]]="form.get('category')?.value === cat.value"
+          [class.text-white]="form.get('category')?.value === cat.value"
+          [class.border-\[#0f3460\]]="form.get('category')?.value === cat.value"
+          (click)="selectCategory(cat.value)">{{ cat.label }}</button>
+      </div>
+      <div class="text-[#dc2626] text-xs mt-[6px]" *ngIf="form.get('category')?.touched && form.get('category')?.invalid">
+        Please select a category</div>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 shadow-md">
+      <label class="text-sm font-bold text-[#1a1a2e] block mb-[10px]">Title *</label>
+      <input type="text" formControlName="title"
+        class="w-full py-[10px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border font-[inherit] text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white"
+        placeholder="Brief summary (e.g. Water leakage in basement)" />
+      <div class="text-[#dc2626] text-xs mt-[6px]" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
+        Title is required (max 200 characters)</div>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 shadow-md">
+      <label class="text-sm font-bold text-[#1a1a2e] block mb-[10px]">Description *</label>
+      <textarea formControlName="description" rows="4"
+        class="w-full py-[10px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border font-[inherit] text-[#1a1a2e] resize-y focus:border-[#0f3460] focus:bg-white"
+        placeholder="Describe the issue — when it started, frequency, prior attempts to fix it..."></textarea>
+      <div class="text-[11px] text-[#ccc] text-right mt-1">{{ form.get('description')?.value?.length || 0 }} / 2000</div>
+      <div class="text-[#dc2626] text-xs mt-[6px]" *ngIf="form.get('description')?.touched && form.get('description')?.invalid">
+        Description is required</div>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 shadow-md">
+      <label class="text-sm font-bold text-[#1a1a2e] block mb-[10px]">Location <span class="font-normal text-[#999] text-[12px]">(optional)</span></label>
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" formControlName="flatNumber"
+          class="w-full py-[10px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border font-[inherit] text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white"
+          placeholder="Flat No." />
+        <input type="text" formControlName="block"
+          class="w-full py-[10px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border font-[inherit] text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white"
+          placeholder="Block" />
+      </div>
+      <input type="text" formControlName="locationDescription" style="margin-top:8px;"
+        class="w-full py-[10px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm outline-none bg-[#fafafa] box-border font-[inherit] text-[#1a1a2e] focus:border-[#0f3460] focus:bg-white"
+        placeholder="e.g. Ground floor corridor, Near lift" />
+    </div>
+
+    <div class="bg-white rounded-xl p-4 shadow-md">
+      <label class="text-sm font-bold text-[#1a1a2e] block mb-[10px]">Attachments <span class="font-normal text-[#999] text-[12px]">(max 10, 5MB each)</span></label>
+      <div class="border-2 border-dashed border-[#c7d2fe] rounded-xl py-6 px-4 text-center cursor-pointer bg-[#f8f9ff] transition-all hover:border-[#0f3460] hover:bg-[#eef2ff]"
+        (click)="fileInput.click()"
+        (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <div class="text-[32px] mb-2">📎</div>
+        <div class="text-sm font-semibold text-[#3730a3] mb-1">Tap to upload photos, PDFs, videos or documents</div>
+        <div class="text-xs text-[#888]">JPG, PNG, PDF, MP4, DOC, XLS</div>
+      </div>
+      <input #fileInput type="file" multiple hidden
+        accept="image/*,.pdf,video/mp4,.doc,.docx,.xls,.xlsx"
+        (change)="onFileChange($event)" />
+      <div class="mt-3 flex flex-col gap-[6px]" *ngIf="selectedFiles.length > 0">
+        <div class="flex items-center gap-2 bg-[#f8f9ff] rounded-lg py-2 px-[10px]" *ngFor="let f of selectedFiles; let i = index">
+          <span class="text-[18px]">{{ fileIcon(f) }}</span>
+          <span class="flex-1 text-[13px] text-[#1a1a2e] overflow-hidden text-ellipsis whitespace-nowrap">{{ f.name }}</span>
+          <span class="text-[11px] text-[#888] flex-shrink-0">{{ formatSize(f.size) }}</span>
+          <button type="button" class="bg-[#fee2e2] border-0 text-[#dc2626] rounded-full w-[22px] h-[22px] cursor-pointer text-[11px] flex-shrink-0" (click)="removeFile(i)">✕</button>
+        </div>
+      </div>
+      <div class="text-[#dc2626] text-xs mt-[6px]" *ngIf="fileError">{{ fileError }}</div>
+    </div>
+
+    <div class="bg-[#fee2e2] rounded-[10px] py-3 px-4 text-sm text-[#991b1b]" *ngIf="submitError">{{ submitError }}</div>
+    <button type="submit" class="w-full bg-[#e94560] text-white border-0 p-[14px] rounded-xl text-base font-semibold cursor-pointer disabled:bg-[#ccc] disabled:cursor-not-allowed" [disabled]="submitting || form.invalid">
+      {{ submitting ? 'Submitting...' : '🚀 Submit Complaint' }}
+    </button>
+  </form>
+</div>

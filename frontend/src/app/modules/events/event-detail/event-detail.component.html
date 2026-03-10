@@ -1,0 +1,267 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20 relative" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/events">← Back</a>
+    </div>
+    <h1 class="text-[22px] font-bold mb-1 mt-0">{{ detail?.event?.name || '🎉 Event Details' }}</h1>
+    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">{{ detail?.event?.eventDate ? (detail.event.eventDate | date:'d MMM yyyy, h:mm a') : (detail?.event?.venue || 'Society event') }}</p>
+  </div>
+
+  <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div *ngIf="detail">
+    <!-- Organiser action bar -->
+    <div class="flex gap-2 py-2 px-[14px] bg-[#111] border-b border-[#2a2a2a] flex-wrap" *ngIf="canCreate">
+      <button class="org-btn yellow" *ngIf="detail.event.status==='DRAFT'"     (click)="openVoting()">🗳️ Open Voting</button>
+      <button class="org-btn green"  *ngIf="detail.event.status==='APPROVED'"  (click)="activate()">🎉 Activate Event</button>
+      <button class="org-btn blue"   *ngIf="detail.event.status==='ACTIVE'"    (click)="complete()">🏆 Mark Complete</button>
+      <button class="org-btn red"    *ngIf="['DRAFT','VOTING','APPROVED','ACTIVE'].includes(detail.event.status)" (click)="cancel()">✕ Cancel</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex bg-[#111] border-b border-[#2a2a2a] overflow-x-auto">
+      <button class="tab" [class.active]="tab==='INFO'"     (click)="tab='INFO'">📋 Info</button>
+      <button class="tab" [class.active]="tab==='VOTE'"     (click)="tab='VOTE'"     *ngIf="isVoting">🗳️ Vote</button>
+      <button class="tab" [class.active]="tab==='VOLUNTEER'" (click)="tab='VOLUNTEER'">🙋 Volunteer</button>
+      <button class="tab" [class.active]="tab==='FUNDS'"    (click)="tab='FUNDS'">💰 Funds</button>
+      <button class="tab" [class.active]="tab==='EXPENSES'" (click)="tab='EXPENSES'">🧾 Expenses</button>
+      <button class="tab" [class.active]="tab==='GALLERY'"  (click)="tab='GALLERY'; loadPhotos()">📷 Gallery</button>
+      <button class="tab" [class.active]="tab==='SETTLE'"   (click)="tab='SETTLE'"   *ngIf="detail.event.status==='COMPLETED'">🏁 Settlement</button>
+    </div>
+
+    <!-- ── INFO ─────────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='INFO'">
+      <div class="grid grid-cols-2 gap-2">
+        <div class="info-item"><div class="il">Date</div><div class="iv">{{ detail.event.eventDate | date:'d MMM yyyy, h:mm a' }}</div></div>
+        <div class="info-item"><div class="il">Venue</div><div class="iv">{{ detail.event.venue || '—' }}</div></div>
+        <div class="info-item"><div class="il">Est. Budget</div><div class="iv money">₹{{ detail.event.estimatedBudget | number:'1.0-0' }}</div></div>
+        <div class="info-item"><div class="il">Organiser</div><div class="iv">{{ detail.event.createdBy?.firstName }} {{ detail.event.createdBy?.lastName }}</div></div>
+        <div class="info-item"><div class="il">Quorum</div><div class="iv">{{ detail.event.quorumPct }}% of residents</div></div>
+        <div class="info-item"><div class="il">Vote Deadline</div><div class="iv">{{ detail.event.voteDeadline | date:'d MMM, h:mm a' }}</div></div>
+      </div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg p-3 text-sm text-[#9ca3af] leading-relaxed" *ngIf="detail.event.description">{{ detail.event.description }}</div>
+
+      <!-- Funds summary bar -->
+      <div class="flex items-center gap-2 bg-[#252525] border border-[#333] rounded-lg py-3 px-[14px]">
+        <div class="flex flex-col items-center gap-[2px]">
+          <div class="funds-val text-[#10b981]">₹{{ detail.raised | number:'1.0-0' }}</div>
+          <div class="funds-label">Raised</div>
+        </div>
+        <div class="text-[#4b5563] text-base flex-1 text-center">of</div>
+        <div class="flex flex-col items-center gap-[2px]">
+          <div class="funds-val">₹{{ detail.event.estimatedBudget | number:'1.0-0' }}</div>
+          <div class="funds-label">Estimated</div>
+        </div>
+        <div class="text-[#4b5563] text-base flex-1 text-center">·</div>
+        <div class="flex flex-col items-center gap-[2px]">
+          <div class="funds-val text-[#ef4444]">₹{{ detail.spent | number:'1.0-0' }}</div>
+          <div class="funds-label">Spent</div>
+        </div>
+      </div>
+      <div class="bg-[#333] rounded h-[7px] overflow-hidden">
+        <div class="h-full rounded transition-all duration-500" [style.width.%]="fundPct" [class.fill-green]="fundPct<=100" [class.fill-red]="fundPct>100"></div>
+      </div>
+      <div class="text-[11px] text-[#6b7280] text-right">{{ fundPct }}% of budget raised</div>
+    </div>
+
+    <!-- ── VOTE ──────────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='VOTE'">
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] p-[14px] flex flex-col gap-[10px]">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-[#10b981]" style="font-family:'Oswald',sans-serif">✅ YES: {{ detail.yesVotes }}</span>
+          <span class="text-[11px] text-[#6b7280]">{{ detail.totalVotes }} votes cast</span>
+          <span class="text-sm font-bold text-[#ef4444]" style="font-family:'Oswald',sans-serif">❌ NO: {{ detail.noVotes }}</span>
+        </div>
+        <div class="bg-[#1c1c1c] rounded h-2 flex overflow-hidden">
+          <div class="bg-[#10b981] transition-all duration-[400ms]" [style.width.%]="detail.totalVotes > 0 ? detail.yesVotes * 100 / detail.totalVotes : 0"></div>
+          <div class="bg-[#ef4444] transition-all duration-[400ms]" [style.width.%]="detail.totalVotes > 0 ? detail.noVotes * 100  / detail.totalVotes : 0"></div>
+        </div>
+        <div class="text-[11px] text-[#6b7280]">Need {{ detail.event.quorumPct }}% participation for quorum. Currently {{ quorumPct }}%.</div>
+        <div class="text-[11px] text-[#6b7280]">Voting closes {{ detail.event.voteDeadline | date:'d MMM, h:mm a' }}</div>
+      </div>
+
+      <div class="bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.3)] text-[#a5b4fc] p-3 rounded-lg text-sm text-center" *ngIf="detail.hasVoted">
+        You voted <strong>{{ detail.myVote }}</strong> on this event.
+      </div>
+      <div class="grid grid-cols-2 gap-[10px]" *ngIf="!detail.hasVoted && detail.event.status==='VOTING'">
+        <button class="yes-btn" (click)="vote('YES')" [disabled]="voting">👍 Approve Event</button>
+        <button class="no-btn"  (click)="vote('NO')"  [disabled]="voting">👎 Reject Event</button>
+      </div>
+    </div>
+
+    <!-- ── VOLUNTEER ──────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='VOLUNTEER'">
+      <div class="text-xs text-[#4b5563] text-center py-5" *ngIf="!detail.volunteerSlots?.length">No volunteer roles defined for this event.</div>
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-2" *ngFor="let vs of detail.volunteerSlots">
+        <div class="flex justify-between items-center">
+          <div class="slot-role">{{ vs.slot.roleName }}</div>
+          <div class="text-[11px] text-[#6b7280]" [class.text-\[\#ef4444\]]="vs.isFull" style="font-family:'IBM Plex Mono',monospace">{{ vs.signupCount }}/{{ vs.slot.maxVolunteers }} {{ vs.isFull ? '(Full)' : '' }}</div>
+        </div>
+        <div class="text-xs text-[#9ca3af]" *ngIf="vs.slot.roleDescription">{{ vs.slot.roleDescription }}</div>
+        <div class="flex gap-2 items-center">
+          <button class="signup-btn" *ngIf="!vs.isSignedUp && !vs.isFull && canVolunteer && isEventOpen"
+            (click)="signup(vs.slot.id)">🙋 Sign Up</button>
+          <button class="withdraw-btn" *ngIf="vs.isSignedUp"
+            (click)="withdrawSignup(vs.slot.id)">↩ Withdraw</button>
+          <span class="text-[11px] text-[#10b981]" *ngIf="vs.isSignedUp">✅ You're signed up</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FUNDS ──────────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='FUNDS'">
+      <!-- Contribute money -->
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-2" *ngIf="canContribute && isEventOpen">
+        <div class="cc-title">💳 Make a Contribution</div>
+        <div class="flex gap-2">
+          <input type="number" [(ngModel)]="contribAmount" placeholder="Amount (₹)" class="contrib-input flex-1" min="1" />
+          <button class="contrib-btn" (click)="contribute()" [disabled]="contributing">
+            {{ contributing ? 'Opening…' : 'Contribute' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- In-kind -->
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-2" *ngIf="canContribute && isEventOpen">
+        <div class="cc-title">🎁 Log In-Kind Contribution</div>
+        <input [(ngModel)]="inkind.itemName"    placeholder="Item name (e.g. Flowers, Sweets)" class="ik-input" />
+        <input [(ngModel)]="inkind.description" placeholder="Description (optional)"           class="ik-input" />
+        <div class="flex gap-2">
+          <input type="number" [(ngModel)]="inkind.quantity"       placeholder="Qty" class="ik-qty" />
+          <input type="number" [(ngModel)]="inkind.estimatedValue" placeholder="Est. value (₹)" class="ik-val flex-1" />
+          <button class="ik-btn" (click)="logInKind()" [disabled]="loggingInKind">
+            {{ loggingInKind ? 'Saving…' : '+ Log' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Contribution list -->
+      <div class="text-[11px] text-[#6b7280]" style="font-family:'Oswald',sans-serif;letter-spacing:1px">💰 Cash Contributions ({{ detail.contributions?.length || 0 }})</div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-3 flex justify-between items-center" *ngFor="let c of detail.contributions">
+        <div class="text-sm text-[#e8e8e8]">{{ c.resident?.firstName }} {{ c.resident?.lastName }} <span class="text-[11px] text-[#6b7280]">· {{ c.resident?.flatNumber }}</span></div>
+        <div class="text-sm font-semibold" [class.text-\[\#f59e0b\]]="!c.confirmed" [class.text-\[\#10b981\]]="c.confirmed" style="font-family:'IBM Plex Mono',monospace">₹{{ c.amount | number:'1.0-0' }} {{ !c.confirmed ? '(pending)' : '' }}</div>
+      </div>
+      <div class="text-xs text-[#4b5563] text-center py-5" *ngIf="!detail.contributions?.length">No cash contributions yet.</div>
+    </div>
+
+    <!-- ── EXPENSES ───────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='EXPENSES'">
+      <!-- Log expense form -->
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-2" *ngIf="canExpense && (detail.event.status==='ACTIVE' || detail.event.status==='COMPLETED')">
+        <div class="ef-title">🧾 Log Expense</div>
+        <input [(ngModel)]="exp.description" placeholder="Description" class="exp-input" />
+        <div class="flex gap-2">
+          <input type="number" [(ngModel)]="exp.amount" placeholder="Amount (₹)" class="exp-amount" />
+          <select [(ngModel)]="exp.category" class="exp-cat flex-1">
+            <option value="Food">Food</option><option value="Decoration">Decoration</option>
+            <option value="Music">Music</option><option value="Venue">Venue</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="file-label" for="receipt">📷 Attach Receipt</label>
+          <input type="file" id="receipt" (change)="onReceipt($event)" accept="image/*,application/pdf" class="hidden" />
+          <span class="text-[11px] text-[#9ca3af] overflow-hidden text-ellipsis whitespace-nowrap max-w-[140px]" *ngIf="receiptFile">{{ receiptFile.name }}</span>
+        </div>
+        <button class="exp-btn" (click)="logExpense()" [disabled]="loggingExp">
+          {{ loggingExp ? 'Saving…' : '+ Log Expense' }}
+        </button>
+      </div>
+
+      <!-- Expense list -->
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[10px] px-3 flex justify-between items-center gap-2" *ngFor="let e of detail.expenses">
+        <div class="flex-1">
+          <div class="text-sm text-[#e8e8e8] font-medium">{{ e.description }}</div>
+          <div class="text-[11px] text-[#4b5563] mt-[2px]">{{ e.category }} · {{ e.loggedBy?.firstName }} {{ e.loggedBy?.lastName }} · {{ e.createdAt | date:'d MMM, h:mm a' }}</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="text-sm font-bold text-[#ef4444]" style="font-family:'IBM Plex Mono',monospace">₹{{ e.amount | number:'1.0-0' }}</div>
+          <a class="text-[18px] no-underline" *ngIf="e.receiptPath" [href]="svc.mediaUrl(e.receiptPath)" target="_blank">📄</a>
+        </div>
+      </div>
+      <div class="text-xs text-[#4b5563] text-center py-5" *ngIf="!detail.expenses?.length">No expenses logged yet.</div>
+    </div>
+
+    <!-- ── GALLERY ─────────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='GALLERY'">
+      <!-- Upload -->
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] p-3 flex flex-wrap gap-2 items-center" *ngIf="canPhoto && detail.event.status==='COMPLETED'">
+        <input type="file" id="photo" (change)="onPhoto($event)" accept="image/*" class="hidden" />
+        <label for="photo" class="bg-[#1c1c1c] border border-dashed border-[#333] text-[#9ca3af] py-2 px-[14px] rounded-md text-xs cursor-pointer">{{ photoFile ? photoFile.name : '📷 Choose Photo' }}</label>
+        <input [(ngModel)]="photoCaption" placeholder="Caption (optional)" class="caption-input flex-1 min-w-[120px]" />
+        <button class="upload-btn" (click)="uploadPhoto()" [disabled]="uploadingPhoto">
+          {{ uploadingPhoto ? 'Uploading…' : '⬆ Upload' }}
+        </button>
+      </div>
+
+      <div class="flex justify-center py-5" *ngIf="photosLoading"><div class="spinner"></div></div>
+      <div class="text-xs text-[#4b5563] text-center py-5" *ngIf="!photosLoading && !photos.length">No photos yet.</div>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="bg-[#252525] border border-[#333] rounded-lg overflow-hidden" *ngFor="let p of photos">
+          <a [href]="svc.mediaUrl(p.photoPath)" target="_blank">
+            <img [src]="svc.mediaUrl(p.photoPath)" [alt]="p.caption || 'Event photo'" class="w-full block object-cover" style="aspect-ratio:4/3" />
+          </a>
+          <div class="text-[11px] text-[#9ca3af] py-1 px-2" *ngIf="p.caption">{{ p.caption }}</div>
+          <div class="text-[10px] text-[#4b5563] px-2 pb-[6px]">{{ p.uploadedBy?.firstName }} · {{ p.uploadedAt | date:'d MMM' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTLEMENT ─────────────────────────────────────────────── -->
+    <div class="py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="tab==='SETTLE'">
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] overflow-hidden">
+        <div class="flex justify-between py-2 px-[14px] text-[10px] text-[#6b7280] border-b border-[#1c1c1c]" style="font-family:'Oswald',sans-serif;letter-spacing:1px"><span>Item</span><span>Amount</span></div>
+        <div class="flex justify-between py-[10px] px-[14px] text-sm border-b border-[#1c1c1c] text-[#10b981]"><span>Total Contributions</span><span>₹{{ detail.raised | number:'1.2-2' }}</span></div>
+        <div class="flex justify-between py-[10px] px-[14px] text-sm border-b border-[#1c1c1c] text-[#ef4444]"><span>Total Expenses</span><span>₹{{ detail.spent | number:'1.2-2' }}</span></div>
+        <div class="flex justify-between py-[10px] px-[14px] text-sm font-bold bg-[#1c1c1c]"
+          [class.text-\[\#10b981\]]="detail.raised - detail.spent >= 0"
+          [class.text-\[\#ef4444\]]="detail.raised - detail.spent < 0"
+          style="font-family:'Oswald',sans-serif;font-size:14px">
+          <span>{{ detail.raised - detail.spent >= 0 ? 'Surplus' : 'Deficit' }}</span>
+          <span>₹{{ Math.abs(detail.raised - detail.spent) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Surplus vote -->
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="detail.raised - detail.spent > 0">
+        <div class="ss-title">What to do with the surplus?</div>
+        <div class="flex flex-col gap-[6px]">
+          <div class="flex justify-between text-sm text-[#e8e8e8]"><span>🔄 Carry Forward</span><span class="text-xs text-[#6b7280]" style="font-family:'IBM Plex Mono',monospace">{{ detail.surplusResults?.CARRY_FORWARD || 0 }} votes</span></div>
+          <div class="flex justify-between text-sm text-[#e8e8e8]"><span>🤝 Donate</span><span class="text-xs text-[#6b7280]" style="font-family:'IBM Plex Mono',monospace">{{ detail.surplusResults?.DONATE || 0 }} votes</span></div>
+          <div class="flex justify-between text-sm text-[#e8e8e8]"><span>💸 Refund Proportionally</span><span class="text-xs text-[#6b7280]" style="font-family:'IBM Plex Mono',monospace">{{ detail.surplusResults?.REFUND || 0 }} votes</span></div>
+        </div>
+        <div class="text-xs text-[#10b981] text-center" *ngIf="detail.hasSurplusVoted">✅ You have voted on surplus.</div>
+        <div class="grid grid-cols-3 gap-2" *ngIf="!detail.hasSurplusVoted">
+          <button class="sv-btn" (click)="surplusVote('CARRY_FORWARD')" [disabled]="votingSurplus">🔄 Carry Forward</button>
+          <button class="sv-btn" (click)="surplusVote('DONATE')"        [disabled]="votingSurplus">🤝 Donate</button>
+          <button class="sv-btn" (click)="surplusVote('REFUND')"        [disabled]="votingSurplus">💸 Refund</button>
+        </div>
+      </div>
+
+      <!-- Recognition wall -->
+      <div class="bg-[#252525] border border-[#333] rounded-[10px] py-3 px-[14px] flex flex-col gap-[10px]" *ngIf="recognition.length || canCreate">
+        <div class="rw-title">🌟 Recognition Wall — These People Made It Happen</div>
+        <div class="flex flex-col gap-2" *ngIf="recognition.length">
+          <div class="rec-card" *ngFor="let r of recognition">
+            <div class="rec-name">{{ r.name }}</div>
+            <div class="text-[11px] text-[#f59e0b] tracking-[0.5px]">{{ r.role }}</div>
+            <div class="text-xs text-[#9ca3af] mt-1 leading-relaxed" *ngIf="r.note">{{ r.note }}</div>
+          </div>
+        </div>
+        <!-- Organiser editor -->
+        <div class="flex flex-col gap-2" *ngIf="canCreate && editingRec">
+          <textarea [(ngModel)]="recognitionRaw" rows="6" class="rec-textarea"
+            placeholder='[{"name":"Arun Kumar","role":"Decoration","note":"Transformed the hall!"},...]'></textarea>
+          <div class="flex gap-2">
+            <button class="rec-save-btn" (click)="saveRecognition()">Save</button>
+            <button class="rec-cancel-btn" (click)="editingRec=false">Cancel</button>
+          </div>
+        </div>
+        <button class="edit-rec-btn" *ngIf="canCreate && !editingRec" (click)="startEditRec()">✏️ Edit Recognition</button>
+      </div>
+    </div>
+  </div><!-- /body -->
+
+  <div class="err" *ngIf="error">{{ error }}</div>
+  <div class="ok"  *ngIf="okMsg">{{ okMsg }}</div>
+</div>

@@ -1,0 +1,44 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <div class="flex gap-[6px] items-center">
+        <button class="fm-btn" *ngIf="canManage" routerLink="/helpdesk/fm">📋 FM View</button>
+        <button class="raise-btn" routerLink="/helpdesk/raise">+ New Request</button>
+      </div>
+    </div>
+    <h1 class="text-[22px] font-bold mb-1 mt-0">🛠️ Helpdesk</h1>
+    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">Service requests</p>
+  </div>
+
+  <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="text-center py-[50px] px-5 flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && requests.length === 0">
+    <div class="text-[42px]">🛠️</div><p class="text-lg" style="font-family:'Oswald',sans-serif">No requests yet</p>
+    <small class="text-xs">Tap "+ New Request" to raise your first service request</small>
+  </div>
+
+  <div class="py-3 px-[14px] flex flex-col gap-[10px]">
+    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests">
+      <div class="req-stripe" [style.background]="catCfg[r.category]?.color"></div>
+      <div class="flex-1 py-3 px-[14px] flex flex-col gap-[7px]">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-[6px]">
+            <span class="text-base">{{ catCfg[r.category]?.icon }}</span>
+            <span class="cat-name" [style.color]="catCfg[r.category]?.color">{{ catCfg[r.category]?.label }}</span>
+          </div>
+          <div class="status-pill"
+            [style.background]="stsCfg[r.status]?.bg"
+            [style.color]="stsCfg[r.status]?.color">
+            {{ stsCfg[r.status]?.icon }} {{ stsCfg[r.status]?.label }}
+          </div>
+        </div>
+        <div class="req-title">{{ r.title }}</div>
+        <div class="flex flex-wrap gap-[10px] text-[11px] text-[#6b7280]">
+          <span>📅 {{ r.createdAt | date:'d MMM yyyy' }}</span>
+          <span *ngIf="r.confirmedDatetime">🕐 Scheduled: {{ r.confirmedDatetime | date:'d MMM, h:mm a' }}</span>
+          <span *ngIf="r.assignedStaffName">👷 {{ r.assignedStaffName }}</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>

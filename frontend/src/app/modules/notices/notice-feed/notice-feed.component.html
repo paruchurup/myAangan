@@ -1,0 +1,158 @@
+<div class="min-h-screen bg-[#faf8f4] pb-20" style="font-family:'Source Serif 4',Georgia,serif">
+
+  <!-- Alert shelf: unread HIGH + URGENT notices -->
+  <div class="bg-[#1a1a1a] py-3 px-4 flex flex-col gap-[10px] border-b-2 border-[#c9a84c]" *ngIf="alertNotices.length">
+    <div class="flex justify-between items-center mb-[2px]">
+      <span class="text-[11px] text-[#c9a84c] font-bold tracking-[1px] uppercase">🔔 Requires your attention</span>
+      <button class="bg-transparent border border-[#444] text-[#888] text-[11px] py-1 px-[10px] rounded-xl cursor-pointer transition-all duration-150 hover:border-[#c9a84c] hover:text-[#c9a84c]" (click)="dismissAll()">Dismiss all</button>
+    </div>
+    <div class="alert-card flex rounded-[10px] overflow-hidden relative" *ngFor="let n of alertNotices"
+         [class.urgent]="n.priority==='URGENT'"
+         [class.high]="n.priority==='HIGH'">
+      <div class="w-[5px] flex-shrink-0" [style.background]="typeAccent(n.type)"></div>
+      <div class="py-[11px] px-3 flex-1 min-w-0">
+        <div class="flex items-center gap-[6px] mb-[6px] flex-wrap">
+          <span class="text-[11px] font-bold" [style.color]="typeAccent(n.type)">{{ typeIcon(n.type) }} {{ typeLabel(n.type) }}</span>
+          <span class="text-[10px] font-[800] py-[2px] px-[7px] rounded-md tracking-[0.5px] bg-[#fee2e2] text-[#dc2626]" *ngIf="n.priority==='URGENT'">🚨 URGENT</span>
+          <span class="text-[10px] font-[800] py-[2px] px-[7px] rounded-md tracking-[0.5px] bg-[#fef3c7] text-[#92400e]" *ngIf="n.priority==='HIGH'">HIGH</span>
+          <span class="bg-[#ef4444] text-white text-[9px] font-[800] py-[2px] px-[6px] rounded tracking-[0.5px]" *ngIf="n['new']">NEW</span>
+        </div>
+        <p class="text-sm font-bold text-[#1a1a1a] m-0 mb-1 leading-[1.3]" style="font-family:'Playfair Display',serif">{{ n.title }}</p>
+        <p class="text-xs text-[#6b7280] m-0 mb-2 leading-[1.4]">{{ n.content | slice:0:100 }}{{ n.content.length > 100 ? '…' : '' }}</p>
+        <div class="flex items-center justify-between flex-wrap gap-[6px]">
+          <span class="text-[11px] text-[#92400e] font-semibold" *ngIf="n.requiresAcknowledgement && !n.acknowledged">⚠️ Acknowledgement required</span>
+          <a class="ac-view text-xs font-bold text-[#c9a84c] no-underline border-b border-transparent transition-colors duration-150" [routerLink]="['/notices', n.id]" (click)="markReadAndDismiss(n)">View full notice →</a>
+        </div>
+      </div>
+      <button class="absolute top-2 right-2 bg-transparent border-0 text-[#9ca3af] text-sm cursor-pointer py-[2px] px-[6px] rounded transition-colors duration-150 hover:text-[#374151] leading-none" (click)="dismiss(n)" aria-label="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/dashboard">← Back</a>
+      <a routerLink="/notices/manage" class="bg-white/15 text-white py-[6px] px-3 rounded-full text-[13px] font-bold no-underline" *ngIf="canManage">+ Post</a>
+    </div>
+    <h1 class="text-[22px] m-0 mb-1 font-bold">📢 Notices</h1>
+    <p class="text-[13px] text-white/70 m-0">Community announcements and updates</p>
+  </div>
+
+  <div class="flex gap-0 overflow-x-auto bg-[#1a1a1a] border-b-2 border-[#333] px-3">
+    <button *ngFor="let f of filters" class="fc bg-transparent border-0 text-[#666] py-[10px] px-3 text-[11px] tracking-[0.5px] cursor-pointer whitespace-nowrap border-b-2 border-transparent -mb-[2px] transition-all duration-150" [class.active]="activeFilter===f.v"
+      (click)="activeFilter=f.v">{{ f.label }}</button>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="sp"></div></div>
+
+  <div class="py-4 px-4 flex flex-col" *ngIf="!loading">
+
+    <!-- URGENT banners -->
+    <div class="urgent-banner flex mb-[14px] rounded-lg overflow-hidden bg-[#fff5f5] border-[1.5px] border-[#fca5a5] cursor-pointer" *ngFor="let n of urgentNotices"
+         [routerLink]="['/notices', n.id]" (click)="markRead(n)">
+      <div class="w-[6px] flex-shrink-0 bg-gradient-to-b from-[#ef4444] to-[#dc2626]"></div>
+      <div class="py-[14px] px-[14px] pb-3 flex-1">
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <span class="text-[11px] font-bold text-[#dc2626] tracking-[1px]">🚨 URGENT</span>
+          <span class="text-[11px] text-[#6b7280]" *ngIf="n.pinned">📌 Pinned</span>
+          <span class="bg-[#dc2626] text-white text-[9px] font-[800] py-[2px] px-[6px] rounded tracking-[1px]" *ngIf="n['new']">NEW</span>
+        </div>
+        <h2 class="text-lg font-bold text-[#1a1a1a] m-0 mb-[6px] leading-[1.3]" style="font-family:'Playfair Display',serif">{{ n.title }}</h2>
+        <p class="text-[13px] text-[#4b5563] m-0 mb-[10px] leading-[1.5]">{{ n.content | slice:0:120 }}{{ n.content.length > 120 ? '…' : '' }}</p>
+        <div class="flex gap-[10px] text-[11px] text-[#9ca3af] flex-wrap">
+          <span>{{ n.createdByName }}</span>
+          <span>{{ n.publishedAt | date:'MMM d, h:mm a' }}</span>
+          <span class="text-[#dc2626] font-semibold" *ngIf="n.requiresAcknowledgement && !n.acknowledged">⚠️ Requires acknowledgement</span>
+          <span class="text-[#16a34a]" *ngIf="n.requiresAcknowledgement && n.acknowledged">✓ Acknowledged</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pinned non-urgent -->
+    <div class="section-label text-[10px] font-semibold uppercase tracking-[2px] text-[#9ca3af] py-[14px] pb-2 flex items-center gap-[6px] border-t border-[#e5e0d8] mt-1" *ngIf="pinnedNormal.length && activeFilter==='ALL'">📌 Pinned</div>
+    <ng-container *ngIf="activeFilter==='ALL'">
+      <a class="notice-card flex bg-white border border-[#e5e0d8] rounded-lg mb-[10px] no-underline overflow-hidden border-l-4 border-l-[#e5e0d8] transition-transform duration-150" *ngFor="let n of pinnedNormal"
+         [routerLink]="['/notices', n.id]" (click)="markRead(n)"
+         [class.unread]="!n.read" [class.has-ack]="n.requiresAcknowledgement && !n.acknowledged"
+         [style.border-left-color]="typeAccent(n.type)">
+        <div class="py-3 px-[14px] flex-1 min-w-0">
+          <div class="flex items-center gap-[6px] mb-[6px] flex-wrap">
+            <span class="text-[11px] font-semibold" [style.color]="typeAccent(n.type)">{{ typeIcon(n.type) }} {{ typeLabel(n.type) }}</span>
+            <span class="bg-[#ef4444] text-white text-[9px] font-[800] py-[2px] px-[6px] rounded tracking-[0.5px]" *ngIf="n['new']">NEW</span>
+            <span class="text-[#d1c9bc] text-xs ml-auto" *ngIf="n.read">✓</span>
+          </div>
+          <h3 class="card-title text-[15px] font-bold text-[#1a1a1a] m-0 mb-1 leading-[1.3]" style="font-family:'Playfair Display',serif">{{ n.title }}</h3>
+          <p class="text-[13px] text-[#6b7280] m-0 mb-2 leading-[1.4]">{{ n.content | slice:0:100 }}{{ n.content.length > 100 ? '…' : '' }}</p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] text-[#9ca3af] italic">{{ n.createdByName }}</span>
+            <span class="text-[11px] text-[#d1c9bc]">{{ n.publishedAt | date:'MMM d' }}</span>
+            <span class="text-[10px] text-[#92400e] bg-[#fef3c7] py-[2px] px-2 rounded-lg font-semibold ml-auto" *ngIf="n.requiresAcknowledgement && !n.acknowledged">⚠ Acknowledge</span>
+            <span class="text-[11px] text-[#9ca3af]" *ngIf="n.attachments?.length">📎 {{ n.attachments.length }}</span>
+          </div>
+        </div>
+      </a>
+    </ng-container>
+
+    <!-- Grouped by type (ALL view) -->
+    <ng-container *ngIf="activeFilter==='ALL'">
+      <ng-container *ngFor="let group of groupedNotices">
+        <div class="section-label text-[10px] font-semibold uppercase tracking-[2px] py-[14px] pb-2 flex items-center gap-[6px] border-t border-[#e5e0d8] mt-1" [style.color]="typeAccent(group.type)">
+          {{ typeIcon(group.type) }} {{ typeLabel(group.type) }}
+          <span class="bg-[#e5e0d8] text-[#6b7280] text-[10px] py-[1px] px-[6px] rounded-lg">{{ group.notices.length }}</span>
+        </div>
+        <a class="notice-card flex bg-white border border-[#e5e0d8] rounded-lg mb-[10px] no-underline overflow-hidden border-l-4 transition-transform duration-150" *ngFor="let n of group.notices"
+           [routerLink]="['/notices', n.id]" (click)="markRead(n)"
+           [class.unread]="!n.read" [class.has-ack]="n.requiresAcknowledgement && !n.acknowledged"
+           [style.border-left-color]="typeAccent(n.type)">
+          <div class="py-3 px-[14px] flex-1 min-w-0">
+            <div class="flex items-center gap-[6px] mb-[6px] flex-wrap">
+              <span class="text-[11px] font-semibold" [style.color]="typeAccent(n.type)">{{ typeIcon(n.type) }} {{ typeLabel(n.type) }}</span>
+              <span class="bg-[#ef4444] text-white text-[9px] font-[800] py-[2px] px-[6px] rounded tracking-[0.5px]" *ngIf="n['new']">NEW</span>
+              <span class="bg-[#fef3c7] text-[#92400e] text-[9px] font-[700] py-[2px] px-[6px] rounded" *ngIf="n.priority==='HIGH'">HIGH</span>
+              <span class="text-[#d1c9bc] text-xs ml-auto" *ngIf="n.read">✓</span>
+            </div>
+            <h3 class="card-title text-[15px] font-bold text-[#1a1a1a] m-0 mb-1 leading-[1.3]" style="font-family:'Playfair Display',serif">{{ n.title }}</h3>
+            <p class="text-[13px] text-[#6b7280] m-0 mb-2 leading-[1.4]">{{ n.content | slice:0:100 }}{{ n.content.length > 100 ? '…' : '' }}</p>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[11px] text-[#9ca3af] italic">{{ n.createdByName }}</span>
+              <span class="text-[11px] text-[#d1c9bc]">{{ n.publishedAt | date:'MMM d' }}</span>
+              <span class="text-[10px] text-[#92400e] bg-[#fef3c7] py-[2px] px-2 rounded-lg font-semibold ml-auto" *ngIf="n.requiresAcknowledgement && !n.acknowledged">⚠ Acknowledge</span>
+              <span class="text-[11px] text-[#9ca3af]" *ngIf="n.attachments?.length">📎 {{ n.attachments.length }}</span>
+            </div>
+          </div>
+        </a>
+      </ng-container>
+    </ng-container>
+
+    <!-- Filtered view -->
+    <ng-container *ngIf="activeFilter!=='ALL'">
+      <a class="notice-card flex bg-white border border-[#e5e0d8] rounded-lg mb-[10px] no-underline overflow-hidden border-l-4 transition-transform duration-150" *ngFor="let n of filteredNotices"
+         [routerLink]="['/notices', n.id]" (click)="markRead(n)"
+         [class.unread]="!n.read" [class.has-ack]="n.requiresAcknowledgement && !n.acknowledged"
+         [style.border-left-color]="typeAccent(n.type)">
+        <div class="py-3 px-[14px] flex-1 min-w-0">
+          <div class="flex items-center gap-[6px] mb-[6px] flex-wrap">
+            <span class="text-[11px] font-semibold" [style.color]="typeAccent(n.type)">{{ typeIcon(n.type) }} {{ typeLabel(n.type) }}</span>
+            <span class="bg-[#ef4444] text-white text-[9px] font-[800] py-[2px] px-[6px] rounded tracking-[0.5px]" *ngIf="n['new']">NEW</span>
+            <span class="bg-[#fef3c7] text-[#92400e] text-[9px] font-[700] py-[2px] px-[6px] rounded" *ngIf="n.priority==='HIGH'">HIGH</span>
+            <span class="text-[#d1c9bc] text-xs ml-auto" *ngIf="n.read">✓</span>
+          </div>
+          <h3 class="card-title text-[15px] font-bold text-[#1a1a1a] m-0 mb-1 leading-[1.3]" style="font-family:'Playfair Display',serif">{{ n.title }}</h3>
+          <p class="text-[13px] text-[#6b7280] m-0 mb-2 leading-[1.4]">{{ n.content | slice:0:100 }}{{ n.content.length > 100 ? '…' : '' }}</p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] text-[#9ca3af] italic">{{ n.createdByName }}</span>
+            <span class="text-[11px] text-[#d1c9bc]">{{ n.publishedAt | date:'MMM d' }}</span>
+            <span class="text-[10px] text-[#92400e] bg-[#fef3c7] py-[2px] px-2 rounded-lg font-semibold ml-auto" *ngIf="n.requiresAcknowledgement && !n.acknowledged">⚠ Acknowledge</span>
+            <span class="text-[11px] text-[#9ca3af]" *ngIf="n.attachments?.length">📎 {{ n.attachments.length }}</span>
+          </div>
+        </div>
+      </a>
+      <div class="text-center p-[30px] text-[13px] text-[#9ca3af] italic" *ngIf="!filteredNotices.length">No notices of this type right now</div>
+    </ng-container>
+
+    <div class="text-center py-[60px] px-5" *ngIf="notices.length === 0">
+      <div class="text-[48px] mb-3">📋</div>
+      <p class="text-lg text-[#4b5563] m-0 mb-[6px]" style="font-family:'Playfair Display',serif">No notices yet</p>
+      <small class="text-[13px] text-[#9ca3af]">Check back soon for society announcements</small>
+    </div>
+  </div>
+</div>

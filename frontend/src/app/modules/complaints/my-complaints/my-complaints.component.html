@@ -1,0 +1,34 @@
+<div class="min-h-screen bg-gray-100 pb-20">
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] px-4 pt-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <button class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer" routerLink="/dashboard">← Back</button>
+      <a routerLink="/complaints/raise" class="bg-[#e94560] text-white py-[7px] px-[14px] rounded-full no-underline text-[13px] font-semibold">+ New</a>
+    </div>
+    <h1 class="text-[22px] m-0 mb-1">📢 My Complaints</h1>
+    <p class="text-[13px] text-white/70 m-0">Track issues you have reported</p>
+  </div>
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
+  <div class="text-center py-[60px] px-5" *ngIf="!loading&&complaints.length===0">
+    <div class="text-[48px] mb-3">📭</div>
+    <p class="text-base text-[#555] mb-5">No complaints yet</p>
+    <a routerLink="/complaints/raise" class="bg-[#0f3460] text-white py-[10px] px-6 rounded-full no-underline text-sm font-semibold">Report an Issue</a>
+  </div>
+  <div class="py-3 px-4 flex flex-col gap-[10px]" *ngIf="!loading&&complaints.length>0">
+    <a class="bg-white rounded-xl p-[14px] shadow-md no-underline block border-l-4 border-[#e5e7eb]" *ngFor="let c of complaints" [routerLink]="['/complaints', c.id]">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-[13px] text-[#666]">{{ c.categoryLabel }}</span>
+        <span class="text-xs font-semibold py-[3px] px-[10px] rounded-[10px]" [style.background]="statusBg(c.status)" [style.color]="statusColor(c.status)">{{ c.statusLabel }}</span>
+      </div>
+      <div class="text-[15px] font-bold text-[#1a1a2e] mb-2">{{ c.title }}</div>
+      <div class="flex gap-3 text-xs text-[#aaa] flex-wrap">
+        <span>{{ c.createdAt | date:'MMM d, h:mm a' }}</span>
+        <span *ngIf="c.attachmentCount">📎 {{ c.attachmentCount }}</span>
+        <span *ngIf="c.commentCount">💬 {{ c.commentCount }}</span>
+        <span class="text-[#dc2626] font-semibold" *ngIf="c.slaBreached">⚠️ Overdue</span>
+      </div>
+      <div class="mt-2 text-xs text-[#92400e] bg-[#fef3c7] py-1 px-[10px] rounded-lg inline-block" *ngIf="c.escalationLevel!=='FACILITY_MANAGER'">
+        🚨 Escalated to {{ c.escalationLabel }}
+      </div>
+    </a>
+  </div>
+</div>

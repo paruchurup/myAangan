@@ -1,0 +1,95 @@
+.header {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  padding: 16px 16px 20px;
+  color: white;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: white;
+  border-bottom: 1px solid #eee;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.filter-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #ddd;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: #555;
+
+  &.active {
+    background: #0f3460;
+    color: white;
+    border-color: #0f3460;
+  }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #eee;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg) } }
+
+.complaint-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  text-decoration: none;
+  display: block;
+  border-left: 4px solid #e5e7eb;
+
+  &.breached {
+    border-left-color: #dc2626;
+  }
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.esc-tag {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.sla-tag {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}

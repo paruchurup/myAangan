@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20">
+  <div class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white">
+    <button class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer mb-3 inline-block" routerLink="/dashboard">← Back</button>
+    <h1 class="text-[22px] m-0 mb-1">📊 Delivery Management</h1>
+    <p class="text-[13px] text-white/70 m-0">All deliveries across the society</p>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="flex bg-white border-b border-[#eee] overflow-x-auto">
+    <div class="flex-1 min-w-[64px] py-3 px-2 text-center cursor-pointer border-b-2 border-transparent transition-all duration-200" (click)="setFilter(null)" [class.active]="!activeFilter">
+      <div class="text-[20px] font-bold text-[#1a1a2e]">{{ all.length }}</div>
+      <div class="text-[10px] text-[#888] mt-[2px] uppercase tracking-[0.5px]">Total</div>
+    </div>
+    <div class="flex-1 min-w-[64px] py-3 px-2 text-center cursor-pointer border-b-2 border-transparent transition-all duration-200" (click)="setFilter('ARRIVED')" [class.active]="activeFilter === 'ARRIVED'">
+      <div class="text-[20px] font-bold text-[#92400e]">{{ count('ARRIVED') }}</div>
+      <div class="text-[10px] text-[#888] mt-[2px] uppercase tracking-[0.5px]">Arrived</div>
+    </div>
+    <div class="flex-1 min-w-[64px] py-3 px-2 text-center cursor-pointer border-b-2 border-transparent transition-all duration-200" (click)="setFilter('NOTIFIED')" [class.active]="activeFilter === 'NOTIFIED'">
+      <div class="text-[20px] font-bold text-[#1e40af]">{{ count('NOTIFIED') }}</div>
+      <div class="text-[10px] text-[#888] mt-[2px] uppercase tracking-[0.5px]">Notified</div>
+    </div>
+    <div class="flex-1 min-w-[64px] py-3 px-2 text-center cursor-pointer border-b-2 border-transparent transition-all duration-200" (click)="setFilter('COLLECTED')" [class.active]="activeFilter === 'COLLECTED'">
+      <div class="text-[20px] font-bold text-[#166534]">{{ count('COLLECTED') }}</div>
+      <div class="text-[10px] text-[#888] mt-[2px] uppercase tracking-[0.5px]">Collected</div>
+    </div>
+    <div class="flex-1 min-w-[64px] py-3 px-2 text-center cursor-pointer border-b-2 border-transparent transition-all duration-200" (click)="setFilter('RETURNED')" [class.active]="activeFilter === 'RETURNED'">
+      <div class="text-[20px] font-bold text-[#991b1b]">{{ count('RETURNED') }}</div>
+      <div class="text-[10px] text-[#888] mt-[2px] uppercase tracking-[0.5px]">Returned</div>
+    </div>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="text-center py-[60px] px-5" *ngIf="!loading && filtered.length === 0">
+    <div class="text-[48px] mb-3">📭</div>
+    <p class="text-base text-[#555]">No deliveries found</p>
+  </div>
+
+  <div class="py-3 px-4 flex flex-col gap-2" *ngIf="!loading && filtered.length > 0">
+    <div class="bg-white rounded-xl py-3 px-[14px] shadow-sm" *ngFor="let d of filtered">
+      <div class="flex justify-between items-center mb-[6px]">
+        <div class="flex items-center gap-[10px]">
+          <span class="text-[13px] font-semibold text-[#0f3460]">{{ d.deliveryTypeLabel }}</span>
+          <span class="text-sm font-bold text-[#1a1a2e]">🏠 {{ d.block ? d.block + '-' : '' }}{{ d.flatNumber }}</span>
+        </div>
+        <div class="status-badge text-[11px] font-semibold py-[3px] px-2 rounded-lg" [class]="d.status.toLowerCase()">{{ d.statusLabel }}</div>
+      </div>
+
+      <div class="text-[13px] text-[#555] mb-[6px]">
+        <span class="font-semibold text-[#333]">👤 {{ d.residentName }}</span>
+        <span *ngIf="d.senderName"> · {{ d.senderName }}</span>
+      </div>
+
+      <div class="flex justify-between text-xs text-[#aaa]">
+        <span>Logged by {{ d.loggedByName }}</span>
+        <span>{{ d.createdAt | date:'MMM d, h:mm a' }}</span>
+      </div>
+
+      <!-- Admin can mark collected/returned -->
+      <div class="flex gap-2 mt-[10px] pt-[10px] border-t border-[#f0f0f0]" *ngIf="d.status === 'ARRIVED' || d.status === 'NOTIFIED'">
+        <button class="flex-1 py-2 border-0 rounded-lg text-xs font-semibold cursor-pointer bg-[#dcfce7] text-[#166534]" (click)="markCollected(d)">✅ Collected</button>
+        <button class="flex-1 py-2 border-0 rounded-lg text-xs font-semibold cursor-pointer bg-[#fee2e2] text-[#991b1b]" (click)="markReturned(d)">↩️ Returned</button>
+      </div>
+    </div>
+  </div>
+</div>

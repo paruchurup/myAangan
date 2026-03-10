@@ -1,0 +1,34 @@
+<nav class="flex items-center justify-between py-3 px-5 bg-[#1a237e] text-white shadow-md flex-wrap gap-2" *ngIf="authService.isLoggedIn()">
+  <div class="flex items-center gap-2">
+    <button class="navbar-back-btn border-0 text-white text-xl w-9 h-9 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-200 flex-shrink-0"
+      *ngIf="showBack" (click)="goBack()" aria-label="Go back">
+      &#8592;
+    </button>
+    <div class="flex items-center gap-2 text-xl font-bold" [class.has-back]="showBack">
+      <span>🏠</span>
+      <span>MyAangan</span>
+    </div>
+  </div>
+  <div class="flex gap-4">
+    <a routerLink="/dashboard" routerLinkActive="active" class="navbar-menu-link text-[rgba(255,255,255,0.8)] no-underline py-[6px] px-3 rounded transition-all duration-200">Dashboard</a>
+    <a routerLink="/profile" routerLinkActive="active" class="navbar-menu-link text-[rgba(255,255,255,0.8)] no-underline py-[6px] px-3 rounded transition-all duration-200">Profile</a>
+    <ng-container *ngIf="authService.isAdmin()">
+      <a routerLink="/admin/users" routerLinkActive="active" class="navbar-menu-link text-[rgba(255,255,255,0.8)] no-underline py-[6px] px-3 rounded transition-all duration-200">Users</a>
+      <a routerLink="/admin/pending" routerLinkActive="active" class="navbar-menu-link text-[rgba(255,255,255,0.8)] no-underline py-[6px] px-3 rounded transition-all duration-200">Pending</a>
+    </ng-container>
+  </div>
+  <div class="flex items-center gap-3">
+    <!-- Notification bell — visible to anyone with NOTICE_VIEW -->
+    <a class="navbar-bell-btn relative flex items-center justify-center w-9 h-9 rounded-full no-underline cursor-pointer transition-colors duration-200"
+      routerLink="/notices" title="Notices" *ngIf="canViewNotices">
+      <span class="text-lg leading-none">🔔</span>
+      <span class="absolute -top-1 -right-1 bg-[#ef4444] text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-[9px] flex items-center justify-center px-1 border-2 border-[#1a237e]"
+        *ngIf="unreadCount > 0">
+        {{ unreadCount > 99 ? '99+' : unreadCount }}
+      </span>
+    </a>
+    <span class="text-[13px] text-[rgba(255,255,255,0.8)]">{{ currentUser?.firstName }} ({{ currentUser?.role }})</span>
+    <button class="navbar-logout-btn text-white py-[6px] px-[14px] rounded cursor-pointer transition-all duration-200"
+      (click)="authService.logout()">Logout</button>
+  </div>
+</nav>

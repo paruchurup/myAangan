@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-[12px]">
+      <a class="back-btn" routerLink="/polls">← Back</a>
+    </div>
+    <h1>⚙️ Manage Polls</h1>
+    <p>Edit and close polls</p>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="sp"></div></div>
+
+  <div class="p-[14px]" *ngIf="!loading">
+    <!-- Filter tabs -->
+    <div class="flex gap-[6px] mb-[14px] overflow-x-auto pb-1">
+      <button *ngFor="let f of filters" class="tab" [class.active]="activeFilter===f.v" (click)="activeFilter=f.v">
+        {{ f.label }} <span class="tc" *ngIf="count(f.v)">{{ count(f.v) }}</span>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <div class="mp-card" *ngFor="let p of filtered()">
+        <div class="flex items-center gap-2 mb-[10px] flex-wrap">
+          <span class="st" [style.background]="stBg(p)" [style.color]="stColor(p)">{{ stLabel(p) }}</span>
+          <span class="type-chip">{{ typeIcon(p.type) }} {{ typeLabel(p.type) }}</span>
+          <span class="anon" *ngIf="p.anonymous">🔒 Anon</span>
+          <div class="flex gap-[6px] ml-auto">
+            <button class="act pub"   *ngIf="p.status==='DRAFT'"  (click)="publish(p)">▶ Publish</button>
+            <button class="act close" *ngIf="p.status==='ACTIVE'" (click)="close(p)">⏹ Close</button>
+            <button class="act arch"  *ngIf="p.status==='CLOSED'" (click)="archive(p)">📦</button>
+            <button class="act del"   *ngIf="p.status!=='ACTIVE'" (click)="delete(p)">🗑</button>
+          </div>
+        </div>
+
+        <a class="mc-q" [routerLink]="['/polls', p.id]">{{ p.question }}</a>
+
+        <div class="flex gap-2 text-[11px] text-[#4b5563] flex-wrap">
+          <span>{{ p.totalVoters }} voter{{ p.totalVoters!==1?'s':'' }}</span>
+          <span *ngIf="p.endsAt && p.status==='ACTIVE'">· ends {{ p.endsAt | date:'MMM d, h:mm a' }}</span>
+          <span *ngIf="p.status==='CLOSED'">· closed {{ p.closedAt | date:'MMM d' }}</span>
+          <span *ngIf="p.status==='DRAFT'">· created {{ p.createdAt | date:'MMM d' }}</span>
+          <span *ngIf="p.targetBlocks">· Block {{ p.targetBlocks }}</span>
+        </div>
+
+        <!-- Mini result preview for closed polls -->
+        <div class="flex flex-col gap-[5px] mt-[10px]" *ngIf="p.status==='CLOSED' && p.results && p.type!=='RATING'">
+          <div *ngFor="let o of topOpts(p)" class="flex items-center gap-2">
+            <span class="pbl">{{ o.emoji }} {{ o.text | slice:0:28 }}</span>
+            <div class="pbt"><div class="pbf" [style.width.%]="o.percentage"></div></div>
+            <span class="pbp">{{ o.percentage|number:'1.0-0' }}%</span>
+          </div>
+          <div *ngIf="p.type==='YES_NO'" class="flex gap-2 mt-[6px]">
+            <span class="yn y">👍 {{ p.results.yesCount }}</span>
+            <span class="yn n">👎 {{ p.results.noCount }}</span>
+            <span class="yn a">🤷 {{ p.results.abstainCount }}</span>
+          </div>
+        </div>
+        <div class="text-[#fbbf24] text-xs mt-2" *ngIf="p.status==='CLOSED' && p.type==='RATING' && p.results?.averageRating">
+          ⭐ {{ p.results!.averageRating|number:'1.1-1' }} average rating from {{ p.totalVoters }} voters
+        </div>
+      </div>
+
+      <div class="text-center p-[50px_20px]" *ngIf="!filtered().length">
+        <div class="text-[40px] mb-2">📋</div>
+        <p class="text-[#4b5563] text-sm mb-4">No {{ activeFilter.toLowerCase() }} polls</p>
+        <a routerLink="/polls/create" class="empty-cta" *ngIf="activeFilter==='ALL'||activeFilter==='DRAFT'">Create your first poll →</a>
+      </div>
+    </div>
+  </div>
+</div>

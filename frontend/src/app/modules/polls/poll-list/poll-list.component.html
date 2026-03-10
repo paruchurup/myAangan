@@ -1,0 +1,74 @@
+<div class="page">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-[12px]">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <a routerLink="/polls/create" class="new-btn" *ngIf="canManage">+ New Poll</a>
+    </div>
+    <h1>🗳️ Polls &amp; Voting</h1>
+    <p>Community polls and decisions</p>
+  </div>
+
+  <div class="flex justify-center p-[60px]" *ngIf="loading"><div class="sp"></div></div>
+
+  <div class="p-4" *ngIf="!loading">
+    <div class="nudge" *ngIf="stats.pendingVote > 0">
+      ⚡ {{ stats.pendingVote }} poll{{ stats.pendingVote>1?'s':'' }} waiting for your vote
+    </div>
+
+    <section *ngIf="activePolls.length">
+      <div class="flex items-center gap-2 mb-[10px]">
+        <h2 class="text-[#e2e8f0] text-[15px] font-bold m-0">Active</h2>
+        <span class="bc">{{ activePolls.length }}</span>
+      </div>
+      <div class="flex flex-col gap-3 mb-6">
+        <a class="card ac" *ngFor="let p of activePolls" [routerLink]="['/polls', p.id]">
+          <div class="flex items-center gap-2 mb-[10px]">
+            <span class="tc">{{ typeIcon(p.type) }} {{ typeLabel(p.type) }}</span>
+            <span class="vt" *ngIf="p.hasVoted">✓ Voted</span>
+            <span class="ut" *ngIf="!p.hasVoted && isUrgent(p)">🔥 Ends soon</span>
+          </div>
+          <p class="q">{{ p.question }}</p>
+          <div class="meta">{{ p.totalVoters }} voter{{ p.totalVoters!==1?'s':'' }}<span *ngIf="p.endsAt"> · {{ timeLeft(p) }}</span></div>
+
+          <!-- Mini result bars (after voting) -->
+          <div *ngIf="p.hasVoted && p.resultsVisible && p.type!=='YES_NO' && p.type!=='RATING'" class="flex flex-col gap-[5px]">
+            <div *ngFor="let o of topOpts(p)" class="flex items-center gap-2">
+              <span class="bl">{{ o.emoji }} {{ o.text | slice:0:20 }}</span>
+              <div class="bt"><div class="bf" [style.width.%]="o.percentage"></div></div>
+              <span class="bp">{{ o.percentage|number:'1.0-0' }}%</span>
+            </div>
+          </div>
+          <div *ngIf="p.hasVoted && p.resultsVisible && p.type==='YES_NO' && p.results" class="flex gap-[10px] mt-2">
+            <span class="yn y">👍 {{ p.results!.yesCount }}</span>
+            <span class="yn n">👎 {{ p.results!.noCount }}</span>
+            <span class="yn a">🤷 {{ p.results!.abstainCount }}</span>
+          </div>
+          <div *ngIf="p.hasVoted && p.resultsVisible && p.type==='RATING' && p.results?.averageRating" class="text-[#fbbf24] text-xs mt-2">
+            ⭐ {{ p.results!.averageRating|number:'1.1-1' }} avg · {{ p.totalVoters }} ratings
+          </div>
+          <div class="cta" *ngIf="!p.hasVoted">Tap to vote →</div>
+        </a>
+      </div>
+    </section>
+
+    <section *ngIf="closedPolls.length" style="margin-top:8px">
+      <div class="flex items-center gap-2 mb-[10px]">
+        <h2 class="text-[#e2e8f0] text-[15px] font-bold m-0">Completed</h2>
+        <span class="bc dim">{{ closedPolls.length }}</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        <a class="cc" *ngFor="let p of closedPolls" [routerLink]="['/polls', p.id]">
+          <span class="tc dim">{{ typeIcon(p.type) }}</span>
+          <span class="cq">{{ p.question }}</span>
+          <span class="cv">{{ p.totalVoters }} voters</span>
+          <span class="cd">{{ p.closedAt|date:'MMM d' }}</span>
+          <span class="arr">›</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="text-center p-[60px_20px] text-[#4b5563] text-[15px]" *ngIf="!activePolls.length&&!closedPolls.length">
+      <div class="text-[48px] mb-3">🗳️</div><p>No polls yet — check back soon!</p>
+    </div>
+  </div>
+</div>

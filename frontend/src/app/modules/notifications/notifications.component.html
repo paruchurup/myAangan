@@ -1,0 +1,40 @@
+<div class="page">
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-[12px]">
+      <a class="back-btn" routerLink="/dashboard">← Back</a>
+      <button class="mark-all-btn" (click)="markAll()" *ngIf="unread > 0">
+        ✓ Mark all read
+      </button>
+    </div>
+    <h1>🔔 Notifications</h1>
+    <p>Your activity notifications</p>
+  </div>
+
+  <div class="flex justify-center p-[40px]" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="text-center p-[60px_20px] flex flex-col items-center gap-2 text-[#4b5563]" *ngIf="!loading && notifications.length === 0">
+    <div class="text-[44px]">🔕</div>
+    <p class="notif-empty-title">All caught up!</p>
+    <small class="text-xs">No notifications yet</small>
+  </div>
+
+  <div class="flex flex-col">
+    <div class="notif-item" *ngFor="let n of notifications"
+      [class.unread]="!n.isRead" (click)="markRead(n)">
+      <div class="ni-stripe" [class.visible]="!n.isRead"></div>
+      <div class="text-[22px] flex-shrink-0 w-[30px] text-center pt-[1px]">{{ typeIcon(n.type) }}</div>
+      <div class="flex-1 min-w-0">
+        <div class="ni-title">{{ n.title }}</div>
+        <div class="text-xs text-[#9ca3af] leading-[1.5]">{{ n.body }}</div>
+        <div class="text-[11px] text-[#4b5563] mt-1">{{ n.createdAt | date:'d MMM yyyy, h:mm a' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex items-center justify-center gap-[14px] p-4" *ngIf="totalPages > 1">
+    <button class="page-btn" (click)="loadPage(currentPage - 1)" [disabled]="currentPage === 0">‹ Prev</button>
+    <span class="text-xs text-[#6b7280]">{{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button class="page-btn" (click)="loadPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">Next ›</button>
+  </div>
+</div>

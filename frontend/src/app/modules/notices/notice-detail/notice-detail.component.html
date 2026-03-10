@@ -1,0 +1,135 @@
+<div class="min-h-screen bg-[#faf8f4] pb-20" style="font-family:'Source Serif 4',Georgia,serif" *ngIf="notice">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" routerLink="/notices">← Back</a>
+    </div>
+    <h1 class="text-[22px] font-bold m-0 mb-1">{{ notice.title }}</h1>
+    <p class="text-[13px] text-white/70 m-0 mb-[10px]">{{ typeLabel() }}</p>
+    <div class="flex gap-2 mt-[10px] flex-wrap">
+      <span class="type-badge" [style.background]="typeAccentFaint()" [style.color]="typeAccent()">
+        {{ typeIcon() }} {{ typeLabel() }}
+      </span>
+      <span class="priority-badge"
+        [style.background]="priorityBg()" [style.color]="priorityColor()"
+        *ngIf="notice.priority !== 'NORMAL'">{{ notice.priority }}</span>
+      <span class="pinned-badge" *ngIf="notice.pinned">📌 Pinned</span>
+    </div>
+    <div class="flex gap-[6px] text-[12px] text-white/70 flex-wrap items-center mt-2">
+      <span>By {{ notice.createdByName }}</span>
+      <span class="text-white/40">·</span>
+      <span>{{ notice.publishedAt | date:'MMMM d, y, h:mm a' }}</span>
+      <span class="text-white/40" *ngIf="notice.expiresAt">·</span>
+      <span class="text-[#fbbf24]" *ngIf="notice.expiresAt">Expires {{ notice.expiresAt | date:'MMM d' }}</span>
+    </div>
+    <div class="flex gap-[14px] mt-[10px]" *ngIf="canManage">
+      <span class="text-[12px] text-white/70 bg-white/10 p-[4px_10px] rounded-lg">👁 {{ notice.readCount }} read</span>
+      <span class="text-[12px] text-white/70 bg-white/10 p-[4px_10px] rounded-lg" *ngIf="notice.requiresAcknowledgement">✓ {{ notice.acknowledgedCount }} acknowledged</span>
+    </div>
+  </div>
+
+  <div class="p-[14px] flex flex-col gap-3">
+
+    <!-- URGENT callout -->
+    <div class="bg-[#fef2f2] border border-[#fca5a5] rounded-xl p-[12px_16px] text-[13px] text-[#dc2626] font-semibold" *ngIf="notice.priority === 'URGENT'">
+      🚨 This is an urgent notice requiring your immediate attention.
+    </div>
+
+    <!-- Acknowledgement required (not yet done) -->
+    <div class="bg-[#fffbeb] border border-[#fbbf24] rounded-xl p-[14px_16px] flex items-center justify-between gap-3 flex-wrap" *ngIf="notice.requiresAcknowledgement && !notice.acknowledged">
+      <div class="flex flex-col gap-[3px]">
+        <strong class="text-[#92400e] text-sm">⚠️ Acknowledgement Required</strong>
+        <span class="text-[#6b7280] text-xs">Please read and confirm you have received this notice</span>
+      </div>
+      <button class="ack-btn" (click)="doAcknowledge()" [disabled]="acking">
+        {{ acking ? 'Confirming…' : '✓ I Acknowledge' }}
+      </button>
+    </div>
+
+    <!-- Acknowledged confirmation -->
+    <div class="bg-[#f0fdf4] border border-[#86efac] rounded-xl p-[10px_16px] text-[13px] text-[#16a34a] font-semibold" *ngIf="notice.requiresAcknowledgement && notice.acknowledged">
+      ✅ You acknowledged this notice
+    </div>
+
+    <!-- Notice content -->
+    <div class="bg-white border border-[#e5e0d8] rounded-xl p-5">
+      <div class="text-[15px] text-[#374151] leading-relaxed whitespace-pre-wrap" style="font-family:'Source Serif 4',serif">{{ notice.content }}</div>
+    </div>
+
+    <!-- Attachments -->
+    <div class="bg-white border border-[#e5e0d8] rounded-xl p-4" *ngIf="notice.attachments?.length">
+      <h2>📎 Attachments</h2>
+      <div class="flex flex-col gap-2">
+        <a *ngFor="let a of notice.attachments" [href]="a.downloadUrl"
+           target="_blank" class="attach-item">
+          <span class="text-[20px] flex-shrink-0">{{ fileIcon(a.fileType) }}</span>
+          <div class="flex-1 min-w-0">
+            <span class="block text-[13px] text-[#374151] font-semibold overflow-hidden whitespace-nowrap text-ellipsis">{{ a.originalName }}</span>
+            <span class="text-[11px] text-[#9ca3af]">{{ formatSize(a.fileSize) }}</span>
+          </div>
+          <span class="text-[#9ca3af] text-[16px]">↓</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Reader analytics (managers only) -->
+    <div class="bg-white border border-[#e5e0d8] rounded-xl p-4" *ngIf="canManage && readers.length">
+      <div class="flex justify-between items-center cursor-pointer mb-0" (click)="showReaders=!showReaders">
+        <h2 class="mb-0">👥 Read By <span class="rc">{{ readers.length }}</span></h2>
+        <span class="text-[#9ca3af] text-[14px]">{{ showReaders ? '▲' : '▼' }}</span>
+      </div>
+      <div class="mt-3 flex flex-col gap-[6px] max-h-[250px] overflow-y-auto" *ngIf="showReaders">
+        <div class="reader-row" *ngFor="let r of readers">
+          <div class="text-[#374151] font-semibold">{{ r.name }}</div>
+          <div class="text-[#9ca3af]">{{ r.role }}</div>
+          <div class="text-[#9ca3af]">{{ r.flat || '—' }}</div>
+          <div>
+            <span class="text-[#16a34a] font-semibold" *ngIf="r.acknowledged">✓ Acked</span>
+            <span class="text-[#f59e0b] text-[11px]" *ngIf="!r.acknowledged && notice.requiresAcknowledgement">Pending</span>
+          </div>
+          <div class="text-[#9ca3af]">{{ r.readAt | date:'MMM d, h:mm a' }}</div>
+        </div>
+        <div class="text-[#9ca3af] text-[13px] text-center" *ngIf="!readers.length">No one has read this yet</div>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="bg-white border border-[#e5e0d8] rounded-xl p-4">
+      <h2>💬 Discussion <span class="cc">{{ notice.comments?.length || 0 }}</span></h2>
+      <div class="flex flex-col gap-[10px] mb-[14px] max-h-[320px] overflow-y-auto">
+        <div class="bg-[#faf8f4] rounded-lg p-3" *ngFor="let c of notice.comments">
+          <div class="flex items-center gap-[6px] mb-[6px] flex-wrap">
+            <strong class="text-[#1a1a1a] text-[13px]">{{ c.authorName }}</strong>
+            <span class="text-[10px] text-[#9ca3af] bg-[#e5e0d8] py-[1px] px-[6px] rounded-md">{{ c.authorRole }}</span>
+            <span class="text-[10px] text-[#9ca3af]" *ngIf="c.authorFlat">{{ c.authorFlat }}</span>
+            <span class="text-[11px] text-[#d1c9bc] ml-auto">{{ c.createdAt | date:'MMM d, h:mm a' }}</span>
+            <button class="bg-none border-none text-[#d1c9bc] text-[16px] cursor-pointer p-[0_4px]" *ngIf="c.canDelete || canManage" (click)="delComment(c.id)">×</button>
+          </div>
+          <p class="text-[13px] text-[#4b5563] m-0 leading-relaxed">{{ c.text }}</p>
+        </div>
+        <div class="text-[#9ca3af] text-[13px] text-center p-5 italic" *ngIf="!notice.comments?.length">Be the first to comment</div>
+      </div>
+      <div class="flex flex-col gap-2" *ngIf="notice.status !== 'ARCHIVED'">
+        <textarea [(ngModel)]="newComment" placeholder="Add your comment…" rows="2" class="add-comment-textarea"></textarea>
+        <button (click)="submitComment()" [disabled]="!newComment.trim()" class="add-comment-btn self-end">Post</button>
+      </div>
+    </div>
+
+    <!-- Manage actions -->
+    <div class="bg-white border border-[#e5e0d8] rounded-xl p-4" *ngIf="canManage">
+      <h2>⚙️ Manage</h2>
+      <div class="flex gap-2 flex-wrap">
+        <button class="mb pin" (click)="doPin()">
+          {{ notice.pinned ? '📌 Unpin' : '📌 Pin' }}
+        </button>
+        <button class="mb pub" *ngIf="notice.status==='DRAFT'" (click)="doPublish()">▶ Publish</button>
+        <button class="mb arch" *ngIf="notice.status==='PUBLISHED'" (click)="doArchive()">📦 Archive</button>
+        <button class="mb del" *ngIf="notice.status!=='PUBLISHED'" (click)="doDelete()">🗑 Delete</button>
+        <a class="mb edit" routerLink="/notices/manage">All Notices</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex justify-center p-[60px]" *ngIf="!notice && loading"><div class="sp"></div></div>

@@ -1,0 +1,281 @@
+
+<div class="min-h-screen pb-20 text-[#212121]">
+
+  <div class="min-h-screen pb-20 text-[#212121] -header">
+    <div class="flex justify-between items-center mb-3">
+      <a class="inline-flex items-center cursor-pointer no-underline text-[13px] text-white rounded-[20px]" routerLink="/dashboard">← Back</a>
+      <div class="flex items-center text-[10px] gap-[6px] text-[#10b981] rounded-[20px]"><span class="rounded-full"></span>LIVE</div>
+    </div>
+    <h1>🚪 Vehicle Registry</h1>
+    <p>Gate vehicle check and entry log</p>
+  </div>
+
+  <!-- Tab strip -->
+  <div class="flex overflow-x-auto">
+    <button class="flex justify-center items-center flex-1 cursor-pointer whitespace-nowrap text-[11px] gap-1 bg-none text-[#6b7280]" [class.active]="tab==='LOOKUP'"   (click)="tab='LOOKUP'">🔍 Lookup</button>
+    <button class="flex justify-center items-center flex-1 cursor-pointer whitespace-nowrap text-[11px] gap-1 bg-none text-[#6b7280]" [class.active]="tab==='VISITORS'" (click)="tab='VISITORS'; loadVisitors()">
+      🚙 Visitors <span class="font-bold text-[9px] text-[#111] rounded-lg" *ngIf="currentVisitors.length">{{ currentVisitors.length }}</span>
+    </button>
+    <button class="flex justify-center items-center flex-1 cursor-pointer whitespace-nowrap text-[11px] gap-1 bg-none text-[#6b7280]" [class.active]="tab==='LOG_IN'"   (click)="tab='LOG_IN'">➕ Log Entry</button>
+    <button class="flex justify-center items-center flex-1 cursor-pointer whitespace-nowrap text-[11px] gap-1 bg-none text-[#6b7280]" [class.active]="tab==='VIOLATE'"  (click)="tab='VIOLATE'">⚠️ Violation</button>
+    <button class="flex justify-center items-center flex-1 cursor-pointer whitespace-nowrap text-[11px] gap-1 bg-none text-[#6b7280]" [class.active]="tab==='PASS'"     (click)="tab='PASS'; resetPassScan()">🎫 Pass Scan</button>
+  </div>
+
+  <!-- ── PLATE LOOKUP ─────────────────────────────────────────────────── -->
+  <div class="flex flex-col p-[14px] gap-3" *ngIf="tab==='LOOKUP'">
+    <div class="flex flex-col gap-[6px]">
+      <input [(ngModel)]="lookupPlate" class="plate-search"
+        placeholder="Enter plate number…" (input)="onSearch()"
+        style="text-transform:uppercase" />
+      <div class="text-center text-[11px] text-[#4b5563]">Live search across all registered vehicles</div>
+    </div>
+
+    <div class="flex justify-center" *ngIf="lookupLoading"><div class="rounded-full"></div></div>
+
+    <!-- Search results -->
+    <ng-container *ngIf="!lookupLoading">
+      <div class="flex flex-col p-[14px] gap-[6px] rounded-[10px]" *ngFor="let v of lookupResults"
+           [class.approved]="v.status==='APPROVED'"
+           [class.pending]="v.status==='PENDING'"
+           [class.rejected]="v.status==='REJECTED' || v.status==='SUSPENDED'">
+        <div class="flex justify-between items-center mb-[10px]">
+          <div class="font-semibold text-xl text-white rounded-[5px]">{{ v.plateNumber }}</div>
+          <div class="flex items-center gap-[6px]" [class.green]="v.status==='APPROVED'" [class.amber]="v.status==='PENDING'" [class.red]="v.status==='REJECTED'||v.status==='SUSPENDED'">
+            <span class="flex-shrink-0 rounded-full"></span>
+            <span class="flex-shrink-0 rounded-full -lbl">{{ v.status }}</span>
+          </div>
+        </div>
+        <div class="text-sm mb-2 text-[#e8e8e8]">{{ v.colour }} {{ v.make }} {{ v.model }} {{ v.year }}</div>
+        <div class="flex flex-col text-xs mb-[6px] gap-[3px] text-[#9ca3af]">
+          <span>👤 {{ v.ownerName }}</span>
+          <span>🏠 Flat {{ v.ownerBlock }}-{{ v.ownerFlat }}</span>
+          <span *ngIf="v.ownerPhone">📱 {{ v.ownerPhone }}</span>
+        </div>
+        <div class="text-xs mb-1 text-[#f59e0b]" *ngIf="v.assignedSlotLabel">🅿️ {{ v.assignedSlotLabel }}</div>
+        <div class="text-xs mb-1 text-[#fbbf24] rounded" *ngIf="v.adminNote">⚠️ {{ v.adminNote }}</div>
+        <div class="font-semibold text-xs text-[#f87171]" *ngIf="v.violationCount > 0">
+          🚨 {{ v.violationCount }} violation{{ v.violationCount > 1 ? 's' : '' }} on record
+        </div>
+      </div>
+      <div class="no-result" *ngIf="lookupPlate.length > 2 && !lookupResults.length && !lookupLoading">
+        <div class="nr-icon">❓</div>
+        <p>Not registered</p>
+        <small>This vehicle is not in the society registry</small>
+        <button class="cursor-pointer font-bold text-[13px] mt-1 -2 text-[#111] rounded-md" (click)="tab='LOG_IN'; visitorForm.plateNumber=lookupPlate">
+          Log as Visitor →
+        </button>
+      </div>
+      <div class="flex flex-col items-center text-center gap-2" *ngIf="!lookupPlate">
+        <div class="text-[40px]">🔍</div>
+        <p>Search any plate number to verify</p>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- ── VISITORS INSIDE ──────────────────────────────────────────────── -->
+  <div class="flex flex-col p-[14px] gap-3" *ngIf="tab==='VISITORS'">
+    <div class="flex justify-center" *ngIf="visitorsLoading"><div class="rounded-full"></div></div>
+    <div class="flex flex-col p-[14px] gap-[6px] rounded-[10px]" *ngFor="let vv of currentVisitors">
+      <div class="flex justify-between items-center">
+        <div class="font-semibold text-base text-white rounded">{{ vv.plateNumber }}</div>
+        <div class="text-[11px] text-[#f59e0b]">IN: {{ vv.enteredAt | date:'h:mm a' }}</div>
+      </div>
+      <div class="font-medium text-[13px] text-[#e8e8e8]">{{ vv.visitorName }} · {{ vv.visitorPhone }}</div>
+      <div class="text-xs text-[#9ca3af]">Visiting: <strong>Flat {{ vv.hostFlat }}</strong></div>
+      <div class="text-xs text-[#6b7280]" *ngIf="vv.vehicleDescription">{{ vv.vehicleDescription }}</div>
+      <div class="text-xs text-[#f59e0b]" *ngIf="vv.slot">🅿️ Slot {{ vv.slot.block }}-{{ vv.slot.slotNumber }}</div>
+      <button class="cursor-pointer font-bold text-xs p-[9px] mt-1 -[2px] text-[#d1fae5] rounded-[7px]" (click)="logExit(vv)">✓ Log Exit</button>
+    </div>
+    <div class="flex flex-col items-center text-center gap-2" *ngIf="!visitorsLoading && !currentVisitors.length">
+      <div>🟢</div>
+      <p>No visitor vehicles currently inside</p>
+    </div>
+  </div>
+
+  <!-- ── LOG VISITOR ENTRY ────────────────────────────────────────────── -->
+  <div class="flex flex-col p-[14px] gap-3" *ngIf="tab==='LOG_IN'">
+    <h2>Log Visitor Vehicle</h2>
+
+    <div class="flex flex-col gap-[5px]">
+      <label>Plate Number *</label>
+      <input class="uppercase box-border w-full font-semibold text-lg p-[14px] text-white rounded-lg" [(ngModel)]="visitorForm.plateNumber"
+        placeholder="KA01AB1234" style="text-transform:uppercase" />
+    </div>
+    <div class="flex flex-col gap-[5px]">
+      <label>Vehicle Description</label>
+      <input [(ngModel)]="visitorForm.vehicleDescription" placeholder="e.g. White Honda City" />
+    </div>
+    <div class="flex flex-col gap-[5px]">
+      <label>Visitor Name *</label>
+      <input [(ngModel)]="visitorForm.visitorName" placeholder="Full name" />
+    </div>
+    <div class="flex flex-col gap-[5px]">
+      <label>Visitor Phone *</label>
+      <input [(ngModel)]="visitorForm.visitorPhone" placeholder="10-digit mobile" type="tel" />
+    </div>
+    <div class="flex flex-col gap-[5px]">
+      <label>Host Flat *</label>
+      <input [(ngModel)]="visitorForm.hostFlat" placeholder="e.g. A-101" />
+    </div>
+    <div class="flex flex-col gap-[5px]">
+      <label>Notes</label>
+      <input [(ngModel)]="visitorForm.notes" placeholder="Optional notes" />
+    </div>
+
+    <div class="text-[13px] p-[10px] text-[#f87171] rounded-md" *ngIf="visitorError">{{ visitorError }}</div>
+    <button class="cursor-pointer font-bold text-[15px] p-[13px] text-[#111] rounded-lg" (click)="logEntry()" [disabled]="visitorSubmitting">
+      {{ visitorSubmitting ? 'Logging…' : '✓ Log Entry' }}
+    </button>
+
+    <div class="text-center text-[13px] p-3 text-[#34d399] rounded-lg" *ngIf="visitorSuccess">
+      ✅ Visitor vehicle logged successfully
+    </div>
+  </div>
+
+  <!-- ── REPORT VIOLATION ─────────────────────────────────────────────── -->
+  <div class="flex flex-col p-[14px] gap-3" *ngIf="tab==='VIOLATE'">
+    <h2>Report Violation</h2>
+
+    <div class="flex flex-col gap-[5px]">
+      <label>Plate Number *</label>
+      <input class="uppercase box-border w-full font-semibold text-lg p-[14px] text-white rounded-lg" [(ngModel)]="violForm.plateNumber"
+        placeholder="KA01AB1234" style="text-transform:uppercase" />
+    </div>
+
+    <div class="flex flex-col gap-[5px]">
+      <label>Violation Type *</label>
+      <div class="grid gap-[7px]">
+        <button *ngFor="let vt of violationTypes" class="cursor-pointer font-medium text-[11px] text-[#9ca3af] rounded-lg"
+          [class.active]="violForm.violationType===vt.value"
+          (click)="violForm.violationType=vt.value">
+          {{ vt.icon }} {{ vt.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-[5px]">
+      <label>Description *</label>
+      <textarea [(ngModel)]="violForm.description" rows="3"
+        placeholder="Describe the violation in detail…"></textarea>
+    </div>
+
+    <div class="flex flex-col gap-[5px]">
+      <label>Photo Evidence (optional)</label>
+      <div class="cursor-pointer text-center text-[13px] p-[14px] text-[#6b7280] rounded-lg" (click)="violPhotoInput.click()">
+        <span *ngIf="!violPhoto">📷 Tap to attach photo</span>
+        <span *ngIf="violPhoto">✅ {{ violPhoto.name }}</span>
+      </div>
+      <input #violPhotoInput type="file" accept="image/*" style="display:none" (change)="onViolPhoto($event)" />
+    </div>
+
+    <div class="text-[13px] p-[10px] text-[#f87171] rounded-md" *ngIf="violError">{{ violError }}</div>
+    <button class="cursor-pointer font-bold text-[15px] p-[13px] text-[#111] rounded-lg" (click)="submitViolation()" [disabled]="violSubmitting">
+      {{ violSubmitting ? 'Reporting…' : '🚨 Report Violation' }}
+    </button>
+
+    <div class="text-center text-[13px] p-3 text-[#34d399] rounded-lg action-required" *ngIf="violSuccess && lastViolation?.status === 'ACTION_REQUIRED'">
+      🚨 Violation reported — owner notified to move their vehicle
+    </div>
+    <div class="text-center text-[13px] p-3 text-[#34d399] rounded-lg" *ngIf="violSuccess && lastViolation?.status !== 'ACTION_REQUIRED'">
+      ✅ Violation reported — admin notified
+    </div>
+  </div>
+
+  <!-- ── VISITOR PASS SCAN ──────────────────────────────────────────── -->
+  <div class="flex flex-col p-[14px] gap-3" *ngIf="tab==='PASS'">
+    <h2>🎫 Visitor Pass Scan</h2>
+
+    <!-- Input: typed code or scanned QR -->
+    <div *ngIf="!passResult">
+      <div class="flex flex-col items-center gap-2 rounded-xl">
+        <div class="scan-icon" *ngIf="!cameraActive" (click)="startCamera()">
+          <div class="cursor-pointer text-4xl">📷</div>
+          <div class="text-[11px] text-[#6b7280]">Tap to scan QR</div>
+        </div>
+        <video #videoEl id="pass-video" class="w-full bg-[#000] rounded-lg" [class.hidden]="!cameraActive"
+          autoplay playsinline></video>
+        <button class="cursor-pointer text-[11px] bg-none text-[#6b7280] rounded-md" *ngIf="cameraActive" (click)="stopCamera()">✕ Close Camera</button>
+      </div>
+
+      <div class="flex items-center text-[11px] gap-[10px] text-[#4b5563]"><span>or enter code</span></div>
+
+      <div class="flex gap-2">
+        <input class="flex-1 text-center uppercase font-bold text-xl" [(ngModel)]="passToken"
+          placeholder="X K Y M  9 2 P Q"
+          (input)="onPassTokenInput($event)"
+          maxlength="8" />
+        <button class="flex-shrink-0 cursor-pointer font-bold text-lg text-[#111] rounded-[7px]" (click)="validatePass()" [disabled]="!passToken || passLooking">
+          {{ passLooking ? '…' : '→' }}
+        </button>
+      </div>
+      <div class="pass- text-[13px] p-[10px] text-[#f87171] rounded-md" *ngIf="passInputErr">{{ passInputErr }}</div>
+    </div>
+
+    <!-- Validation result -->
+    <div class="flex flex-col gap-[10px]" *ngIf="passResult">
+
+      <!-- VALID -->
+      <div class="flex flex-col p-[14px] gap-[6px] rounded-[10px] valid" *ngIf="passResult.valid">
+        <div class="flex items-center gap-2 valid-hdr">
+          <span class="text-xl">✅</span>
+          <span class="text-sm text-[#10b981]">PASS VALID</span>
+        </div>
+        <div class="font-bold text-xl text-white">{{ passResult.pass?.visitorName }}</div>
+        <div class="text-xs text-[#9ca3af]" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
+        <div class="text-xs text-[#9ca3af]" *ngIf="passResult.pass?.visitorPhone">📱 {{ passResult.pass?.visitorPhone }}</div>
+        <div class="font-medium text-[13px] text-[#f59e0b]">
+          🏠 Flat {{ passResult.pass?.createdBy?.block }}-{{ passResult.pass?.createdBy?.flatNumber }}
+          · {{ passResult.pass?.createdBy?.firstName }} {{ passResult.pass?.createdBy?.lastName }}
+        </div>
+        <div class="text-xs text-[#6ee7b7]">
+          <span *ngIf="passResult.pass?.passType==='ONE_TIME'">📅 One-time pass · {{ passResult.pass?.validDate | date:'d MMM' }}
+            <span *ngIf="passResult.pass?.windowStart"> · {{ passResult.pass?.windowStart }}–{{ passResult.pass?.windowEnd }}</span>
+          </span>
+          <span *ngIf="passResult.pass?.passType==='STANDING'">🔄 Standing · {{ formatPassDays(passResult.pass?.allowedDays) }}</span>
+        </div>
+        <div class="italic text-xs text-[#6b7280]" *ngIf="passResult.pass?.notes">💬 {{ passResult.pass?.notes }}</div>
+        <button class="cursor-pointer font-bold text-sm p-3 mt-1 text-white rounded-[7px]" (click)="checkIn(false)" [disabled]="checkingIn">
+          {{ checkingIn ? 'Checking in…' : '✅ Allow Entry' }}
+        </button>
+      </div>
+
+      <!-- INVALID -->
+      <div class="flex flex-col p-[14px] gap-[6px] rounded-[10px] invalid" *ngIf="!passResult.valid">
+        <div class="flex items-center gap-2 invalid-hdr">
+          <span class="text-xl">🚫</span>
+          <span class="text-sm text-[#10b981]">PASS INVALID</span>
+        </div>
+        <div class="font-medium text-[13px] text-[#fca5a5] rounded-md">{{ passResult.errorReason }}</div>
+
+        <ng-container *ngIf="passResult.pass">
+          <div class="font-bold text-xl text-white mt-1">{{ passResult.pass?.visitorName }}</div>
+          <div class="text-xs text-[#9ca3af]" *ngIf="passResult.pass?.purpose">{{ passResult.pass?.purpose }}</div>
+          <div class="font-medium text-[13px] text-[#f59e0b]">
+            🏠 Flat {{ passResult.pass?.createdBy?.block }}-{{ passResult.pass?.createdBy?.flatNumber }}
+            · {{ passResult.pass?.createdBy?.firstName }} {{ passResult.pass?.createdBy?.lastName }}
+          </div>
+        </ng-container>
+
+        <!-- Override section -->
+        <div class="flex flex-col mt-1 gap-2">
+          <div class="text-[11px] text-[#f59e0b]">Guard Override — Allow Entry Anyway?</div>
+          <textarea [(ngModel)]="overrideReason" rows="2"
+            placeholder="Reason for override (required)…" class="box-border w-full text-xs text-[#e8e8e8] rounded-md"></textarea>
+          <button class="cursor-pointer font-bold text-[13px] p-[10px] text-[#f59e0b] rounded-[7px]" (click)="checkIn(true)"
+            [disabled]="!overrideReason.trim() || checkingIn">
+            {{ checkingIn ? 'Processing…' : '⚠️ Override & Allow Entry' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Post check-in success -->
+      <div class="flex items-center p-[14px] gap-[10px] rounded-lg" *ngIf="checkInDone">
+        <div class="text-2xl">✅</div>
+        <div class="font-medium text-sm text-[#6ee7b7]">Entry logged for {{ passResult.pass?.visitorName }}</div>
+      </div>
+
+      <button class="cursor-pointer text-center text-xs p-[9px] bg-none text-[#6b7280] rounded-[7px]" (click)="resetPassScan()">← Scan Another Pass</button>
+    </div>
+  </div>
+
+</div>

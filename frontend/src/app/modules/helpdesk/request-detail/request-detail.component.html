@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-[#f5f6fa] pb-20 relative" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#212121">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460)" class="p-4 pb-6 text-white">
+    <div class="flex justify-between items-center mb-3">
+      <a class="back-btn" (click)="goBack()">← Back</a>
+    </div>
+    <h1 class="text-[22px] font-bold mb-1 mt-0">🛠️ {{ detail?.request?.title || 'Request Details' }}</h1>
+    <p class="text-sm m-0" style="color:rgba(255,255,255,0.7)">{{ detail ? (catCfg[detail.request.category]?.label || '') + (detail.request.status ? ' · ' + (stsCfg[detail.request.status]?.label || '') : '') : 'Loading…' }}</p>
+  </div>
+
+  <div class="flex justify-center p-10" *ngIf="loading"><div class="spinner"></div></div>
+
+  <div class="p-[14px] flex flex-col gap-3" *ngIf="detail">
+    <div class="text-[11px] text-[#4b5563]" style="font-family:'Oswald',sans-serif;letter-spacing:1px">Request #{{ detail.request.id }}</div>
+    <div class="req-title">{{ detail.request.title }}</div>
+    <div class="text-sm text-[#9ca3af] leading-relaxed bg-[#252525] border border-[#333] rounded-lg py-[10px] px-3" *ngIf="detail.request.description">{{ detail.request.description }}</div>
+
+    <!-- Key info grid -->
+    <div class="grid grid-cols-2 gap-2">
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-[11px]">
+        <div class="il">Raised by</div>
+        <div class="iv">{{ detail.request.resident?.firstName }} {{ detail.request.resident?.lastName }} · Flat {{ detail.request.resident?.flatNumber }}</div>
+      </div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-[11px]">
+        <div class="il">Raised on</div>
+        <div class="iv">{{ detail.request.createdAt | date:'d MMM yyyy, h:mm a' }}</div>
+      </div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-[11px]" *ngIf="detail.request.preferredDatetime">
+        <div class="il">Preferred time</div>
+        <div class="iv" style="color:#f59e0b">{{ detail.request.preferredDatetime | date:'d MMM, h:mm a' }}</div>
+      </div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-[11px]" *ngIf="detail.request.confirmedDatetime">
+        <div class="il">Confirmed slot</div>
+        <div class="iv" style="color:#10b981">{{ detail.request.confirmedDatetime | date:'d MMM, h:mm a' }}</div>
+      </div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-[11px]" *ngIf="detail.request.assignedStaffName">
+        <div class="il">Assigned to</div>
+        <div class="iv">{{ detail.request.assignedStaffName }}
+          <span class="text-[#6b7280]" *ngIf="detail.request.assignedStaffContact"> · {{ detail.request.assignedStaffContact }}</span>
+        </div>
+      </div>
+      <div class="bg-[#252525] border border-[#333] rounded-lg py-[9px] px-[11px]" *ngIf="detail.request.fmNote">
+        <div class="il">FM Note</div>
+        <div class="iv text-[#9ca3af] italic">{{ detail.request.fmNote }}</div>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="flex flex-col gap-2" *ngIf="detail.photos?.length">
+      <div class="section-label">PHOTOS</div>
+      <div class="flex gap-2 flex-wrap">
+        <a *ngFor="let p of detail.photos" [href]="svc.photoUrl(p.photoPath)" target="_blank">
+          <img [src]="svc.photoUrl(p.photoPath)" alt="photo" class="w-[90px] h-[90px] object-cover rounded-lg border border-[#333]" />
+        </a>
+      </div>
+    </div>
+
+    <!-- Status timeline -->
+    <div class="section-label">STATUS HISTORY</div>
+    <div class="flex flex-col pl-1">
+      <div class="flex gap-3 relative" *ngFor="let log of detail.statusLog; let last = last">
+        <div class="tl-dot" [style.background]="stsCfg[log.toStatus]?.color"></div>
+        <div class="tl-line" *ngIf="!last"></div>
+        <div class="flex-1 pb-[14px]">
+          <div class="tl-status" [style.color]="stsCfg[log.toStatus]?.color">
+            {{ stsCfg[log.toStatus]?.icon }} {{ stsCfg[log.toStatus]?.label }}
+          </div>
+          <div class="text-xs text-[#9ca3af] mt-[2px]" *ngIf="log.note">{{ log.note }}</div>
+          <div class="text-[11px] text-[#4b5563] mt-[2px]">{{ log.changedBy?.firstName }} {{ log.changedBy?.lastName }} · {{ log.changedAt | date:'d MMM, h:mm a' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FM actions panel -->
+    <div class="fm-panel" *ngIf="detail.canManage && isOpen">
+      <div class="fp-title">FM ACTIONS</div>
+
+      <!-- Assign (when PENDING) -->
+      <div class="flex flex-col gap-[7px]" *ngIf="detail.request.status === 'PENDING' || detail.request.status === 'ASSIGNED'">
+        <div class="fp-subtitle">{{ detail.request.status === 'PENDING' ? 'Assign Staff' : 'Reassign / Update Slot' }}</div>
+        <input [(ngModel)]="assign.staffName"     class="fm-input" placeholder="Staff name *" />
+        <input [(ngModel)]="assign.staffContact"  class="fm-input" placeholder="Contact number" />
+        <input type="datetime-local" [(ngModel)]="assign.confirmedDatetime" class="fm-input" />
+        <textarea [(ngModel)]="assign.fmNote"     class="fm-input" rows="2" placeholder="Internal note (optional)"></textarea>
+        <button class="fm-btn assign-btn" (click)="doAssign()" [disabled]="assigning">
+          {{ assigning ? 'Saving…' : '👷 ' + (detail.request.status === 'PENDING' ? 'Assign & Confirm Slot' : 'Update Assignment') }}
+        </button>
+      </div>
+
+      <!-- Status transitions -->
+      <div class="flex flex-col gap-2">
+        <div class="fp-subtitle">UPDATE STATUS</div>
+        <div class="flex gap-2 flex-wrap">
+          <button class="sts-btn inprogress" *ngIf="detail.request.status === 'ASSIGNED'"
+            (click)="changeStatus('IN_PROGRESS', 'Work started')">🔨 Start Work</button>
+          <button class="sts-btn done" *ngIf="detail.request.status === 'IN_PROGRESS'"
+            (click)="changeStatus('DONE', 'Work completed')">✅ Mark Done</button>
+          <button class="sts-btn cancel" *ngIf="['PENDING','ASSIGNED','IN_PROGRESS'].includes(detail.request.status)"
+            (click)="promptCancel()">🚫 Cancel Request</button>
+        </div>
+        <div class="flex flex-col gap-[6px]" *ngIf="showNoteInput">
+          <textarea [(ngModel)]="statusNote" class="fm-input" rows="2" placeholder="Add a note (optional)"></textarea>
+          <div class="flex gap-2">
+            <button class="confirm-btn" (click)="confirmStatusChange()" [disabled]="updatingStatus">Confirm</button>
+            <button class="discard-btn" (click)="showNoteInput = false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resident: cancel button -->
+    <div class="pt-1" *ngIf="!detail.canManage && canCancel">
+      <button class="cancel-btn" (click)="residentCancel()" [disabled]="cancelling">
+        {{ cancelling ? 'Cancelling…' : '✕ Cancel This Request' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="err" *ngIf="error">{{ error }}</div>
+  <div class="ok"  *ngIf="okMsg">{{ okMsg }}</div>
+</div>

@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.section-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 10px;
+  color: #3b82f6;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 4px;
+  margin-top: 4px;
+}
+
+.cat-btn {
+  background: #252525;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cat-btn.selected { background: rgba(59,130,246,0.08); }
+.cat-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+label {
+  font-size: 10px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  font-family: 'Oswald', sans-serif;
+}
+input, textarea {
+  background: #1c1c1c;
+  border: 1.5px solid #333;
+  border-radius: 6px;
+  color: #e8e8e8;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+input:focus, textarea:focus { border-color: #3b82f6; }
+textarea { resize: vertical; }
+small { font-size: 10px; color: #4b5563; }
+
+.preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+.preview-item img { width: 100%; height: 100%; object-fit: cover; }
+.rm-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0,0,0,0.7);
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.add-photo {
+  width: 80px;
+  height: 80px;
+  background: #252525;
+  border: 1.5px dashed #333;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.submit-btn {
+  background: #3b82f6;
+  border: none;
+  color: #fff;
+  padding: 13px;
+  border-radius: 8px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.submit-btn:disabled { opacity: 0.4; }

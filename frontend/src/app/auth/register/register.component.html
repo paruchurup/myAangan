@@ -1,0 +1,114 @@
+<div class="flex justify-center items-start min-h-[calc(100vh-64px)] p-5 bg-gray-100">
+  <div class="bg-white rounded-[16px] p-8 w-full max-w-[520px] shadow-xl">
+    <div class="text-center mb-6">
+      <span class="text-[40px]">🏠</span>
+      <h1 class="mt-2 mb-1 text-[#0f3460]">Register</h1>
+      <p class="text-gray-500 m-0 text-sm">Join MyAangan Society</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="mb-4">
+          <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">First Name *</label>
+          <input formControlName="firstName" placeholder="John"
+            class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+        </div>
+        <div class="mb-4">
+          <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Last Name *</label>
+          <input formControlName="lastName" placeholder="Doe"
+            class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Email *</label>
+        <input type="email" formControlName="email" placeholder="john@example.com"
+          class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Phone</label>
+        <input formControlName="phone" placeholder="9876543210"
+          class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Password *</label>
+        <input type="password" formControlName="password" placeholder="Min 6 characters"
+          class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+      </div>
+
+      <!-- Role selector — card grid -->
+      <div class="mb-4">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Register As *</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" *ngFor="let r of roles"
+            [class]="selectedRole === r.value
+              ? 'flex flex-col items-start py-[10px] px-3 border-[1.5px] border-[#0f3460] rounded-xl bg-[#0f3460] cursor-pointer text-left transition-all'
+              : 'flex flex-col items-start py-[10px] px-3 border-[1.5px] border-[#e5e7eb] rounded-xl bg-white cursor-pointer text-left transition-all hover:border-[#0f3460] hover:bg-[#f0f4ff]'"
+            (click)="selectRole(r.value)">
+            <span class="text-[20px] mb-1">{{ r.label.split(' ')[0] }}</span>
+            <span [class]="selectedRole === r.value ? 'text-[13px] font-bold text-white' : 'text-[13px] font-bold text-[#1a1a2e]'">{{ r.label.substring(r.label.indexOf(' ')+1) }}</span>
+            <span [class]="selectedRole === r.value ? 'text-[11px] text-[rgba(255,255,255,0.75)] mt-[2px] leading-[1.3]' : 'text-[11px] text-[#888] mt-[2px] leading-[1.3]'">{{ r.description }}</span>
+          </button>
+        </div>
+        <div class="text-[#dc2626] text-xs mt-[6px]" *ngIf="form.get('role')?.touched && form.get('role')?.invalid">
+          Please select a role
+        </div>
+      </div>
+
+      <!-- Resident fields -->
+      <ng-container *ngIf="selectedRole === 'RESIDENT'">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="mb-4">
+            <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Flat / Unit No *</label>
+            <input formControlName="flatNumber" placeholder="101"
+              class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+          </div>
+          <div class="mb-4">
+            <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Block / Tower</label>
+            <input formControlName="block" placeholder="A"
+              class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Society Name *</label>
+          <input formControlName="societyName" placeholder="MyAangan Society"
+            class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+        </div>
+      </ng-container>
+
+      <!-- Visitor field -->
+      <div class="mb-4" *ngIf="selectedRole === 'VISITOR'">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Host Flat Number *</label>
+        <input formControlName="hostFlatNumber" placeholder="A-101 (flat you are visiting)"
+          class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+      </div>
+
+      <!-- Society name for staff roles -->
+      <div class="mb-4" *ngIf="isStaffRole">
+        <label class="block font-semibold mb-[6px] text-gray-800 text-[13px]">Society Name</label>
+        <input formControlName="societyName" placeholder="MyAangan Society"
+          class="w-full py-[11px] px-3 border-[1.5px] border-[#e5e7eb] rounded-[10px] text-sm box-border bg-[#fafafa] text-[#1a1a2e] focus:outline-none focus:border-[#0f3460] focus:bg-white" />
+      </div>
+
+      <!-- Approval notice -->
+      <div class="py-[10px] px-[14px] rounded-[10px] mb-4 text-[13px] bg-[#fef3c7] text-[#92400e]" *ngIf="needsApproval">
+        ⏳ Your account will be activated after Admin approval.
+      </div>
+      <div class="py-[10px] px-[14px] rounded-[10px] mb-4 text-[13px] bg-[#dcfce7] text-[#166534]" *ngIf="selectedRole && !needsApproval">
+        ✅ Your account will be active immediately after registration.
+      </div>
+
+      <div class="bg-[#fee2e2] text-[#991b1b] py-[10px] px-3 rounded-lg mb-3 text-[13px]" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="bg-[#dcfce7] text-[#166534] py-[10px] px-3 rounded-lg mb-3 text-[13px]" *ngIf="successMessage">{{ successMessage }}</div>
+
+      <button type="submit" [disabled]="loading || !selectedRole"
+        class="w-full py-[13px] bg-[#0f3460] text-white border-0 rounded-[10px] text-[15px] font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
+    </form>
+
+    <p class="text-center mt-4 text-gray-500 text-sm">Already have an account? <a routerLink="/auth/login" class="text-[#0f3460] font-semibold no-underline">Login</a></p>
+  </div>
+</div>

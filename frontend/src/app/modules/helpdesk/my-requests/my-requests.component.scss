@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.raise-btn {
+  background: #3b82f6;
+  border: none;
+  color: #fff;
+  padding: 9px 14px;
+  border-radius: 7px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #333;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.req-card {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 10px;
+  display: flex;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+.req-card:hover { border-color: #3b82f6; }
+.rc-stripe { width: 4px; flex-shrink: 0; }
+
+.rc-cat {
+  font-size: 11px;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.5px;
+}
+.rc-status {
+  font-size: 10px;
+  font-family: 'Oswald', sans-serif;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.rc-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}

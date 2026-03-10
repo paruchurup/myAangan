@@ -1,0 +1,178 @@
+<div class="bg-[#f5f6fa] min-h-screen pb-20" *ngIf="provider">
+
+  <!-- Header -->
+  <div class="page-header bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] py-4 px-4 pb-6 text-white text-center">
+    <div class="flex justify-between items-center mb-3 text-left">
+      <a class="bg-white/15 border-0 text-white py-[6px] px-3 rounded-full text-[13px] cursor-pointer no-underline inline-flex items-center" routerLink="/services">← Back</a>
+    </div>
+    <div class="header-content">
+
+      <!-- Photo or Avatar -->
+      <div class="relative inline-block mb-3">
+        <img *ngIf="provider.photoUrl && !photoError" [src]="provider.photoUrl"
+          class="provider-photo" [alt]="provider.name"
+          (error)="photoError = true" />
+        <div *ngIf="!provider.photoUrl || photoError" class="big-avatar">
+          {{ provider.name.charAt(0).toUpperCase() }}
+        </div>
+        <!-- Photo upload button (admin/resident who added) -->
+        <label class="photo-upload-btn" *ngIf="canEdit" title="Change photo">
+          📷
+          <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
+        </label>
+      </div>
+
+      <h1 class="text-[22px] m-0 mb-[6px]">{{ provider.name }}</h1>
+      <div class="inline-block bg-white/15 py-1 px-3 rounded-full text-[13px] mb-2">{{ provider.categoryIcon }} {{ provider.categoryName }}</div>
+      <div class="availability-badge inline-flex items-center gap-[6px] py-1 px-3 rounded-full text-xs font-semibold" [class]="provider.availability.toLowerCase()">
+        <span class="dot"></span> {{ availLabel(provider.availability) }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo upload progress -->
+  <div class="bg-[#e8f0fe] text-[#0f3460] text-center p-2 text-[13px] font-semibold" *ngIf="uploadingPhoto">📤 Uploading photo...</div>
+  <div class="bg-[#dcfce7] text-[#166534] text-center p-2 text-[13px] font-semibold" *ngIf="uploadSuccess">✅ Photo updated!</div>
+
+  <!-- Action Buttons Row -->
+  <div class="flex gap-2 py-3 px-4 bg-white border-b border-[#f0f0f0]">
+    <a class="flex-1 flex flex-col items-center gap-[3px] py-[10px] px-1 rounded-xl border-0 cursor-pointer text-[11px] font-semibold no-underline text-white bg-[#22c55e]" href="tel:{{ provider.phone }}">
+      📞 <span class="text-[11px]">Call</span>
+    </a>
+    <button class="flex-1 flex flex-col items-center gap-[3px] py-[10px] px-1 rounded-xl border-0 cursor-pointer text-[11px] font-semibold text-white bg-[#25D366]" (click)="shareWhatsApp()">
+      💬 <span class="text-[11px]">WhatsApp</span>
+    </button>
+    <button class="flex-1 flex flex-col items-center gap-[3px] py-[10px] px-1 rounded-xl border-0 cursor-pointer text-[11px] font-semibold text-white bg-[#0f3460]" (click)="shareContact()">
+      🔗 <span class="text-[11px]">Share</span>
+    </button>
+    <button class="flex-1 flex flex-col items-center gap-[3px] py-[10px] px-1 rounded-xl border-0 cursor-pointer text-[11px] font-semibold text-white bg-[#f59e0b]" *ngIf="canEdit" (click)="toggleEdit()">
+      ✏️ <span class="text-[11px]">Edit</span>
+    </button>
+  </div>
+
+  <!-- Info Section -->
+  <div class="py-4 px-4 border-b border-[#eee]" *ngIf="!editMode">
+    <div class="flex justify-between items-center py-2 border-b border-[#f5f5f5]" *ngIf="provider.phone">
+      <span class="text-[13px] text-[#888]">📱 Phone</span><span class="text-sm font-semibold text-[#1a1a2e]">{{ provider.phone }}</span>
+    </div>
+    <div class="flex justify-between items-center py-2 border-b border-[#f5f5f5]" *ngIf="provider.area">
+      <span class="text-[13px] text-[#888]">📍 Area</span><span class="text-sm font-semibold text-[#1a1a2e]">{{ provider.area }}</span>
+    </div>
+    <div class="flex justify-between items-center py-2 border-b border-[#f5f5f5]">
+      <span class="text-[13px] text-[#888]">⭐ Rating</span>
+      <span class="text-sm font-semibold text-[#1a1a2e]">
+        {{ provider.avgRating | number:'1.1-1' }} / 5
+        <small class="font-normal text-[#999]">({{ provider.reviewCount }} reviews)</small>
+      </span>
+    </div>
+    <div class="flex justify-between items-center py-2">
+      <span class="text-[13px] text-[#888]">👤 Added by</span><span class="text-sm font-semibold text-[#1a1a2e]">{{ provider.addedByName }}</span>
+    </div>
+  </div>
+
+  <!-- Edit Mode -->
+  <div class="py-4 px-4 border-b border-[#eee] bg-white" *ngIf="editMode">
+    <h3 class="text-base font-bold text-[#1a1a2e] m-0 mb-3">Edit Provider Details</h3>
+    <form [formGroup]="editForm">
+      <div class="mb-[14px]">
+        <label class="block text-[13px] font-semibold text-[#555] mb-[5px]">Name</label>
+        <input class="field-input" formControlName="name" type="text" />
+      </div>
+      <div class="mb-[14px]">
+        <label class="block text-[13px] font-semibold text-[#555] mb-[5px]">Phone</label>
+        <input class="field-input" formControlName="phone" type="tel" />
+      </div>
+      <div class="mb-[14px]">
+        <label class="block text-[13px] font-semibold text-[#555] mb-[5px]">Category</label>
+        <select class="field-input" formControlName="categoryId">
+          <option *ngFor="let c of categories" [value]="c.id">
+            {{ c.icon }} {{ c.name }}
+          </option>
+        </select>
+      </div>
+      <div class="mb-[14px]">
+        <label class="block text-[13px] font-semibold text-[#555] mb-[5px]">Area</label>
+        <input class="field-input" formControlName="area" type="text" placeholder="e.g. Near Main Gate" />
+      </div>
+      <div class="flex gap-[10px] mt-1">
+        <button class="flex-1 bg-[#0f3460] text-white border-0 py-[11px] rounded-[10px] text-sm font-semibold cursor-pointer disabled:bg-[#ccc] disabled:cursor-not-allowed" (click)="saveEdit()" [disabled]="saving">
+          {{ saving ? 'Saving...' : '✅ Save Changes' }}
+        </button>
+        <button class="flex-1 bg-[#f3f4f6] text-[#555] border-0 py-[11px] rounded-[10px] text-sm cursor-pointer" (click)="toggleEdit()">Cancel</button>
+      </div>
+      <div class="text-[#dc2626] text-[13px] mt-2" *ngIf="editError">{{ editError }}</div>
+    </form>
+  </div>
+
+  <!-- Availability -->
+  <div class="py-4 px-4 border-b border-[#eee]" *ngIf="!isVisitor">
+    <h3 class="text-base font-bold text-[#1a1a2e] m-0 mb-3">Availability</h3>
+    <div class="flex gap-2 flex-wrap">
+      <button *ngFor="let opt of availOpts"
+        class="avail-btn" [class]="opt.cls"
+        [class.selected]="provider.availability === opt.value"
+        (click)="setAvailability(opt.value)">
+        {{ opt.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin delete -->
+  <div class="py-4 px-4 border-b border-[#eee]" *ngIf="isAdmin">
+    <button class="bg-[#fee2e2] text-[#991b1b] border-0 py-[10px] px-[18px] rounded-[10px] text-sm font-semibold cursor-pointer" (click)="deleteProvider()">🗑 Remove from Directory</button>
+  </div>
+
+  <!-- Reviews -->
+  <div class="py-4 px-4 border-b border-[#eee]">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-base font-bold text-[#1a1a2e] m-0">Reviews ({{ provider.reviews.length }})</h3>
+      <div class="flex items-center gap-[6px]" *ngIf="provider.reviewCount > 0">
+        <span class="text-[#f59e0b] text-lg">{{ getStars(provider.avgRating) }}</span>
+        <span class="text-base font-bold text-[#1a1a2e]">{{ provider.avgRating | number:'1.1-1' }}</span>
+      </div>
+    </div>
+
+    <!-- Write/edit review -->
+    <div class="bg-[#f8f9ff] rounded-[14px] p-[14px] mb-4" *ngIf="!isVisitor">
+      <h4 class="text-sm font-semibold m-0 mb-[10px]">{{ myReview ? 'Edit Your Review' : 'Write a Review' }}</h4>
+      <div class="flex items-center gap-1 mb-[10px]">
+        <span *ngFor="let s of [1,2,3,4,5]"
+          class="text-[30px] cursor-pointer text-[#f59e0b]" [class.filled]="s <= newStars"
+          (click)="newStars = s">{{ s <= newStars ? '★' : '☆' }}</span>
+        <span class="text-[13px] text-[#888] ml-2">{{ starLabel(newStars) }}</span>
+      </div>
+      <textarea class="review-textarea w-full border border-[#e5e7eb] rounded-[10px] p-[10px] text-sm resize-none outline-none bg-white box-border"
+        [(ngModel)]="newComment"
+        placeholder="Share your experience... (optional)" rows="3"></textarea>
+      <button class="mt-[10px] w-full bg-[#0f3460] text-white border-0 p-3 rounded-[10px] text-[15px] font-semibold cursor-pointer disabled:bg-[#ccc] disabled:cursor-not-allowed"
+        [disabled]="newStars === 0 || submitting"
+        (click)="submitReview()">
+        {{ submitting ? 'Submitting...' : (myReview ? 'Update Review' : 'Submit Review') }}
+      </button>
+      <div class="text-[#166534] text-[13px] mt-2 text-center" *ngIf="reviewSuccess">✅ Review saved!</div>
+      <div class="text-[#dc2626] text-[13px] mt-2" *ngIf="reviewError">{{ reviewError }}</div>
+    </div>
+
+    <!-- Reviews list -->
+    <div class="text-center text-[#aaa] py-6 text-sm" *ngIf="provider.reviews.length === 0">
+      No reviews yet. Be the first to review!
+    </div>
+    <div class="bg-white rounded-xl p-[14px] mb-[10px]" *ngFor="let r of provider.reviews">
+      <div class="flex items-center gap-[10px] mb-2">
+        <div class="w-9 h-9 rounded-full bg-[#0f3460] text-white font-bold flex items-center justify-center flex-shrink-0 text-[15px]">{{ r.reviewerName.charAt(0) }}</div>
+        <div>
+          <div class="text-sm font-semibold">{{ r.reviewerName }}</div>
+          <div class="text-[11px] text-[#aaa]">{{ r.createdAt | date:'MMM d, y' }}</div>
+        </div>
+        <div class="ml-auto text-[#f59e0b] text-[15px]">{{ getStars(r.stars) }}</div>
+        <button class="bg-[#fee2e2] border-0 text-[#991b1b] w-6 h-6 rounded-full text-[11px] cursor-pointer" *ngIf="isAdmin" (click)="deleteReview(r)">✕</button>
+      </div>
+      <p class="text-sm text-[#444] m-0 leading-[1.5]" *ngIf="r.comment">{{ r.comment }}</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="flex justify-center items-center h-[50vh]" *ngIf="!provider">
+  <div class="spinner"></div>
+</div>
