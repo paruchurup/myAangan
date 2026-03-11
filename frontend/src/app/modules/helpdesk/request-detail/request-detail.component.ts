@@ -62,8 +62,9 @@ export class RequestDetailComponent implements OnInit {
   get canCancel() { return ['PENDING','ASSIGNED'].includes(this.detail?.request?.status); }
 
   goBack() {
-    if (this.detail?.canManage) this.router.navigate(['/helpdesk/fm']);
-    else this.router.navigate(['/helpdesk']);
+    // if (this.detail?.canManage) this.router.navigate(['/helpdesk/fm']);
+    // else this.router.navigate(['/helpdesk']);
+    this.router.navigate(['/helpdesk']);
   }
 
   flash(msg: string, ok = true) {

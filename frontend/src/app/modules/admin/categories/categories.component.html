@@ -9,7 +9,7 @@
   </div>
 
   <!-- Add Category Form -->
-  <div class="bg-white mx-4 rounded-[14px] p-4 shadow-md">
+  <div class="bg-white mx-4 rounded-[14px] p-4 mt-2 shadow-md">
     <h3 class="text-[15px] font-bold m-0 mb-3 text-[#1a1a2e]">Add New Category</h3>
     <div class="flex gap-2 items-center">
       <input
@@ -37,18 +37,19 @@
 
   <!-- Categories List -->
   <div class="px-4">
-    <h3 class="text-[15px] font-bold text-[#1a1a2e] my-2 mb-3">All Categories</h3>
-    <div class="text-center text-[#888] p-5" *ngIf="loading">Loading...</div>
-    <div class="flex flex-col gap-2">
-      <div class="cat-card" *ngFor="let cat of categories"
-        [class.inactive]="!cat.active">
-
-        <!-- View mode -->
+      <h3 class="text-rg font-bold text-navy-dark my-2 mb-3">All Categories</h3>
+      <div class="text-center text-muted p-5" *ngIf="loading">Loading...</div>
+      <div class="flex flex-col gap-2">
+          <div class="cat-card" *ngFor="let cat of categories; let i = index"
+               [class.inactive]="!cat.active"
+               [ngClass]="i % 2 === 0 ? 'bg-surface' : 'bg-row-alt'">
+          <!-- View mode -->
         <ng-container *ngIf="editingId !== cat.id">
           <div class="text-[26px] flex-shrink-0 w-9 text-center">{{ cat.icon || '🔧' }}</div>
           <div class="flex-1">
-            <div class="text-[15px] font-semibold text-[#1a1a2e]">{{ cat.name }}</div>
-            <div class="text-[11px] mt-[2px]" [class.active]="cat.active" [class.text-\[#aaa\]]="!cat.active" [class.text-\[#166534\]]="cat.active">
+              <div class="text-rg font-semibold text-navy-dark">{{ cat.name }}</div>
+              <div class="text-badge mt-[2px]"
+                   [ngClass]="cat.active ? 'text-green-dark' : 'text-faint'">
               {{ cat.active ? 'Active' : 'Inactive' }}
             </div>
           </div>

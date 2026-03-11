@@ -1,4 +1,4 @@
-/* New request button in header */
+/* ── Header extras ───────────────────────────────────────── */
 .new-btn {
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
@@ -16,32 +16,108 @@
   &:hover { background: rgba(255,255,255,0.25); }
 }
 
-/* Card list */
-.card-list { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+/* Point 5 – summary counts in header */
+.header-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+  opacity: 0.9;
+  font-family: var(--font-heading);
+  flex-wrap: wrap;
+}
+.hs-total   { color: rgba(255,255,255,0.95); font-weight: 700; }
+.hs-sep     { color: rgba(255,255,255,0.45); }
+.hs-pending { color: #fcd34d; font-weight: 600; }
+.hs-done    { color: #6ee7b7; font-weight: 600; }
 
-/* Request card */
+/* ── Point 1 – filter row ────────────────────────────────── */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+
+  &:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+  &.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+
+    .filter-count { background: rgba(255,255,255,0.25); color: white; }
+  }
+}
+
+.filter-count {
+  background: #e5e7eb;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  line-height: 1.4;
+}
+
+/* ── Card list ───────────────────────────────────────────── */
+.card-list {
+  padding: 10px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;   /* Point 4: tighter gap */
+}
+
+/* Point 3, 4, 6, 8 – request card */
 .req-card {
   border: 1px solid var(--color-border);
+  border-left: 3px solid var(--status-color, var(--color-border)); /* Point 6 */
   border-radius: var(--radius-lg);
   display: flex;
+  align-items: stretch;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
+  background: var(--color-surface);
   box-shadow: var(--shadow-card);
   transition: box-shadow 0.15s, border-color 0.15s;
-  &:hover { box-shadow: var(--shadow-card-md); border-color: #c7d2fe; }
+
+  &:hover {
+    box-shadow: var(--shadow-card-md);
+    border-left-color: var(--status-color, var(--color-primary));
+  }
 }
 
-.rc-stripe { width: 5px; flex-shrink: 0; }
+.rc-stripe { width: 4px; flex-shrink: 0; }
 
 .rc-body {
   flex: 1;
-  padding: 12px 14px;
+  padding: 9px 10px;   /* Point 4: reduced vertical padding */
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
+/* Point 3: category left + status right, tightly grouped */
 .rc-top {
   display: flex;
   justify-content: space-between;
@@ -53,13 +129,13 @@
   font-size: 11px;
   font-family: var(--font-heading);
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
 .rc-status {
   font-size: 10px;
   font-family: var(--font-heading);
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-md);
   font-weight: 700;
   white-space: nowrap;
@@ -67,7 +143,7 @@
 
 .rc-title {
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: 14px;       /* Point 4: slightly smaller */
   font-weight: 700;
   color: var(--color-primary-dark);
   line-height: 1.3;
@@ -75,8 +151,22 @@
 
 .rc-meta {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
   font-size: 11px;
   color: var(--color-text-muted);
+}
+
+/* Point 8: chevron tap affordance */
+.rc-chevron {
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 4px;
+  font-size: 20px;
+  color: var(--color-border);
+  font-weight: 300;
+  flex-shrink: 0;
+  transition: color 0.15s;
+
+  .req-card:hover & { color: var(--color-text-muted); }
 }

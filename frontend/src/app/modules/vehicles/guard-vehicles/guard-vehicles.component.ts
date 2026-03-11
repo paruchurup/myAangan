@@ -152,7 +152,27 @@ export class GuardVehiclesComponent implements OnInit {
     const body: any = { token: this.passToken };
     if (override) { body.override = 'true'; body.overrideReason = this.overrideReason; }
     this.svc.checkInPass(body).subscribe({
-      next: () => { this.checkingIn = false; this.checkInDone = true; },
+      next: () => {
+        this.checkingIn = false;
+        this.checkInDone = true;
+        // Also log as visitor vehicle so they appear in the Visitors tab
+        const pass = this.passResult?.pass;
+        if (pass) {
+          const hostFlat = [pass.createdBy?.block, pass.createdBy?.flatNumber].filter(Boolean).join('-');
+          const visitorEntry = {
+            plateNumber: 'PASS-' + this.passToken,
+            vehicleDescription: '',
+            visitorName: pass.visitorName,
+            visitorPhone: pass.visitorPhone || '',
+            hostFlat,
+            notes: pass.purpose || pass.notes || ''
+          };
+          this.svc.logVisitorEntry(visitorEntry).subscribe({
+            next: r => this.currentVisitors.unshift(r.data),
+            error: () => {} // non-critical: pass check-in already succeeded
+          });
+        }
+      },
       error: e  => { this.checkingIn = false; this.passInputErr = e.error?.message || 'Check-in failed.'; }
     });
   }

@@ -1,42 +1,88 @@
 <div class="page">
 
+  <!-- HEADER -->
   <div class="page-header">
     <div class="header-row">
       <a class="back-btn" routerLink="/dashboard">← Back</a>
       <a class="new-btn" routerLink="/helpdesk/raise">+ New Request</a>
     </div>
     <h1>🛠️ My Service Requests</h1>
-    <p>Track your helpdesk service requests</p>
+
+    <!-- Point 5: summary counts -->
+    <div class="header-summary" *ngIf="!loading">
+      <span class="hs-total">{{ totalCount }} request{{ totalCount !== 1 ? 's' : '' }}</span>
+      <span class="hs-sep">·</span>
+      <span class="hs-pending">{{ pendingCount }} Pending</span>
+      <span class="hs-sep">·</span>
+      <span class="hs-done">{{ doneCount }} Done</span>
+    </div>
   </div>
 
+  <!-- Point 1: filter row -->
+  <div class="filter-row" *ngIf="!loading && requests.length">
+    <button
+      class="filter-btn"
+      *ngFor="let f of filters"
+      [class.active]="activeFilter === f.key"
+      (click)="applyFilter(f.key)">
+      {{ f.label }}
+      <span class="filter-count" *ngIf="countFor(f.key) > 0">{{ countFor(f.key) }}</span>
+    </button>
+  </div>
+
+  <!-- LOADING -->
   <div class="loading" *ngIf="loading"><div class="spinner"></div></div>
 
+  <!-- EMPTY: no requests at all -->
   <div class="empty-state" *ngIf="!loading && !requests.length">
     <div class="empty-icon">🛠️</div>
     <p>No requests yet</p>
     <small>Tap "+ New Request" to raise a service request</small>
   </div>
 
-  <div class="card-list" *ngIf="!loading && requests.length">
-    <a class="req-card" [routerLink]="['/helpdesk', r.id]" *ngFor="let r of requests; let i = index"
-       [style.background]="i % 2 === 0 ? '#ffffff' : '#f8faff'">
-      <div class="rc-stripe" [style.background]="catCfg[r.category]?.color"></div>
+  <!-- EMPTY: filtered result empty -->
+  <div class="empty-state" *ngIf="!loading && requests.length && !filteredRequests.length">
+    <div class="empty-icon">🔍</div>
+    <p>No {{ activeFilter.toLowerCase().replace('_', ' ') }} requests</p>
+    <small>Try a different filter</small>
+  </div>
+
+  <!-- Point 3, 4, 6, 8: card list -->
+  <div class="card-list" *ngIf="!loading && filteredRequests.length">
+    <a class="req-card"
+       [routerLink]="['/helpdesk', r.id]"
+       *ngFor="let r of filteredRequests"
+       [style.--status-color]="stCfg[r.status]?.color">
+
+      <!-- Point 6: left stripe coloured by status -->
+      <div class="rc-stripe" [style.background]="stCfg[r.status]?.color"></div>
+
       <div class="rc-body">
+
+        <!-- Point 3: category left, status right — both on same row -->
         <div class="rc-top">
-          <div class="rc-cat" [style.color]="catCfg[r.category]?.color">
+          <span class="rc-cat" [style.color]="catCfg[r.category]?.color">
             {{ catCfg[r.category]?.icon }} {{ catCfg[r.category]?.label }}
-          </div>
-          <div class="rc-status" [style.background]="stCfg[r.status]?.bg" [style.color]="stCfg[r.status]?.color">
+          </span>
+          <span class="rc-status"
+                [style.background]="stCfg[r.status]?.bg"
+                [style.color]="stCfg[r.status]?.color">
             {{ stCfg[r.status]?.icon }} {{ stCfg[r.status]?.label }}
-          </div>
+          </span>
         </div>
+
+        <!-- Point 4: compact title -->
         <div class="rc-title">{{ r.title }}</div>
+
         <div class="rc-meta">
           <span>{{ r.createdAt | date:'d MMM yyyy' }}</span>
           <span *ngIf="r.assignedStaff">· 👤 {{ r.assignedStaff }}</span>
           <span *ngIf="r.confirmedAt">· ✅ {{ r.confirmedAt | date:'d MMM, h:mm a' }}</span>
         </div>
       </div>
+
+      <!-- Point 8: chevron affordance -->
+      <div class="rc-chevron">›</div>
     </a>
   </div>
 
