@@ -63,6 +63,7 @@
 .tabs {
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
   background: white;
   border-bottom: 2px solid var(--color-border);
   gap: 0;
